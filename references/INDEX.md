@@ -94,6 +94,13 @@ Navigation map for all VDD reference files.
 - Impact chain breaks → `anti-patterns.md#anti-pattern-7-impact-chain-breaks-mid-chain`
 - Validation without impact verification → `anti-patterns.md#anti-pattern-11-validation-without-impact-verification`
 - Domain primers ignored → `anti-patterns.md#anti-pattern-12-domain-primers-ignored`
+- Spec with implementation details → `anti-patterns.md#anti-pattern-17-spec-with-implementation-details`
+- Vague acceptance criteria → `anti-patterns.md#anti-pattern-18-vague-acceptance-criteria`
+- Missing error cases in contracts → `anti-patterns.md#anti-pattern-19-missing-error-cases-in-contracts`
+- Treating AI like a mind reader → `anti-patterns.md#anti-pattern-20-treating-ai-like-a-mind-reader`
+- Skipping the clarify step → `anti-patterns.md#anti-pattern-21-skipping-the-clarify-step`
+- Tasks without AC references → `anti-patterns.md#anti-pattern-22-tasks-without-ac-references`
+- Oversized tasks → `anti-patterns.md#anti-pattern-23-oversized-tasks`
 
 ### Domain Primers
 - WebApp → `../domain-primers/webapp.md`

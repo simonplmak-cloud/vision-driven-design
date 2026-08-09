@@ -26,9 +26,11 @@ One-page cheat sheet. For full details, see referenced files.
 | `/vdd:vision "statement"` | 1 | human freeform | `vdd/vision.md` |
 | `/vdd:strategize` | 2 | vision.md + domain-primers | `vdd/strategy.md` |
 | `/vdd:tactics` | 3 | strategy.md + repository | `vdd/tactics.md` |
-| `/vdd:specify [action-item]` | 4 | tactics.md → action item | `vdd/specs/[feature]/spec.md` |
+| `/vdd:specify [action-item \| "description"]` | 4 | tactics.md → action item (or freeform) | `vdd/specs/[feature]/spec.md` |
+| `/vdd:clarify [feature]` | 4 | spec.md | delta of resolutions and edge cases |
 | `/vdd:plan [feature]` | 5 | spec.md + constitution | `plan.md`, `data-model.md`, `contracts/` |
 | `/vdd:tasks [feature]` | 6 | plan.md + contracts/ | `tasks.md` |
+| `/vdd:next-task [feature]` | 7 | tasks.md | next uncompleted task |
 | `/vdd:implement [task-id]` | 7 | task + all artifacts | code commit |
 | `/vdd:validate` | 8 | full chain + code | impact-report.md, drift report |
 | `/vdd:trace` | any | all artifacts | traceability matrix |
@@ -41,7 +43,7 @@ One-page cheat sheet. For full details, see referenced files.
 G1: V↔S  ───  G2: S↔T  ───  G3: T↔SP  ───  G4: SP↔PL  ───  G5: PL↔TK  ───  G6: TK↔IM  ───  G7: IM↔VS
 ```
 
-Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings).
+Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). Total: 113 checks across 7 gates.
 
 ## Impact Chain Format
 

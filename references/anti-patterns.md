@@ -194,3 +194,149 @@ The most common VDD failure modes, their symptoms, and how to fix them.
 - Structural issues surface only in Phase 8
 
 **Fix:** Every critic agent runs in a fresh context with no memory of the generating session. It receives only: the artifact being reviewed + the critic prompt. A critic that knows the reasoning behind decisions cannot challenge them.
+
+---
+
+## Anti-Pattern 17: Spec with Implementation Details
+
+**Symptoms:**
+- spec.md mentions specific tables, functions, libraries, or frameworks
+- "The /api/users endpoint should query the `users` table using a JOIN with `user_profiles`"
+- Changing the database engine requires rewriting the spec
+- Plan has no architectural decisions left to make because the spec already made them
+
+**Example (wrong):**
+```markdown
+## AC-1
+The `/api/users` endpoint should query the `users` table using a JOIN
+with the `user_profiles` table and return the result as JSON.
+```
+
+**Example (correct):**
+```markdown
+## AC-1
+Given a valid session, when the user requests their profile,
+then their full profile information is returned within 200ms.
+```
+
+**Fix:** Remove all technology references from spec.md. Move them to plan.md.
+The spec describes WHAT and WHY. The plan describes HOW.
+
+---
+
+## Anti-Pattern 18: Vague Acceptance Criteria
+
+**Symptoms:**
+- "The feature works correctly" — no test can be written for this
+- "The API is fast" — 10ms or 10s?
+- "Users can manage their settings" — create, read, update, delete, or just read?
+- Gate checks pass because nobody can prove the AC failed
+
+**Fix:** Every AC must pass the testability test:
+- Can you write an automated test that returns pass or fail? If no → rewrite.
+- Can two developers independently write the same test? If no → rewrite.
+- Does it include a measurable threshold for performance/security criteria? If no → add one.
+
+Use the Reframe Vague Requirements key practice table in SKILL.md as reference.
+
+---
+
+## Anti-Pattern 19: Missing Error Cases in Contracts
+
+**Symptoms:**
+- Frontend shows a generic 500 error because the contract didn't define 409 CONFLICT
+- Auth errors not handled because the contract said "returns 200"
+- Duplicate submission creates two records because idempotency behavior wasn't specified
+- Contracts only document the happy path success response
+
+**Fix:** For every contract, explicitly define:
+- All success responses (200, 201, 204)
+- All client error responses (400, 401, 403, 404, 409, 422)
+- Idempotency behavior (is this endpoint safe to call twice?)
+- Rate limiting behavior if applicable
+- For every happy-path AC, there must be a paired error AC
+
+---
+
+## Anti-Pattern 20: Treating AI Like a Mind Reader
+
+**Symptoms:**
+- Prompt: "Add user authentication" → AI builds OAuth when you wanted sessions
+- Prompt: "Make it faster" → AI rewrites working code, introduces bugs
+- Prompt: "Add the missing validation" → AI adds it in the wrong layer
+- Developer skips spec because "the AI should figure it out"
+
+**The root cause:** Without a spec, AI makes thousands of micro-decisions silently.
+It's not wrong — it's guessing. And some guesses will be wrong.
+
+**Fix:** Never prompt an AI coding agent for feature work without a spec (or at minimum,
+a tactical action item that is concrete enough). VDD's chain exists precisely to prevent
+this — every level constrains the level below so the AI never has to guess.
+
+> "You wouldn't hire a junior dev without giving them specs. Why let an AI code without one?"
+
+---
+
+## Anti-Pattern 21: Skipping the Clarify Step
+
+**Symptoms:**
+- spec.md has `[NEEDS CLARIFICATION]` items that were never resolved
+- Plan was written with assumed answers that turned out to be wrong
+- "The spec says X but we actually meant Y" — discovered during Phase 7
+- AI picks an answer for the ambiguity, it's wrong, drift propagates
+
+**The trap:** Spec looks complete enough. You move to Plan. Then in Phase 7 the AI asks
+"what should happen when the user is not found?" and you realize there's no AC for it.
+The AI picks an answer. It's wrong. Now you have drift baked into the implementation.
+
+**Fix:** The Clarify step is mandatory before Plan generation:
+1. Resolve every `[NEEDS CLARIFICATION]` item — no assumptions
+2. Run spec validation (vague terms check)
+3. Add ACs for every error and edge case surfaced during clarification
+
+30 minutes on Clarify saves 3 hours of wrong implementation.
+
+---
+
+## Anti-Pattern 22: Tasks Without AC References
+
+**Symptoms:**
+- tasks.md has entries like "Implement UserRepository" with no AC citation
+- During Phase 7, AI asks "what should happen when the user isn't found?"
+- Gate G6 cannot be verified — unknown which ACs each task was supposed to cover
+- Test tasks pass but the wrong behavior is tested
+- Two tasks implement overlapping behavior; one AC is never covered
+
+**Fix:** Every task must declare:
+- **Test tasks:** the specific ACs being tested, including error ACs
+- **Implementation tasks:** the contract it implements + the ACs it satisfies
+
+Example:
+```markdown
+- [ ] **TASK-003** [M] Write tests for UserRepository.create()
+  - Tests: AC-1 (success path), AC-E1 (duplicate email), AC-E2 (invalid input)
+  - Depends on: TASK-001
+
+- [ ] **TASK-004** [M] Implement UserRepository.create()
+  - Contract: `vdd/specs/[feature]/contracts/user-api.md → POST /users`
+  - Satisfies: AC-1, AC-E1, AC-E2
+  - Depends on: TASK-003
+```
+
+---
+
+## Anti-Pattern 23: Oversized Tasks
+
+**Symptoms:**
+- TASK-007 touches 8 files and takes 4 hours
+- AI loses context mid-task and asks what the endpoint signature should be
+- Multiple unrelated changes in one commit make rollback difficult
+- "This is all one logical unit" — but it's actually several units
+
+**Fix:** Split any task that:
+- Touches more than 3 files
+- Has more than one acceptance criterion
+- Would produce a commit diff over 200 lines
+- Is estimated at [L] without a written justification
+
+A task that can be described in one sentence is the right size.

@@ -51,7 +51,7 @@ farmer income by 40% and help lift rural communities out of poverty."
 | **Research** | Not included | 5 parallel research subagents (market, competitive, tech, impact, domain) |
 | **Codebase awareness** | Not included | Full repository audit before spec generation |
 | **Traceability** | Spec → Code | Vision → Strategy → Tactics → Spec → Plan → Tasks → Code → Tests → Impact |
-| **Verification direction** | Forward only | Bi-directional at every level (7 gates, 110 checks) |
+| **Verification direction** | Forward only | Bi-directional at every level (7 gates, 113 checks) |
 | **Impact verification** | Not included | Leading + lagging metrics validated against vision |
 | **Domain awareness** | Generic | 4 domain primers (webapp, data storage, ETL, infrastructure) |
 | **Autonomy** | Per-phase human gates | Full-auto mode — human provides vision only |
@@ -64,9 +64,11 @@ farmer income by 40% and help lift rural communities out of poverty."
 | `/vdd:vision "..."` | Expand freeform vision into structured impact model |
 | `/vdd:strategize` | Research market, competitors, technology → strategic pillars |
 | `/vdd:tactics` | Audit codebase → gap analysis → prioritized action items |
-| `/vdd:specify <ID>` | Generate precise acceptance criteria from action item |
+| `/vdd:specify <ID \| "description">` | Generate precise acceptance criteria from action item (or freeform — backward-compatible with SDD) |
+| `/vdd:clarify <feature>` | Standalone clarification pass on a spec |
 | `/vdd:plan <feature>` | Technical architecture, data model, API contracts |
 | `/vdd:tasks <feature>` | Test-first task breakdown with dependencies |
+| `/vdd:next-task <feature>` | Extract next uncompleted task |
 | `/vdd:implement <ID>` | Execute single task, verify, commit |
 | `/vdd:validate` | Full-chain traceability matrix + drift detection + impact report |
 | `/vdd:trace` | Generate bidirectional traceability matrix |
@@ -113,9 +115,9 @@ Reference the prompts in `references/prompt-patterns.md` directly.
     ├── workflow-phases.md           # 8 phases step-by-step
     ├── artifact-templates.md        # 11 copy-paste templates
     ├── prompt-patterns.md           # All prompts + bidirectional gates
-    ├── quality-gates.md             # 7 gates with 110 checks
+    ├── quality-gates.md             # 7 gates, 113 checks
     ├── ai-agent-patterns.md         # Multi-agent orchestration
-    ├── anti-patterns.md             # 16 failure modes
+    ├── anti-patterns.md             # 23 failure modes
     └── traceability-matrix.md       # RTM format + automation
 ```
 

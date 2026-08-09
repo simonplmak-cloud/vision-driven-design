@@ -40,6 +40,20 @@ The combined 8-phase chain is governed by Goldratt's recursive Strategy-Tactic
 decomposition: every phase's Tactic is the next phase's Strategy, creating a natural
 recursive chain with built-in bidirectional verification.
 
+### Spec Levels
+
+VDD inherits SDD's three spec posture levels, extended to apply at every chain level:
+
+| Level | What it means | Best for |
+|-------|--------------|---------|
+| **Spec-first** | Write spec upfront, implement immediately | Most features with clear requirements |
+| **Strategy-first** | Research strategy upfront, then derive specs | New domains, uncertain markets |
+| **Vision-first** | Define vision upfront, then research+spec | New products, major pivots |
+| **Spec-anchored** | Maintain artifact alongside code as it evolves | Long-lived features |
+| **Spec-as-source** | Artifact is primary; code is generated, never hand-edited | High-compliance, safety-critical |
+
+Start with vision-first for new products. Use spec-first for features within an established vision.
+
 ### The Bi-Directional Difference
 
 Traditional SDD verifies forward (does the code match the spec?). VDD verifies in both
@@ -88,6 +102,23 @@ Without forward verification: vision goals ship with no implementation.
 - Throwaway prototypes where requirements will immediately change
 - Changes unrelated to any vision goal
 
+### Key Practice: Reframe Vague Requirements
+
+Before writing any AC, convert vague requirements into measurable targets:
+
+| Vague | Concrete |
+|-------|---------|
+| "make it faster" | "LCP < 2.5s on a 4G connection" |
+| "it should be secure" | "requires authenticated session; all inputs validated before processing" |
+| "handle errors properly" | "returns 4xx with structured error code, never exposes stack traces" |
+| "should scale" | "handles 1000 concurrent users at < 500ms p95" |
+| "works correctly" | "Given X, When Y, Then Z — independently verifiable" |
+| "good UX" | "WCAG 2.2 AA compliant; task completion rate > 80%" |
+
+If you cannot write a passing test for an AC, the AC is not concrete enough.
+This applies at every level: vision metrics must be measurable, strategy pillars
+must be verifiable, tactical items must be actionable, and ACs must be testable.
+
 ---
 
 ## The 8-Phase Chain
@@ -113,7 +144,7 @@ Without forward verification: vision goals ship with no implementation.
 | 1 | Vision | Write 1-3 paragraph impact statement | Expand into structured vision.md |
 | 2 | Strategy | (optional: redirect) | Spawn 5 parallel research subagents, synthesize findings |
 | 3 | Tactics | (optional: re-prioritize) | Full repo audit → gap analysis → prioritized action items |
-| 4 | Specs | (optional: clarify ambiguities) | Generate precise acceptance criteria per action item |
+| 4 | Specs | (optional: clarify ambiguities) | Generate precise acceptance criteria per action item. Can also accept freeform description directly via `/vdd:specify "description"` — skips V/S/T for simple cases. |
 | 5 | Plan | (optional: review architecture) | Technical design, data models, API contracts |
 | 6 | Tasks | (optional: adjust ordering) | Break plan into test-first atomic tasks |
 | 7 | Implement | (optional: review PRs) | Execute tasks one by one, fresh context per task |
@@ -136,7 +167,7 @@ Each gate verifies both directions and validates 4 S&T assumptions:
 | **G4 (SP→PL)** | Every AC has ≥1 plan component | Every component traces to an AC |
 | **G5 (PL→TK)** | Every component has ≥1 task | Every task traces to a component |
 | **G6 (TK→IM)** | Every task produces passing code | Every commit traces to a task |
-| **G7 (IM→VS)** | Every MUST AC has passing tests | Every code artifact traces to vision |
+| **G7 (IM→VS)** | Every MUST AC has passing tests | Every code artifact traces to vision. User story walkthrough complete. |
 
 **4 S&T Assumptions per gate** (28 total): Necessity, Achievability, Sufficiency, Warnings
 — based on Goldratt's Strategy-and-Tactic tree.
@@ -175,9 +206,11 @@ vdd/
 | `/vdd:vision "statement"` | 1 | Expand freeform vision → structured `vision.md` |
 | `/vdd:strategize` | 2 | Load domain primers, spawn research subagents, synthesize `strategy.md` |
 | `/vdd:tactics` | 3 | Audit repo, gap analysis, generate `tactics.md` |
-| `/vdd:specify <action-item-id>` | 4 | Generate `spec.md` from a tactical action item |
+| `/vdd:specify <action-item-id \| "freeform description">` | 4 | Generate `spec.md` from a tactical action item (or freeform description — skips V/S/T for simple cases) |
+| `/vdd:clarify <feature>` | 4 | Run standalone clarification pass on a spec (resolve ambiguities, add edge case ACs) |
 | `/vdd:plan <feature>` | 5 | Generate `plan.md`, `data-model.md`, `contracts/` |
 | `/vdd:tasks <feature>` | 6 | Generate `tasks.md` with test-first ordering |
+| `/vdd:next-task <feature>` | 7 | Extract and display the next uncompleted task from tasks.md |
 | `/vdd:implement <task-id>` | 7 | Execute a single task, verify, commit |
 | `/vdd:validate` | 8 | Full-chain traceability, drift detection, impact verification |
 | `/vdd:trace` | any | Generate bidirectional traceability matrix |
@@ -239,9 +272,9 @@ VDD artifacts are versioned, committed, and archived alongside code:
 | Templates for all 11 artifact types | `references/artifact-templates.md` |
 | Prompts for every phase + bidirectional gates | `references/prompt-patterns.md` |
 | Step-by-step phase instructions | `references/workflow-phases.md` |
-| 7 bidirectional gates with 110 total checks | `references/quality-gates.md` |
+| 7 bidirectional gates with 113 total checks | `references/quality-gates.md` |
 | Multi-agent patterns and auto-mode execution | `references/ai-agent-patterns.md` |
-| 16 common failure modes and fixes | `references/anti-patterns.md` |
+| 23 common failure modes and fixes | `references/anti-patterns.md` |
 | RTM format, generation, and CI/CD integration | `references/traceability-matrix.md` |
 | One-page cheat sheet | `references/quick-reference.md` |
 | Topic navigation | `references/INDEX.md` |

@@ -280,3 +280,50 @@ Auto-mode is the default. To switch to gated mode, set in constitution.md:
 ## VDD Mode: gated
 ```
 Or override per-project via environment variable: `VDD_MODE=gated`
+
+---
+
+## Task Extraction Tool (`/vdd:next-task`)
+
+Problem: If you show the AI agent the full tasks.md, it may try to implement multiple
+tasks at once, or reference future tasks that haven't been defined in context.
+
+Solution: Retrieve one task at a time:
+
+```bash
+# Extract a single task by ID from tasks.md
+extract-task() {
+  local task_id=$1
+  local tasks_file=$2
+  awk "/\*\*${task_id}\*\*/,/^- \[ \] \*\*TASK-/{if(/^- \[ \] \*\*TASK-/ && !/\*\*${task_id}\*\*/) exit; print}" "$tasks_file"
+}
+```
+
+Or via VDD command:
+```
+/vdd:next-task vdd/specs/[feature]
+```
+Returns the next uncompleted task (by checking `- [ ]` vs `- [x]`), with all
+necessary context for a single implementation session.
+
+---
+
+## CI/CD Task Progress Tracking
+
+```yaml
+# Add to .github/workflows/vdd-gates.yml
+- name: Task completion report
+  run: |
+    total=$(grep -rc "\- \[" vdd/specs/*/tasks.md 2>/dev/null | cut -d: -f2 | paste -sd+ 2>/dev/null | bc 2>/dev/null || echo 0)
+    done=$(grep -rc "\- \[x\]" vdd/specs/*/tasks.md 2>/dev/null | cut -d: -f2 | paste -sd+ 2>/dev/null | bc 2>/dev/null || echo 0)
+    remaining=$((total - done))
+    echo "## Task Progress" >> $GITHUB_STEP_SUMMARY
+    echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
+    echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+    echo "| Completed | $done |" >> $GITHUB_STEP_SUMMARY
+    echo "| Remaining | $remaining |" >> $GITHUB_STEP_SUMMARY
+    echo "| Total | $total |" >> $GITHUB_STEP_SUMMARY
+    if [ $remaining -eq 0 ]; then
+      echo ":white_check_mark: All tasks complete" >> $GITHUB_STEP_SUMMARY
+    fi
+```

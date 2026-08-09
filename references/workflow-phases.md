@@ -187,12 +187,19 @@ git commit -m "tactics: codebase audit, gap analysis, and prioritized action ite
 ## Phase 4 — Specs
 
 ### Goal
-For each MUST-priority action item in `tactics.md`, generate a `spec.md` that precisely defines WHAT to build. This is where SDD begins within VDD.
+For each MUST-priority action item in `tactics.md`, generate a `spec.md` that precisely defines WHAT to build. This is where SDD begins within VDD. Can also accept freeform descriptions directly via `/vdd:specify "description"` for simple features that don't need the full V/S/T chain — in that backwards-compatible mode, VDD operates identically to SDD Phase 1 (Specify).
 
 ### S&T Role
 **Specs = L3 Tactic → L4 Strategy.**
-L3 Tactic: "How do we execute action items?" → Generate precise requirements.
-L4 Strategy: "What exactly must be built?" → MoSCoW-prioritized acceptance criteria.
+
+### Spec Level Selection
+
+VDD supports three spec postures:
+- **Spec-first**: Write full spec.md upfront → default for action items with clear scope
+- **Spec-anchored**: Maintain spec alongside evolving code → use for long-lived features
+- **Spec-as-source**: Spec is primary; code is generated → use for high-compliance work
+
+Choose posture per spec. Override in spec.md header: `Spec Level: [spec-first | spec-anchored | spec-as-source]`.
 
 ### Step-by-Step
 
@@ -206,9 +213,16 @@ Include corrected assumptions. Each spec includes:
 - Tactical Origin (which action item this implements)
 - Impact Verification (how this spec contributes to vision metrics)
 
-**Step 4.3 — Clarify**
+**Step 4.3 — Clarify (mandatory before Plan)**
 Run `references/prompt-patterns.md → Phase 4 → Clarify Phase Prompt`.
-Resolve every `[NEEDS CLARIFICATION]` item. Add edge-case ACs.
+Resolve every `[NEEDS CLARIFICATION]` item. Add edge-case ACs. Run automated spec validation.
+
+Perform a full clarification pass covering:
+- Resolve ambiguous requirements (make vague terms concrete)
+- Find missing edge cases (empty inputs, concurrent requests, service failures)
+- Add error/edge case ACs for every happy-path MUST AC
+- Resolve all [NEEDS CLARIFICATION] markers
+Can also be invoked standalone: `/vdd:clarify <feature>`
 
 **Step 4.4 — Run Bi-Directional Gate G3 (T→S)**
 **Forward check:** Every MUST tactical action item has a spec. Every spec has ACs covering the action item's scope.
@@ -353,11 +367,16 @@ For each gate's 4 S&T assumptions (28 total), validate:
 - Was the child sufficient? (Did it fully cover the parent?)
 - Were warnings heeded? (Did documented risks materialize?)
 
-**Step 8.7 — Generate impact verification report**
+**Step 8.7 — User story walkthrough**
+Manually walk through each user story from spec.md in the running application.
+Check each AC as a user, not as a developer. This is the "validation" half of
+verification-and-validation — does the product actually work for its intended users?
+
+**Step 8.8 — Generate impact verification report**
 Use `references/artifact-templates.md → Impact Verification Report Template`.
 Output at `vdd/impact-report.md`.
 
-**Step 8.8 — Fix drift immediately**
+**Step 8.9 — Fix drift immediately**
 If drift is found:
 - Do not "adjust the spec to match the code"
 - Fix the implementation to match the spec

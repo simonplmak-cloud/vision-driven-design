@@ -387,6 +387,31 @@ Target users: [from vision stakeholders]
 Constraints: [from constitution.md + vision.md constraints]
 ```
 
+### Freeform Specification Prompt (SDD Backward-Compatibility)
+
+*When `/vdd:specify "freeform description"` is used without V/S/T chain — operates identically to SDD Phase 1.*
+
+```
+Generate a spec.md for this feature description:
+
+[Freeform description]
+
+Use the template in references/artifact-templates.md.
+
+REQUIREMENTS:
+- No implementation details (no technology names, no function names)
+- Each AC independently testable (Given/When/Then)
+- MoSCoW priority on every AC: [MUST] / [SHOULD] / [COULD] / [WONT]
+- Include error/edge case ACs — not just happy path
+- Mark ambiguities with [NEEDS CLARIFICATION]
+- Explicitly list OUT OF SCOPE
+- Include Boundaries section (Always do / Ask first / Never do)
+- Include Impact Chain header if a vision exists; otherwise mark as [STANDALONE]
+
+Target users: [from stakeholder context if available]
+Constraints: [from constitution.md]
+```
+
 ### Clarify Phase Prompt
 
 ```
@@ -409,6 +434,36 @@ Flag vague terms:
 - "secure", "safe" → needs specific constraint
 
 Return: proposed resolutions + new ACs to add. Do NOT rewrite spec.md.
+```
+
+### Standalone Clarify Prompt (`/vdd:clarify <feature>`)
+
+*Use when running clarification independently — outside the generation flow. Same logic,
+invoked directly. Can be run at any time to re-examine an existing spec.*
+
+```
+You are a spec reviewer. Read vdd/specs/[feature]/spec.md and perform a full clarification pass.
+
+Step 1 — Resolve open questions:
+List every [NEEDS CLARIFICATION] item and propose a resolution for human approval.
+Do not resolve them unilaterally.
+
+Step 2 — Find missing edge cases:
+For each [MUST] AC, identify edge cases not yet covered:
+- What happens with empty/null inputs?
+- What happens with concurrent requests?
+- What happens when dependent services are unavailable?
+- What are the permission boundary cases?
+
+Step 3 — Automated validation:
+Flag any AC that contains vague terms:
+- "fast", "slow", "quickly", "efficiently" → needs a numeric threshold
+- "works correctly", "functions properly" → needs a specific testable outcome
+- "secure", "safe" → needs a specific constraint
+- "simple", "easy" → not a requirement
+
+Return: a list of proposed resolutions + a list of new ACs to add.
+Do NOT write a new spec.md. Return only the delta.
 ```
 
 ### Bi-Directional Gate G3 Prompt (Tactics → Specs)
@@ -547,7 +602,25 @@ Warnings: What must go right / be avoided for Tasks to succeed?
 
 ---
 
+---
+
 ## Phase 7 — Implement Prompts
+
+### Task Extraction Prompt (`/vdd:next-task`)
+
+```
+Read vdd/specs/[feature]/tasks.md.
+
+Find the next task where the checkbox is `- [ ]` (not `- [x]`).
+Extract and display:
+- Task ID, title, size, dependencies
+- The specific ACs it covers (from the task's Tests/Satisfies declarations)
+- The specific contract and plan section references
+
+Only extract ONE task — the first uncompleted one.
+Provide the task in the exact format for a single implementation session.
+Do NOT display other tasks.
+```
 
 ### Single Task Implementation Prompt
 

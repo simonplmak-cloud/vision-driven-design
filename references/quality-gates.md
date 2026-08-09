@@ -115,6 +115,7 @@ In full-auto mode, AI self-gates all checks and only halts for human interventio
 | F3.7 | MoSCoW labels | Every AC has a [MUST]/[SHOULD]/[COULD]/[WONT] label |
 | F3.8 | No vague terms | No "fast", "secure", "works correctly" without measurable thresholds |
 | F3.9 | Clarification resolved | All [NEEDS CLARIFICATION] items resolved |
+| F3.10 | Non-functional requirements | Performance, security, and accessibility requirements stated with specific values |
 
 ### Backward Verification (Specs → Tactics)
 
@@ -193,6 +194,7 @@ In full-auto mode, AI self-gates all checks and only halts for human interventio
 | F5.3 | Entity coverage | Every data model entity has migration + repository tasks |
 | F5.4 | AC references | Test tasks cite specific ACs from spec.md |
 | F5.5 | Contract references | Implementation tasks cite specific contracts/ files |
+| F5.6 | Satisfies declaration | Implementation tasks explicitly declare which ACs they satisfy |
 
 ### Backward Verification (Tasks → Plan)
 
@@ -271,6 +273,7 @@ In full-auto mode, AI self-gates all checks and only halts for human interventio
 | F7.3 | Contract audit | All contract error codes have implementation and tests |
 | F7.4 | Impact instrumentation | Success metrics have measurement mechanisms deployed |
 | F7.5 | Drift report | Zero drift items found (spec vs. implementation) |
+| F7.6 | User story walkthrough | Each user story from spec.md verified in the running application |
 
 ### Backward Verification (Validation → Implementation → Vision)
 
@@ -303,13 +306,13 @@ In full-auto mode, AI self-gates all checks and only halts for human interventio
 | G0 | (pre-chain) | — | — | — |
 | G1 | Vision → Strategy | 5 | 5 | 4 |
 | G2 | Strategy → Tactics | 4 | 5 | 4 |
-| G3 | Tactics → Specs | 9 | 4 | 4 |
+| G3 | Tactics → Specs | 10 | 4 | 4 |
 | G4 | Specs → Plan | 7 | 6 | 4 |
-| G5 | Plan → Tasks | 5 | 6 | 4 |
+| G5 | Plan → Tasks | 6 | 6 | 4 |
 | G6 | Tasks → Implement | 4 | 7 | 4 |
-| G7 | Implement → Validate | 5 | 5 | 4 |
+| G7 | Implement → Validate | 6 | 5 | 4 |
 
-**Total checks across all gates: 110** (44 forward + 38 backward + 28 S&T assumptions)
+**Total checks across all gates: 113** (47 forward + 38 backward + 28 S&T assumptions)
 
 ---
 
