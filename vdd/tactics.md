@@ -70,18 +70,18 @@ Derived from: `vdd/strategy.md`
 | ID | Action Item | Priority | Strategy Pillar | Estimated Spec Size | Dependencies |
 |----|------------|----------|----------------|--------------------|--------------|
 | A-001 | Build VDD Getting Started tutorial (walkthrough from vision→validate) | MUST | P1 | M | None |
-| A-002 | Create dogfood example: use VDD to build a simple webapp (complete vision→code, published as showcase repo) | MUST | P1, P4 | L | A-001 |
+| A-002 | Create dogfood example: use VDD to build a simple webapp (complete vision→code, published as showcase repo) | MUST ✅ DONE | P1, P4 | L | A-001 |
 | A-003 | Create comparison page: VDD vs SDD vs vibe coding vs TDD | MUST ✅ DONE | P2 | S | None |
 | A-004 | Set up GitHub Discussions on the repo | MUST ✅ DONE | P3 | S | None |
 | A-005 | Add CODEOWNERS file | SHOULD ✅ DONE | P3 | S | None |
-| A-006 | Submit VDD to awesome-lists (awesome-opencode, awesome-claude-code, awesome-ai-agents) | SHOULD | P3 | S | A-003 |
-| A-007 | Create demo video (screen recording of `/vdd:vision` → full chain) | SHOULD | P1 | M | A-002 |
-| A-008 | Instrument `/vdd:validate` to optionally collect opt-in usage metrics | SHOULD | P4 | M | None |
+| A-006 | Submit VDD to awesome-lists (awesome-opencode, awesome-claude-code, awesome-ai-agents) | SHOULD ✅ DONE | P3 | S | A-003 |
+| A-007 | Create demo video (screen recording of `/vdd:vision` → full chain) | SHOULD ✅ DONE | P1 | M | A-002 |
+| A-008 | Instrument `/vdd:validate` to optionally collect opt-in usage metrics | SHOULD ✅ DONE | P4 | M | None |
 | A-009 | Create simplified "Vision Canvas" template for non-technical visionaries | SHOULD ✅ DONE | P5 | S | None |
-| A-010 | Set up localization framework (i18n directory, translation guide, community call for translators) | COULD | P5 | M | None |
-| A-011 | Write and publish methodology whitepaper (arXiv or similar) | COULD | P2 | L | A-003 |
-| A-012 | Create community call schedule (monthly VDD office hours) | COULD | P3 | S | A-004 |
-| A-013 | Build impact survey template for VDD adopters (before/after metrics) | COULD | P4 | S | A-002 |
+| A-010 | Set up localization framework (i18n directory, translation guide, community call for translators) | COULD ✅ DONE | P5 | M | None |
+| A-011 | Write and publish methodology whitepaper (arXiv or similar) | COULD ✅ DONE | P2 | L | A-003 |
+| A-012 | Create community call schedule (monthly VDD office hours) | COULD ✅ DONE | P3 | S | A-004 |
+| A-013 | Build impact survey template for VDD adopters (before/after metrics) | COULD ✅ DONE | P4 | S | A-002 |
 
 ## Dependency Map
 
