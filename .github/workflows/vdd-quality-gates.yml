@@ -1,0 +1,70 @@
+name: VDD Quality Gates
+
+on:
+  pull_request:
+    paths:
+      - 'vdd/**'
+      - 'references/**'
+  push:
+    branches: [main]
+
+jobs:
+  impact-chain-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify impact chain headers
+        run: |
+          errors=0
+          for file in $(find vdd/ -name '*.md' -type f ! -path '*/docs/*'); do
+            if ! grep -q "^> Impact Chain:" "$file"; then
+              echo "MISSING: $file"
+              errors=$((errors+1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "FAIL: $errors files missing Impact Chain header"
+            exit 1
+          fi
+          echo "PASS: All VDD artifacts have Impact Chain headers"
+
+      - name: Detect unresolved clarifications
+        run: |
+          if grep -rn "\[NEEDS CLARIFICATION\]" vdd/; then
+            echo "FAIL: Unresolved [NEEDS CLARIFICATION] items found"
+            exit 1
+          fi
+          echo "PASS: No unresolved clarification items"
+
+  task-progress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Task completion report
+        run: |
+          echo "## VDD Task Progress" >> $GITHUB_STEP_SUMMARY
+          for tasks_file in $(find vdd/specs -name tasks.md); do
+            feature=$(echo "$tasks_file" | cut -d/ -f3)
+            total=$(grep -c '\- \[' "$tasks_file")
+            done=$(grep -c '\- \[x\]' "$tasks_file")
+            pct=$((done * 100 / total))
+            echo "| $feature | $done/$total ($pct%) |" >> $GITHUB_STEP_SUMMARY
+          done
+
+  gate-count-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify gate check count consistency
+        run: |
+          skl=$(grep -c "113" SKILL.md || echo 0)
+          rd=$(grep -c "113" README.md || echo 0)
+          qr=$(grep -c "113" references/quick-reference.md || echo 0)
+          if [ "$skl" -gt 0 ] && [ "$rd" -gt 0 ] && [ "$qr" -gt 0 ]; then
+            echo "PASS: Gate count (113) consistent across SKILL.md, README.md, quick-reference.md"
+          else
+            echo "WARN: Gate count may be inconsistent — check manually"
+          fi

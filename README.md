@@ -7,6 +7,7 @@
 <a href="https://opencode.ai/docs/skills/"><img src="https://img.shields.io/badge/platform-OpenCode-white" alt="OpenCode Skill"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/github/stars/simonplmak-cloud/vision-driven-design?style=flat" alt="GitHub stars"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/github/last-commit/simonplmak-cloud/vision-driven-design" alt="Last commit"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/built%20with-VDD-4CAF50" alt="Built with VDD"></a>
 
 **From vision to verified impact — an AI-native, fully autonomous software development methodology.**
 
@@ -206,6 +207,7 @@ All reference docs live in `references/`:
 - **[VDD vs Alternatives](vdd/docs/comparison.md)** — VDD compared to SDD, vibe coding, and TDD
 - **[Vision Canvas](vdd/docs/vision-canvas.md)** — 5-minute template for non-technical visionaries
 - **[Dogfood Example](https://github.com/simonplmak-cloud/vdd-dogfood-task-tracker)** — Real project built with full VDD chain (vision→code)
+- **[VDD Badge](vdd/docs/vdd-badge.md)** — Add to your repo: `[![Built with VDD](https://img.shields.io/badge/built%20with-VDD-4CAF50)]`
 
 ---
 

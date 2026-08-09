@@ -140,6 +140,16 @@ The methodology layer sits above and across agents. Key enablers:
 - Partnership with organizations serving these communities
 - Free tier forever (MIT license)
 
+### Pillar 6: GitHub-Native Growth Through Topics, Trending, and Community
+
+**Rationale:** GitHub is the primary distribution and discovery channel for VDD. Stars, trending, topics, Discussions, and the dogfood repo are the growth engine. Every GitHub feature must be optimized for discoverability and conversion.
+
+**Vision Trace:** I-006 (GitHub community discovers and adopts VDD through trending and search), I-001 (developer adoption)
+
+**Key Research Finding:** GitHub's trending algorithm rewards concentrated star bursts. Repositories with optimized READMEs (demo videos, badges, clear value proposition) see higher conversion. Projects with active Discussions and labeled good-first-issues attract more contributors. 15+ well-chosen topics significantly improve search discoverability.
+
+**Expected Impact:** 10,000+ stars within 3 years. Monthly trending appearances. GitHub Topics rank #1-3 for "vision-driven-design", "spec-driven-development", "ai-skill", "opencode-skill".
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |

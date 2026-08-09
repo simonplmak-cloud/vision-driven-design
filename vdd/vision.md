@@ -12,13 +12,13 @@ Vision Driven Design (VDD) exists to transform how software gets built — from 
 
 VDD changes this by making vision the root of all traceability. A human states the impact they want to create. AI agents handle the rest — researching the domain, auditing the codebase, generating specs grounded in real-world goals, planning, implementing, and validating — with bi-directional verification at every junction to ensure no requirement is missed and no scope is invented.
 
-The vision for VDD itself is to **maximize its impact on society** — to become the default methodology for any team building software that matters. By making it trivial for anyone to go from "I want to solve this problem" to deployed, impact-verified code, VDD can multiply the number of successful software projects, reduce the billions wasted on failed or misaligned software, and ultimately channel more of humanity's engineering effort toward work that demonstrably improves lives.
+The vision for VDD itself is to **maximize its impact on society by promoting VDD on GitHub** — to become the default methodology for any team building software that matters, driven by GitHub-native distribution, community growth, and discoverability. By leveraging GitHub's 150M+ developer ecosystem as the primary adoption channel — stars as social proof, topics for discoverability, Discussions for community, and the dogfood repo as living proof — VDD can multiply the number of successful software projects, reduce the billions wasted on failed or misaligned software, and ultimately channel more of humanity's engineering effort toward work that demonstrably improves lives.
 
 ## Impact Model
 
 ### Goal
 
-Make VDD the dominant methodology for impact-driven software development, reaching 10,000 active projects and measurably improving software project success rates within 3 years.
+Make VDD a Top-10 trending methodology on GitHub, reaching 10,000 stars, 2,000+ skill installations, and measurably improving software project success rates within 3 years — all driven through GitHub-native promotion channels.
 
 ### Actors
 
@@ -28,6 +28,7 @@ Make VDD the dominant methodology for impact-driven software development, reachi
 | Product teams | Spend weeks on specs that don't connect to business goals; AI generates misaligned code | Provide a vision statement → AI drives the full pipeline with bidirectional verification | Reduced waste, aligned output, auditable traceability |
 | Open source maintainers | Projects grow organically without measurable goals; contributors build in different directions | Anchor project around a vision.md; all contributions trace to impact goals | Coherent project direction, easier contributor onboarding |
 | Enterprise architects | Compliance requires traceability but it's manual, expensive, and decays | VDD's automated bidirectional verification produces auditable traceability by default | Compliance evidence generated automatically, reduced audit cost |
+| GitHub community (stars, forks, contributors) | Discover open source projects through GitHub search and trending; find VDD unclear without social proof | VDD appears in GitHub trending, has 10K+ stars, active Discussions, and a showcase of dogfood projects | Trust through social proof; easy discoverability via topics and search |
 | Underserved communities | Software isn't built for their needs because the ROI case doesn't close | Vision-first methodology lowers the barrier to building impact-driven software | More software that serves overlooked populations |
 
 ### Impacts
@@ -39,6 +40,7 @@ Make VDD the dominant methodology for impact-driven software development, reachi
 | I-003 | Software project failure rate decreases among VDD adopters | Product teams + Enterprise architects | Before/after comparison of project outcomes |
 | I-004 | AI-generated code becomes demonstrably more aligned with business goals | All actors | Drift report scores, traceability matrix completeness |
 | I-005 | Underserved communities gain access to impact-driven software development | Underserved communities | Number of vision-first projects targeting these communities |
+| I-006 | GitHub community discovers and adopts VDD organically through trending and search | GitHub community | GitHub stars, forks, clones, Discussions activity, topic-rank position |
 
 ## Stakeholder Map
 
@@ -48,6 +50,7 @@ Make VDD the dominant methodology for impact-driven software development, reachi
 | Tech leads / CTOs (decision maker) | Reduced waste, predictable outcomes, auditable compliance | High — they approve adoption | Case studies, ROI data, comparison with SDD and ad-hoc approaches |
 | Product managers | Features that demonstrably advance business goals | Medium — they write the visions | Templates, vision workshop guides, impact measurement frameworks |
 | Open source community | Quality, coherence, contributor alignment | Medium — they spread it | GitHub stars, awesome lists, conference talks |
+| GitHub community (organic discoverers) | Discover quality projects, signal trust through stars | High — they drive virality and trending | GitHub trending, topics, Discussions, showcase repos |
 | Underserved communities | Access to high-quality software built for their needs | Low but critical | Free tier, community partnerships, localized documentation |
 
 ## Success Metrics
@@ -57,6 +60,8 @@ Make VDD the dominant methodology for impact-driven software development, reachi
 | Metric | Target | Measurement Method |
 |--------|--------|-------------------|
 | Active VDD projects | 10,000+ | `/vdd:init` telemetry (opt-in) + GitHub dependency graph |
+| GitHub stars | 10,000+ | GitHub API |
+| GitHub trending appearances | Monthly | GitHub trending archives for methodology/skill topics |
 | Project success rate improvement | 2x reduction in "failed to meet goals" | Survey of VDD adopters vs. industry baseline |
 | Revenue/productivity impact attributed to VDD | $100M+ in aggregate | Case studies, user-reported value |
 | Underserved community projects | 500+ active projects | Vision.md tags for community focus |
@@ -66,11 +71,13 @@ Make VDD the dominant methodology for impact-driven software development, reachi
 | Metric | Target | Measurement Method |
 |--------|--------|-------------------|
 | GitHub stars | 5,000+ | GitHub API |
-| Skill installations | 2,000+ | Clone counts, package registry |
+| GitHub trending appearances | Weekly during launch month | GitHub trending page |
+| GitHub Discussions activity | 50+ weekly participants | Discussions API |
+| Skill installations (clones) | 2,000+ | GitHub clone traffic |
 | Community contributors | 100+ | GitHub contributors |
-| Case studies published | 20+ | vdd-showcase repo, blog posts |
-| Conference talks / workshops | 10+ | Speaker tracking |
+| Dogfood repos using VDD | 20+ showcase repos | GitHub topic: `vision-driven-design` |
 | Developer satisfaction (would recommend) | >80% | In-skill survey after `/vdd:validate` |
+| Conference talks / workshops | 10+ | Speaker tracking |
 
 ## Constraints & Boundaries
 

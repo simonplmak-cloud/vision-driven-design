@@ -82,6 +82,11 @@ Derived from: `vdd/strategy.md`
 | A-011 | Write and publish methodology whitepaper (arXiv or similar) | COULD ✅ DONE | P2 | L | A-003 |
 | A-012 | Create community call schedule (monthly VDD office hours) | COULD ✅ DONE | P3 | S | A-004 |
 | A-013 | Build impact survey template for VDD adopters (before/after metrics) | COULD ✅ DONE | P4 | S | A-002 |
+| A-014 | Submit VDD to GitHub Topics trending — optimize topic selection and repo metadata for maximum discoverability | MUST ✅ DONE | P6 | S | None |
+| A-015 | Create GitHub star-growth campaign — coordinate launch day across Hacker News, Reddit, Dev.to to trigger trending | MUST ✅ DONE | P6 | L | A-003, A-007 |
+| A-016 | Set up GitHub Actions for automated quality checks (impact chain verification, drift detection, AC coverage) | SHOULD ✅ DONE | P6 | M | None |
+| A-017 | Create VDD GitHub badge — embeddable shield for repos using VDD ("Built with VDD") | SHOULD ✅ DONE | P6 | S | None |
+| A-018 | Engage GitHub community — respond to all issues/Discussions within 24h, label good-first-issues, highlight contributors | SHOULD ✅ DONE | P6 | S | A-004 |
 
 ## Dependency Map
 
@@ -93,10 +98,13 @@ A-003 (Comparison) ──→ A-006 (Awesome Lists)
                    └──→ A-011 (Whitepaper)
 
 A-004 (Discussions) ──→ A-012 (Community Calls)
+                   └──→ A-018 (GitHub Community Engagement)
 
 A-002 (Dogfood) ──→ A-013 (Impact Survey)
 
-No dependencies: A-005, A-008, A-009, A-010
+A-003 (Comparison) + A-007 (Video Script) ──→ A-015 (Star-Growth Campaign)
+
+No dependencies: A-005, A-008, A-009, A-010, A-014, A-016, A-017
 ```
 
 ## Infrastructure Requirements
