@@ -340,3 +340,27 @@ Example:
 - Is estimated at [L] without a written justification
 
 A task that can be described in one sentence is the right size.
+
+---
+
+## Anti-Pattern 24: Ceremony Without Substance
+
+**Symptoms:**
+- VDD artifacts are generated and approved but nothing actually changes
+- A spec has 10 COULD ACs and zero MUST ACs — all optional, nothing required
+- A strategy pillar says "Improve UX" with no research citation, no measurable target
+- A commit message says "feat: update" but the diff only changes comments or whitespace
+- Gates pass because traceability is technically correct but the artifacts are empty calories
+- "All phases complete" but the product's behavior hasn't changed
+
+**The trap:** VDD's chain produces artifacts automatically. If the gates only check traceability (does X trace to Y?) but don't check substance (did X actually change anything?), the methodology becomes a ceremony factory — producing process artifacts that look complete but deliver zero impact.
+
+**Fix:** Every VDD gate must include a substance check:
+- **G1**: Strategy pillars must cite research. "Improve UX" with no citation = rejected.
+- **G3**: Specs must have ≥1 MUST AC. Zero MUSTs = rejected.
+- **G6**: Commits must change behavior. Comment-only changes = rejected.
+- **G7**: Full-chain substance audit — if any artifact is purely ceremonial, the chain is tainted.
+
+The substance principle: **"What did this actually change?"** If the answer is "nothing" or "added a comment," the gate fails regardless of traceability coverage.
+
+Run `scripts/vdd-substance-audit.sh` to automatically detect low-substance artifacts.

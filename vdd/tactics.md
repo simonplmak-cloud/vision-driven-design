@@ -96,6 +96,9 @@ Derived from: `vdd/strategy.md`
 | A-025 | Expand domain-primers with technology-specific depth — add SurrealDB 3.x, Neo4j, Redis, MongoDB, PostgreSQL deep-dive sections to data-storage primer | MUST ✅ DONE | P8 | M | None |
 | A-026 | Create human-psychology primer (new `domain-primers/human-factors.md`) — covers user motivation, behavioral change, decision psychology, accessibility cognition | MUST ✅ DONE | P8 | M | None |
 | A-027 | Vertical spectrum audit — run gap analysis across all phases to verify every concern level (human → business → architecture → code → DB → deploy) has domain-specific coverage at every VDD phase | MUST ✅ DONE | P8 | S | A-024, A-025, A-026 |
+| A-028 | Add substance checks to all 7 bidirectional gates — each gate validates that the artifact produced tangible change (≥1 MUST AC for specs, ≥1 research citation for strategy pillars, behavior-changing commits not comment-only) | MUST ✅ DONE | P9 | M | None |
+| A-029 | Create substance audit script — scans VDD artifacts and flags low-substance patterns (zero MUST ACs, pillars without citations, 100% SHOULD/COULD items, comment-only changes) | MUST ✅ DONE | P9 | S | A-028 |
+| A-030 | Add anti-pattern: "Ceremony Without Substance" — documents the failure mode of producing process artifacts that don't change outcomes | MUST ✅ DONE | P9 | S | None |
 
 ## Dependency Map
 

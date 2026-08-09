@@ -275,7 +275,7 @@ VDD artifacts are versioned, committed, and archived alongside code:
 | Step-by-step phase instructions | `references/workflow-phases.md` |
 | 7 bidirectional gates with 113 total checks | `references/quality-gates.md` |
 | Multi-agent patterns and auto-mode execution | `references/ai-agent-patterns.md` |
-| 23 common failure modes and fixes | `references/anti-patterns.md` |
+| 24 common failure modes and fixes | `references/anti-patterns.md` |
 | RTM format, generation, and CI/CD integration | `references/traceability-matrix.md` |
 | One-page cheat sheet | `references/quick-reference.md` |
 | Topic navigation | `references/INDEX.md` |

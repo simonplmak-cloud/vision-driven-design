@@ -233,7 +233,7 @@ All reference docs live in `references/`:
     ├── prompt-patterns.md           # All prompts + bidirectional gate verification
     ├── quality-gates.md             # 7 gates with 113 checks
     ├── ai-agent-patterns.md         # Multi-agent orchestration and auto-mode
-    ├── anti-patterns.md             # 23 failure modes and fixes
+    ├── anti-patterns.md             # 24 failure modes and fixes
     └── traceability-matrix.md       # RTM format + CI/CD automation
 ```
 

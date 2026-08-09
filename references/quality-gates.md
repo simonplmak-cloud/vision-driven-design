@@ -299,6 +299,20 @@ In full-auto mode, AI self-gates all checks and only halts for human interventio
 
 ---
 
+## Substance Enforcement
+
+Every gate includes a substance check. Cosmetic-only contributions fail the gate regardless of traceability coverage.
+
+| Gate | Substance Check | Fail Condition |
+|------|----------------|---------------|
+| G1 (V→S) | Every strategy pillar cites ≥1 research finding | Pillar with no citation = rejected |
+| G2 (S→T) | Every [MUST] action item describes a concrete behavior change | "Improve UX" without measurable target = rejected |
+| G3 (T→SP) | Every spec has ≥1 [MUST] AC that changes observable behavior | Spec with zero MUST ACs = rejected |
+| G4 (SP→PL) | Every plan component describes a specific technical decision | "Add component" with no design detail = rejected |
+| G5 (PL→TK) | Every task description is concrete enough for a fresh AI context to execute | Task that says "Fix things" = rejected |
+| G6 (TK→IM) | Every commit changes behavior, not just comments or formatting | Comment-only or whitespace-only commit = rejected |
+| G7 (IM→VS) | Full chain substance audit — no phase produced purely ceremonial output | Any artifact flagged as "no substance" by G1-G6 = chain tainted |
+
 ## Gate Summary Table
 
 | Gate | Junction | Forward Checks | Backward Checks | S&T Assumptions |
