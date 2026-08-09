@@ -2,7 +2,7 @@
 
 <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.0-blue" alt="Version 1.5.0"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.1-blue" alt="Version 1.5.1"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-113-green" alt="113 Verification Checks"></a>
 <a href="https://opencode.ai/docs/skills/"><img src="https://img.shields.io/badge/platform-OpenCode-white" alt="OpenCode Skill"></a>
@@ -125,7 +125,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | **Traceability** | Spec → Code | Vision → Strategy → Tactics → Spec → Plan → Code → Impact |
 | **Verification** | Forward only | Bi-directional at every level (7 gates, 113 checks) |
 | **Impact verification** | Not included | Leading + lagging metrics validated against vision |
-| **Domain awareness** | Generic | 4 domain primers loaded automatically |
+| **Domain awareness** | Generic | 6 domain primers (4 conditional + 2 unconditional) |
 | **Autonomy** | Per-phase human gates | Full-auto mode — human provides vision only |
 
 ---
@@ -183,8 +183,10 @@ VDD loads domain-specific research patterns during the Strategy phase based on y
 | **Data Storage** | Schema design, indexing strategy, data governance, ACID vs eventual |
 | **ETL** | Pipeline architecture, data quality frameworks, batch vs streaming |
 | **Infrastructure** | CI/CD, observability, security, scaling, disaster recovery |
+| **Human Factors** | Behavioral economics, cognitive load, habit formation, accessibility cognition |
+| **Verification Toolchain** | Playwright, Browserless, Sentry, CI/CD quality pipeline integration |
 
-Each primer also includes **impact verification patterns** — how to prove real-world impact in that domain.
+Each primer also includes **impact verification patterns** — how to prove real-world impact in that domain. `human-factors.md` and `verification-toolchain.md` are loaded unconditionally for every project.
 
 ---
 
@@ -199,7 +201,7 @@ All reference docs live in `references/`:
 | [`prompt-patterns.md`](references/prompt-patterns.md) | AI prompts for generation + bidirectional gate verification |
 | [`quality-gates.md`](references/quality-gates.md) | 7 gates with 113 checks + CI/CD integration |
 | [`ai-agent-patterns.md`](references/ai-agent-patterns.md) | Multi-agent orchestration and auto-mode execution |
-| [`anti-patterns.md`](references/anti-patterns.md) | 23 failure modes and fixes |
+| [`anti-patterns.md`](references/anti-patterns.md) | 24 failure modes and fixes |
 | [`traceability-matrix.md`](references/traceability-matrix.md) | RTM format + automated generation |
 | [`quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
 
@@ -220,23 +222,36 @@ All reference docs live in `references/`:
 ├── SKILL.md                         # Entry point — loaded by OpenCode
 ├── AGENTS.md                        # Instructions for AI agents working on this repo
 ├── README.md                        # This file
+├── constitution.md                  # This repo's own constitution (dogfooded)
+├── CHANGELOG.md                     # Versioned change history
 ├── CONTRIBUTING.md                  # How to contribute
 ├── LICENSE.md                       # MIT
 ├── domain-primers/                  # Domain research patterns (loaded during Strategy)
 │   ├── webapp.md
 │   ├── data-storage.md
 │   ├── etl.md
-│   └── infrastructure.md
-└── references/                      # All reference documentation
-    ├── INDEX.md                     # Navigation map
-    ├── quick-reference.md           # 1-page cheat sheet
-    ├── workflow-phases.md           # 8 phases step-by-step (authoritative)
-    ├── artifact-templates.md        # 11 copy-paste templates (authoritative)
-    ├── prompt-patterns.md           # All prompts + bidirectional gate verification
-    ├── quality-gates.md             # 7 gates with 113 checks
-    ├── ai-agent-patterns.md         # Multi-agent orchestration and auto-mode
-    ├── anti-patterns.md             # 24 failure modes and fixes
-    └── traceability-matrix.md       # RTM format + CI/CD automation
+│   ├── infrastructure.md
+│   ├── human-factors.md             # Behavioral economics, cognitive load, habit formation
+│   └── verification-toolchain.md    # Playwright, Browserless, Sentry, CI/CD pipeline
+├── references/                      # All reference documentation
+│   ├── INDEX.md                     # Navigation map
+│   ├── quick-reference.md           # 1-page cheat sheet
+│   ├── workflow-phases.md           # 8 phases step-by-step (authoritative)
+│   ├── artifact-templates.md        # 11 copy-paste templates (authoritative)
+│   ├── prompt-patterns.md           # All prompts + bidirectional gate verification
+│   ├── quality-gates.md             # 7 gates with 113 checks
+│   ├── ai-agent-patterns.md         # Multi-agent orchestration and auto-mode
+│   ├── anti-patterns.md             # 24 failure modes and fixes
+│   └── traceability-matrix.md       # RTM format + CI/CD automation
+├── scripts/                         # Installer and helper scripts
+│   ├── install.sh                   # One-line installer
+│   ├── vdd-agent-setup.sh           # Multi-agent config generator
+│   ├── vdd-detect.sh                # Project convention auto-detector
+│   └── vdd-substance-audit.sh       # Low-substance artifact detection
+└── .github/                         # GitHub-specific config
+    ├── CODEOWNERS
+    ├── ISSUE_TEMPLATE/
+    └── workflows/
 ```
 
 ## Credits

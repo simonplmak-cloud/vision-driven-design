@@ -107,6 +107,8 @@ Navigation map for all VDD reference files.
 - Data Storage → `../domain-primers/data-storage.md`
 - ETL → `../domain-primers/etl.md`
 - Infrastructure → `../domain-primers/infrastructure.md`
+- Human Factors (loaded unconditionally) → `../domain-primers/human-factors.md`
+- Verification Toolchain (loaded unconditionally) → `../domain-primers/verification-toolchain.md`
 
 ---
 
@@ -135,9 +137,9 @@ Navigation map for all VDD reference files.
 | `artifact-templates.md` | Copy-paste templates for all 11 artifacts | Long |
 | `prompt-patterns.md` | Prompts for every phase + bidirectional gates | Long |
 | `workflow-phases.md` | Step-by-step phase instructions | Long |
-| `quality-gates.md` | 7 gates with 110 total checks | Medium |
+| `quality-gates.md` | 7 gates with 113 total checks | Medium |
 | `ai-agent-patterns.md` | Multi-agent patterns and auto-mode execution | Medium |
-| `anti-patterns.md` | 16 failure modes and fixes | Medium |
+| `anti-patterns.md` | 24 failure modes and fixes | Medium |
 | `traceability-matrix.md` | RTM format, generation, CI/CD | Medium |
 | `quick-reference.md` | One-page cheat sheet | Short |
 | `INDEX.md` | This file | Medium |
@@ -145,3 +147,5 @@ Navigation map for all VDD reference files.
 | `../domain-primers/data-storage.md` | Data Storage research patterns | Medium |
 | `../domain-primers/etl.md` | ETL research patterns | Medium |
 | `../domain-primers/infrastructure.md` | Infrastructure research patterns | Medium |
+| `../domain-primers/human-factors.md` | Human factors research patterns (loaded unconditionally) | Medium |
+| `../domain-primers/verification-toolchain.md` | Verification toolchain patterns (loaded unconditionally) | Medium |

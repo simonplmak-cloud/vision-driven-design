@@ -2,8 +2,8 @@
 
 > Impact Chain: V-001
 
-Status: Draft
-Version: 1.0
+Status: Active
+Version: 1.1
 Last updated: 2026-08-10
 
 ## Vision Statement
@@ -46,6 +46,7 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | I-009 | Every VDD artifact produces tangible, demonstrable change — gates reject cosmetic-only contributions | All actors | Substance audit: % of artifacts with ≥1 MUST AC, % of strategy pillars with research citations, % of commits that change behavior (not comments) |
 | I-010 | VDD is benchmarked as matching or exceeding every industry best practice (NASA SE, CMMI, DO-178C, IEC 62304, DORA, SDD) | Enterprise architects, tech leads | Benchmark compliance matrix; % of best-practice criteria that VDD matches/exceeds |
 | I-011 | Every VDD project is verified through an extensive integrated toolset — Playwright/Browserless pre-deploy, Sentry post-deploy, full CI/CD quality pipeline | Developers, QA engineers | Tool coverage %; % of MUST ACs verified by automated tools; production error rate via Sentry |
+| I-012 | GitHub artifacts (README.md, SKILL.md, AGENTS.md, CHANGELOG.md, CONTRIBUTING.md) accurately reflect the current repo state — no stale counts, no missing files, no mismatched domain primer listings | GitHub community, contributors, evaluators | README anti-pattern count matches actual; domain-primers listing matches directory; repository structure diagram matches disk; all generated docs are consistent with canonical sources |
 
 ## Stakeholder Map
 

@@ -2,6 +2,15 @@
 
 All notable changes to Vision Driven Design.
 
+## [1.5.1] — 2026-08-10
+
+### Fixed
+
+- **README.md**: Anti-pattern count (23→24), domain primers count (4→6), added human-factors.md and verification-toolchain.md to "Domains Covered" table and Repository Structure diagram, added scripts/ and .github/ to structure tree
+- **AGENTS.md**: Expanded domain-primers/ directory map to list all 6 primers, added constitution.md and scripts/ to directory map, clarified unconditional loading of human-factors.md and verification-toolchain.md
+- **references/INDEX.md**: Fixed gate check count (110→113), anti-pattern count (16→24), added missing human-factors.md and verification-toolchain.md primers to File List and Domain Primers sections
+- **vdd/vision.md**: Added I-012 (GitHub artifact accuracy) impact, status Draft→Active, v1.0→v1.1
+
 ## [1.5.0] — 2026-08-10
 
 ### Added

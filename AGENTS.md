@@ -7,7 +7,10 @@ This is an **OpenCode AI skill repository** — static documentation, not an app
 ```
 SKILL.md                 ← Entry point loaded by OpenCode. YAML frontmatter with name, description, keywords.
 README.md                ← GitHub landing page. Keep in sync with SKILL.md overview and command table.
+constitution.md          ← This repo's own constitution (dogfooded). No build/toolchain — documentation only.
 domain-primers/           ← Loaded during Phase 2 (Strategy) based on vision's target domains.
+  webapp.md, data-storage.md, etl.md, infrastructure.md  ← Original 4 domain primers.
+  human-factors.md, verification-toolchain.md             ← Added in v1.5.0 (loaded unconditionally).
 references/               ← All detailed reference docs. SKILL.md's "Reference Index" links into here.
   INDEX.md                ← Navigation map; update when adding/renaming reference files.
   artifact-templates.md   ← Authoritative source for all artifact structures (vision, strategy, tactics, spec, plan, data-model, contracts, tasks, impact-report).
@@ -16,6 +19,7 @@ references/               ← All detailed reference docs. SKILL.md's "Reference
   quality-gates.md        ← Authoritative source for gate checklists, counts, and CI/CD snippets.
   ai-agent-patterns.md    ← Authoritative source for agent orchestration, parallel execution, context management.
   quick-reference.md      ← Derived from the sources above. Update counts and commands here when sources change.
+scripts/                  ← Installer and helper scripts. Not part of the skill loaded at runtime.
 ```
 
 ## File Roles — Authoritative Sources
@@ -55,7 +59,7 @@ Numbered sequentially from AP1 upward. Each has: Symptoms, Fix. When adding a ne
 - **Command tables** appear in 3 files (SKILL.md, README.md, quick-reference.md). If you add a command, add it to all three.
 - **Phase numbering** (0–8) is stable. Phase 0 is Constitution. Phases 1–3 are VDD additions. Phases 4–8 are the SDD chain. Do not renumber phases.
 - **Gate check counts** in `quality-gates.md` Gate Summary Table must match the actual checklist items above it. The total (113) is the sum of all F/B/A columns across G1–G7.
-- **Domain primers** are loaded dynamically by Phase 2 based on `vision.md` → Target Domains. When editing a primer, its two sections (Research Patterns, Impact Verification) are used by different subagents.
+- **Domain primers** are loaded dynamically by Phase 2 based on `vision.md` → Target Domains. The original 4 (webapp, data-storage, etl, infrastructure) are loaded per-domain. `human-factors.md` and `verification-toolchain.md` (added v1.5.0) are loaded unconditionally. When editing a primer, its two sections (Research Patterns, Impact Verification) are used by different subagents.
 - **No build/toolchain** — this repo has no code, tests, linting, or CI. Don't add build configuration.
 
 ## Superset Relationship
