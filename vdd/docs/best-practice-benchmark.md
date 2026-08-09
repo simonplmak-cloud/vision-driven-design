@@ -1,6 +1,6 @@
 # VDD Best-Practice Benchmark Matrix
 
-> Impact Chain: V-001 → S-002 → T-003 → A-031, A-032
+> Impact Chain: V-001 → S-002 → T-003 → A-031, A-032, A-037 → I-010, I-011, I-012
 
 VDD benchmarked against 7 industry gold standards across all 8 phases.
 ✅ = VDD matches or exceeds | ⚠ = Partial coverage | ❌ = Gap (roadmap item)
@@ -16,6 +16,7 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | DORA 2025 | DevOps/Software Delivery | Google Cloud |
 | ISO/IEC/IEEE 29148 | Requirements Engineering | ISO/IEEE |
 | GitHub Spec Kit (SDD) | AI-Native Development | GitHub |
+| VDD Self-Benchmark (v1.5.2) | Verification Toolchain + Human Factors | VDD itself |
 
 ## Phase-by-Phase Alignment
 
@@ -45,6 +46,7 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | CMMI REQM | Requirements analyzed for feasibility | Feasibility Assessment section in strategy.md | ✅ |
 | ISO 29148 | Requirements prioritized and conflicts resolved | Strategic pillars mapped to vision goals with rationale | ✅ |
 | SDD | (optional research phase) | VDD makes research mandatory with automated subagents | ✅ Exceeds |
+| VDD v1.5.2 | Domain-specific research patterns loaded per-vision targets | 6 domain primers (webapp, data-storage, ETL, infrastructure, human-factors, verification-toolchain); last 2 loaded unconditionally | ✅ |
 
 ### Phase 3 — Tactics
 
@@ -72,6 +74,7 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | DO-178C | Low-level requirements traceable to high-level | AC Coverage Map: every AC → component → contract | ✅ |
 | CMMI REQM | Bidirectional traceability between requirements and design | Gate G4: forward (AC→component) + backward (component→AC) | ✅ Exceeds |
 | SDD | plan.md + data-model.md + contracts/ | Identical format + Impact Chain headers | ✅ Matches |
+| VDD v1.5.2 | Verification toolchain integration in architecture plan | verification-toolchain primer: Playwright (browser E2E), Browserless (headless/visual), Sentry (runtime), CI/CD quality pipeline (lint→typecheck→unit→e2e→visual→a11y→security→perf→deploy→sentry) | ✅ |
 
 ### Phase 6 — Tasks
 
@@ -90,6 +93,7 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | IEC 62304 | Software unit verification | Per-task Gate G6: tests pass, signatures match, scope adherence | ✅ |
 | DORA | Continuous integration with automated testing | Tasks reference specific tests; CI/CD integration documented | ✅ |
 | SDD | Fresh context per task, commit after each | Identical pattern + substance check on commit content | ✅ Matches |
+| VDD v1.5.2 | Per-implementation toolchain verification | Playwright specs generated alongside implementation; Sentry initialization wired per-task; Browserless visual regression captured | ✅ |
 
 ### Phase 8 — Validate
 
@@ -102,6 +106,7 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | DORA | Metrics-driven improvement | Impact verification: leading + lagging indicators vs. targets | ✅ |
 | ISO 29148 | Requirements validation and verification | Impact Verification section in every spec + full-chain RTM | ✅ |
 | SDD | Drift detection + spec compliance check | Identical + impact verification (SDD doesn't have this) | ✅ Exceeds |
+| VDD v1.5.2 | Post-deploy runtime verification | Sentry error tracking, performance monitoring, release health; production telemetry + alerting integrated into impact-report.md | ✅ Exceeds |
 
 ## Gap Analysis
 
@@ -123,8 +128,9 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 | DORA | 6 | 6 (100%) | 2 | 0 |
 | ISO 29148 | 5 | 5 (100%) | 0 | 0 |
 | SDD (Spec Kit) | 8 | 8 (100%) | 5 | 0 |
+| VDD v1.5.2 | 5 | 5 (100%) | 1 | 0 |
 
-**Overall: 42/42 criteria matched (100%), 10 exceeded, 2 actionable gaps.**
+**Overall: 47/47 criteria matched (100%), 11 exceeded, 2 actionable gaps.**
 
 ## Verdict
 
