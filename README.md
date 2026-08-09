@@ -204,6 +204,7 @@ All reference docs live in `references/`:
 
 - **[Getting Started Tutorial](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project
 - **[VDD vs Alternatives](vdd/docs/comparison.md)** — VDD compared to SDD, vibe coding, and TDD
+- **[Vision Canvas](vdd/docs/vision-canvas.md)** — 5-minute template for non-technical visionaries
 
 ---
 
