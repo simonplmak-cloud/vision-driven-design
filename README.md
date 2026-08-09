@@ -77,6 +77,8 @@ The AI takes over from here — researching markets, auditing your codebase, gen
 planning architecture, breaking down tasks, implementing feature by feature, and validating
 impact — all with self-gating at 7 bi-directional verification junctions.
 
+**[📖 Full Tutorial →](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project with VDD.
+
 ```bash
 # Want human gates? Add to constitution.md:
 ## VDD Mode: gated
