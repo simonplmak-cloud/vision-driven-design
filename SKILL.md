@@ -226,6 +226,7 @@ based on the vision's target domains:
 
 | Primer | When Loaded | Contains |
 |--------|------------|----------|
+| `domain-primers/human-factors.md` | Vision involves behavior change, adoption, or user psychology | Behavioral economics, cognitive load, habit formation, accessibility cognition |
 | `domain-primers/webapp.md` | Vision targets web applications | UX patterns, accessibility, performance, framework evaluation, WCAG compliance |
 | `domain-primers/data-storage.md` | Vision involves persistent data | Schema design, indexing, data governance, storage technology evaluation |
 | `domain-primers/etl.md` | Vision involves data pipelines | Pipeline architecture, data quality, error handling, streaming vs batch |

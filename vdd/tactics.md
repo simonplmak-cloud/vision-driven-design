@@ -92,6 +92,10 @@ Derived from: `vdd/strategy.md`
 | A-021 | Create VDD installer script — one-liner that clones VDD + auto-wires it into the current project and agent | MUST ✅ DONE | P7 | S | A-019 |
 | A-022 | Add VDD skill to OpenCode's default skill registry — submit PR to opencode project for built-in inclusion | SHOULD ✅ DONE | P7 | S | A-019 |
 | A-023 | Create VDD Agent SDK — lightweight library that any agent platform can embed to natively support `/vdd:*` commands | COULD ✅ DONE | P7 | L | A-019 |
+| A-024 | Expand domain-primers with human-factors depth — add behavioral economics, cognitive load, habit formation patterns to each primer | MUST ✅ DONE | P8 | M | None |
+| A-025 | Expand domain-primers with technology-specific depth — add SurrealDB 3.x, Neo4j, Redis, MongoDB, PostgreSQL deep-dive sections to data-storage primer | MUST ✅ DONE | P8 | M | None |
+| A-026 | Create human-psychology primer (new `domain-primers/human-factors.md`) — covers user motivation, behavioral change, decision psychology, accessibility cognition | MUST ✅ DONE | P8 | M | None |
+| A-027 | Vertical spectrum audit — run gap analysis across all phases to verify every concern level (human → business → architecture → code → DB → deploy) has domain-specific coverage at every VDD phase | MUST ✅ DONE | P8 | S | A-024, A-025, A-026 |
 
 ## Dependency Map
 
@@ -110,6 +114,8 @@ A-002 (Dogfood) ──→ A-013 (Impact Survey)
 A-003 (Comparison) + A-007 (Video Script) ──→ A-015 (Star-Growth Campaign)
 
 No dependencies: A-005, A-008, A-009, A-010, A-014, A-016, A-017
+
+A-024 + A-025 + A-026 ──→ A-027 (Vertical Spectrum Audit)
 
 A-019 (Agent Config Generator) ──→ A-021 (Installer Script)
                                └──→ A-022 (OpenCode Registry PR)

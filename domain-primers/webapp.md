@@ -78,3 +78,14 @@ For each vision goal, define the webapp-specific evidence that proves the impact
 - Using `any` type in TypeScript — loses all safety guarantees
 - `console.log` in production — use structured logging with levels
 - Hardcoded API URLs — use environment variables with validation
+
+### Human-Psychology Integration
+
+The WebApp primer intersects with `domain-primers/human-factors.md` at these points:
+
+- **Vision phase**: When the webapp's impact goal involves behavior change (adoption, habit formation, reduced churn), load the human-factors primer alongside webapp.
+- **First-session experience**: Apply Fogg Behavior Model — the webapp's onboarding must provide high motivation (clear value prop), high ability (no signup, instant use), and an effective prompt (CTA placement).
+- **Cognitive load budget**: Every UI element beyond 5 core ones must be justified in spec with impact trace. Hick's Law governs navigation depth — flat navigation with fewer choices outperforms deep hierarchies.
+- **Responsive design + cognitive accessibility**: Mobile users have higher cognitive load (smaller screen, divided attention). Breakpoints should simplify, not just resize.
+- **Dark patterns audit**: No confirm-shaming buttons, no disguised ads, no forced social sharing. Every engagement mechanism must trace to a vision impact.
+

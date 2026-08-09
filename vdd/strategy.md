@@ -160,6 +160,16 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Expected Impact:** 3+ agents natively supporting VDD. Auto-detection of project conventions eliminates the `/vdd:init` manual Q&A step. New users experience VDD as "already there" when they open their project in any supported agent.
 
+### Pillar 8: Full-Spectrum Vertical Coverage — From Human Psychology to SurrealDB 3.x
+
+**Rationale:** Most methodologies have blind spots. SDD covers specs→code but not vision→impact. TDD covers code correctness but not user psychology. VDD must cover the complete vertical spectrum — from "why do humans behave this way?" at Vision, through "what does the market need?" at Strategy, to "should this use a SurrealDB 3.x RELATE edge or an embedded array?" at Tasks. Every domain primer must be deep enough that a database architect finds technology-specific guidance, and a UX researcher finds behavioral economics frameworks.
+
+**Vision Trace:** I-008 (full vertical spectrum coverage)
+
+**Key Research Finding:** The #1 reason developers abandon methodologies is uncovered edge cases — "this works for CRUD but not my graph database" or "covers code but not my design process." VDD's domain primers must close these gaps. The existing 4 primers (webapp, data-storage, ETL, infrastructure) need depth expansion — each adding technology-specific sections (SurrealDB, PostgreSQL, Neo4j, MongoDB, Redis) and human-factors sections (behavioral economics, cognitive load theory, habit formation).
+
+**Expected Impact:** 0 vertical gaps. Domain primers expanded with technology-specific and human-factors depth. "VDD covers everything — from psychology to SurrealDB" becomes the tagline.
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |

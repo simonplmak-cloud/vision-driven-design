@@ -12,13 +12,13 @@ Vision Driven Design (VDD) exists to transform how software gets built — from 
 
 VDD changes this by making vision the root of all traceability. A human states the impact they want to create. AI agents handle the rest — researching the domain, auditing the codebase, generating specs grounded in real-world goals, planning, implementing, and validating — with bi-directional verification at every junction to ensure no requirement is missed and no scope is invented.
 
-The vision for VDD itself is to **maximize its impact on society by promoting VDD on GitHub and integrating it automatically into coding agents' existing tools** — to make VDD the invisible methodology that every AI coding agent already knows how to use, without the developer needing to install or configure anything. VDD should auto-detect existing project conventions (package.json, tsconfig, AGENTS.md), auto-generate constitution.md, and auto-wire itself into the agent's context — whether that agent is OpenCode, Claude Code, Cursor, Copilot, or any future AI coding tool. The developer should simply write `/vdd:vision` and the rest happens transparently. By making VDD zero-friction at the agent level, spreading through GitHub-native channels, and embedding into the tools developers already use, VDD can multiply the number of successful software projects, reduce the billions wasted on failed or misaligned software, and ultimately channel more of humanity's engineering effort toward work that demonstrably improves lives.
+The vision for VDD itself is to **cover the full spectrum of software development — from human psychology at the Vision level down to specific database schema design considerations like SurrealDB 3.x at the Task level** — while maximizing its impact on society through GitHub promotion and automatic agent integration. VDD must be the one methodology that connects *every* concern: why humans behave the way they do (psychology, behavioral economics), what markets need (competitive analysis, user research), what technology can deliver (framework trade-offs, DB-specific optimizations), and how to wire it all together with bidirectional traceability. No concern is "too high-level" for VDD's Vision phase, and no detail is "too low-level" for VDD's Tasks phase. Whether the question is "what motivates this user to change behavior?" or "should this SurrealDB 3.x schema use a RELATE edge or an embedded array?", VDD's chain ensures the answer traces back to the impact goal. By covering the complete vertical spectrum — human → business → architecture → code → database → deployment — and spreading through GitHub-native channels and agent auto-integration, VDD can multiply the number of successful software projects and channel humanity's engineering effort toward work that demonstrably improves lives.
 
 ## Impact Model
 
 ### Goal
 
-Make VDD the default methodology auto-integrated into every major AI coding agent, reaching 10,000+ projects using VDD (with zero manual installation) and appearing as a Top-10 trending methodology on GitHub within 3 years.
+Make VDD the methodology that covers the complete development spectrum — from human behavior analysis at Vision to SurrealDB 3.x schema patterns at Tasks — deployed across 3+ AI agent platforms and reaching Top-10 trending on GitHub within 3 years.
 
 ### Actors
 
@@ -42,6 +42,7 @@ Make VDD the default methodology auto-integrated into every major AI coding agen
 | I-005 | Underserved communities gain access to impact-driven software development | Underserved communities | Number of vision-first projects targeting these communities |
 | I-006 | GitHub community discovers and adopts VDD organically through trending and search | GitHub community | GitHub stars, forks, clones, Discussions activity, topic-rank position |
 | I-007 | Coding agents auto-detect and integrate VDD into any project with zero manual setup | AI coding agent users | Number of agents supporting VDD natively; `/vdd:init` auto-triggered by agent |
+| I-008 | VDD covers the full vertical spectrum — no concern is too abstract for Vision or too granular for Tasks | All actors | Domain primer coverage completeness; spec-to-task vertical gap audits |
 
 ## Stakeholder Map
 
@@ -53,6 +54,8 @@ Make VDD the default methodology auto-integrated into every major AI coding agen
 | Open source community | Quality, coherence, contributor alignment | Medium — they spread it | GitHub stars, awesome lists, conference talks |
 | GitHub community (organic discoverers) | Discover quality projects, signal trust through stars | High — they drive virality and trending | GitHub trending, topics, Discussions, showcase repos |
 | AI coding agent platforms (OpenCode, Claude Code, Cursor, Copilot) | Compete on features; lack a standard methodology layer | Bundle VDD as the default methodology — auto-detect and activate | Every agent becomes a VDD distribution channel; users get impact-driven development out of the box |
+| Behavioral scientists / UX researchers | Research informs product but doesn't connect to implementation | Feed human behavior insights directly into Vision phase; VDD traces UX decisions → code → outcomes | Psychology research becomes a first-class engineering input |
+| Database architects / backend engineers | Make schema decisions in isolation from product goals | VDD traces SurrealDB 3.x RELATE edges back to the vision impact they serve | No "cool tech for its own sake" — every schema choice justified by impact |
 | Underserved communities | Access to high-quality software built for their needs | Low but critical | Free tier, community partnerships, localized documentation |
 
 ## Success Metrics
@@ -80,6 +83,7 @@ Make VDD the default methodology auto-integrated into every major AI coding agen
 | Community contributors | 100+ | GitHub contributors |
 | Dogfood repos using VDD | 20+ showcase repos | GitHub topic: `vision-driven-design` |
 | Developer satisfaction (would recommend) | >80% | In-skill survey after `/vdd:validate` |
+| Vertical spectrum coverage | 0 gaps — every phase has domain-specific patterns for all 4 target domains | Primers audit: human psychology ✅, SurrealDB ✅, etc. |
 | Conference talks / workshops | 10+ | Speaker tracking |
 
 ## Constraints & Boundaries
