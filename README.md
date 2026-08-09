@@ -200,6 +200,11 @@ All reference docs live in `references/`:
 | [`traceability-matrix.md`](references/traceability-matrix.md) | RTM format + automated generation |
 | [`quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
 
+### Guides
+
+- **[Getting Started Tutorial](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project
+- **[VDD vs Alternatives](vdd/docs/comparison.md)** — VDD compared to SDD, vibe coding, and TDD
+
 ---
 
 ## Repository Structure

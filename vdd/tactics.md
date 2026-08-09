@@ -71,8 +71,8 @@ Derived from: `vdd/strategy.md`
 |----|------------|----------|----------------|--------------------|--------------|
 | A-001 | Build VDD Getting Started tutorial (walkthrough from vision→validate) | MUST | P1 | M | None |
 | A-002 | Create dogfood example: use VDD to build a simple webapp (complete vision→code, published as showcase repo) | MUST | P1, P4 | L | A-001 |
-| A-003 | Create comparison page: VDD vs SDD vs vibe coding vs TDD | MUST | P2 | S | None |
-| A-004 | Set up GitHub Discussions on the repo | MUST | P3 | S | None |
+| A-003 | Create comparison page: VDD vs SDD vs vibe coding vs TDD | MUST ✅ DONE | P2 | S | None |
+| A-004 | Set up GitHub Discussions on the repo | MUST ✅ DONE | P3 | S | None |
 | A-005 | Add CODEOWNERS file | SHOULD | P3 | S | None |
 | A-006 | Submit VDD to awesome-lists (awesome-opencode, awesome-claude-code, awesome-ai-agents) | SHOULD | P3 | S | A-003 |
 | A-007 | Create demo video (screen recording of `/vdd:vision` → full chain) | SHOULD | P1 | M | A-002 |
