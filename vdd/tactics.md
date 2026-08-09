@@ -103,6 +103,9 @@ Derived from: `vdd/strategy.md`
 | A-032 | Audit VDD against each standard — identify gaps, document matches, create gap-closure action items | MUST ✅ DONE | P10 | M | A-031 |
 | A-033 | Add compliance evidence templates — enable VDD adopters to produce DO-178C/CMMI/IEC 62304 audit evidence from VDD artifacts | SHOULD ✅ DONE | P10 | M | A-031 |
 | A-034 | Publish benchmark as "VDD Best-Practice Alignment" in docs — defensible claim that VDD matches or exceeds industry standards | MUST ✅ DONE | P10 | S | A-031, A-032 |
+| A-035 | Create Verification Toolchain Primer (`domain-primers/verification-toolchain.md`) — covers Playwright, Browserless, Sentry, CI/CD pipeline integration patterns | MUST ✅ DONE | P11 | M | None |
+| A-036 | Add tool-specific verification requirements to Phase 5 (Plan) and Phase 7 (Implement) — every AC must specify which tool verifies it; every plan component must specify CI stage | MUST ✅ DONE | P11 | M | A-035 |
+| A-037 | Create CI/CD quality pipeline template (`.github/workflows/vdd-quality.yml`) — lint → typecheck → unit → e2e → visual → a11y → security → perf → sentry | MUST ✅ DONE | P11 | M | A-035 |
 
 ## Dependency Map
 

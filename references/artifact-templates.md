@@ -509,10 +509,23 @@ Implements: `vdd/specs/[branch]/spec.md`
 
 ## AC Coverage Map
 
-| AC | Component(s) | Contract(s) |
-|----|-------------|-------------|
-| AC-1 | [ComponentName] | [contracts/file.md] |
-| AC-E1 | [ComponentName] | [contracts/file.md] |
+| AC | Component(s) | Contract(s) | Verified By |
+|----|-------------|-------------|-------------|
+| AC-1 | [ComponentName] | [contracts/file.md] | Playwright: `tests/e2e/feature.spec.ts` |
+| AC-2 | [ComponentName] | [contracts/file.md] | Vitest: `tests/unit/feature.test.ts` |
+| AC-E1 | [ComponentName] | [contracts/file.md] | Vitest: `tests/unit/feature.test.ts` |
+| AC-5 (perf) | [ComponentName] | — | Browserless Lighthouse: LCP < [ms] |
+
+## Toolchain Verification
+
+| Tool | AC Coverage | CI Stage |
+|------|------------|----------|
+| Vitest | AC-2, AC-E1 | `unit-test` |
+| Playwright | AC-1 | `e2e-test` |
+| Browserless (perf) | AC-5 | `perf` |
+| Browserless (visual) | All UI ACs | `visual-diff` |
+| axe-core | A11y ACs | `a11y` |
+| Sentry | I-002 (reliability) | `sentry-init` (post-deploy) |
 
 ## Risks
 

@@ -190,6 +190,16 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Expected Impact:** Published benchmark matrix showing VDD matches/exceeds 90%+ of best-practice criteria. VDD becomes the default recommendation for projects that need methodology + compliance in one package.
 
+### Pillar 11: Quality-First with Integrated Verification Toolchain
+
+**Rationale:** Quality is not an afterthought — it must be woven into every phase. VDD's Phase 7 (Implement) and Phase 8 (Validate) must have first-class integration with the full verification ecosystem: Playwright for browser E2E tests, Browserless for headless visual regression and performance audits, Sentry for runtime error tracking and production monitoring, and the CI/CD pipeline (lint → typecheck → unit → integration → a11y → security → perf) as the automated enforcement layer. Every spec AC must specify *which tool verifies it*. Every plan component must specify *which CI stage validates it*. The toolchain must span pre-deployment (Playwright, Browserless, unit tests, lint) and post-deployment (Sentry, monitoring, alerting, analytics).
+
+**Vision Trace:** I-011 (every project verified through extensive integrated toolset)
+
+**Key Research Finding:** DORA 2025 found that teams with comprehensive automated testing and observability see 2x improvement in delivery stability with AI adoption versus 1x for teams without. The key differentiator is not "do you test?" but "does your methodology enforce testing and monitoring as first-class artifacts?" VDD must make "the AC is verified by Playwright test X" as natural as "the AC is implemented by component Y."
+
+**Expected Impact:** Every VDD project ships with: Playwright E2E test suite, Browserless visual regression baseline, Sentry error tracking initialized, CI/CD pipeline with full quality gates. Tool coverage 100% for all MUST ACs.
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |
