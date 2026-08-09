@@ -209,6 +209,7 @@ All reference docs live in `references/`:
 - **[Vision Canvas](vdd/docs/vision-canvas.md)** — 5-minute template for non-technical visionaries
 - **[Dogfood Example](https://github.com/simonplmak-cloud/vdd-dogfood-task-tracker)** — Real project built with full VDD chain (vision→code)
 - **[VDD Badge](vdd/docs/vdd-badge.md)** — Add to your repo: `[![Built with VDD](https://img.shields.io/badge/built%20with-VDD-4CAF50)]`
+- **[Best-Practice Benchmark](vdd/docs/best-practice-benchmark.md)** — VDD vs NASA SE, CMMI, DO-178C, IEC 62304, DORA, ISO 29148, GitHub SDD
 
 ---
 

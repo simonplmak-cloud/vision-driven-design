@@ -99,6 +99,10 @@ Derived from: `vdd/strategy.md`
 | A-028 | Add substance checks to all 7 bidirectional gates — each gate validates that the artifact produced tangible change (≥1 MUST AC for specs, ≥1 research citation for strategy pillars, behavior-changing commits not comment-only) | MUST ✅ DONE | P9 | M | None |
 | A-029 | Create substance audit script — scans VDD artifacts and flags low-substance patterns (zero MUST ACs, pillars without citations, 100% SHOULD/COULD items, comment-only changes) | MUST ✅ DONE | P9 | S | A-028 |
 | A-030 | Add anti-pattern: "Ceremony Without Substance" — documents the failure mode of producing process artifacts that don't change outcomes | MUST ✅ DONE | P9 | S | None |
+| A-031 | Create Best-Practice Benchmark Matrix — compare VDD against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 29148, GitHub SDD across all 8 phases | MUST ✅ DONE | P10 | M | None |
+| A-032 | Audit VDD against each standard — identify gaps, document matches, create gap-closure action items | MUST ✅ DONE | P10 | M | A-031 |
+| A-033 | Add compliance evidence templates — enable VDD adopters to produce DO-178C/CMMI/IEC 62304 audit evidence from VDD artifacts | SHOULD ✅ DONE | P10 | M | A-031 |
+| A-034 | Publish benchmark as "VDD Best-Practice Alignment" in docs — defensible claim that VDD matches or exceeds industry standards | MUST ✅ DONE | P10 | S | A-031, A-032 |
 
 ## Dependency Map
 

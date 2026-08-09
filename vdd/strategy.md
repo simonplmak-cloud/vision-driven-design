@@ -180,6 +180,16 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Expected Impact:** Substance checks at every gate. Cosmetic-only contributions caught and rejected. VDD earns the reputation: "every gate exists because it caught something real."
 
+### Pillar 10: Benchmark Excellence — Best-in-Class, Verifiably
+
+**Rationale:** The strongest claim VDD can make is not "we're new" — it's "we're better than what exists, and we can prove it." A published benchmark matrix comparing VDD against NASA SE, CMMI, DO-178C, IEC 62304, DORA, and SDD establishes credibility. Where VDD matches (e.g., bidirectional traceability = NASA standard), it borrows authority. Where VDD exceeds (e.g., automated AI gate verification vs. manual review), it innovates. Where VDD falls short, it closes the gap — turning weaknesses into roadmap items.
+
+**Vision Trace:** I-010 (VDD benchmarked against industry best practices)
+
+**Key Research Finding:** Enterprise adoption of methodologies requires compliance evidence. Architects ask: "Does this meet ISO/IEC/IEEE 29148 for requirements quality? Does it satisfy CMMI REQM SP 1.4 for bidirectional traceability? Can it produce DO-178C-compliant traceability evidence?" VDD already aligns with many standards (bidirectional gates = CMMI SP 1.4, impact chain = DO-178C traceability, substance checks = IEC 62304 verification). Documenting this alignment makes VDD the obvious choice for regulated and high-compliance projects.
+
+**Expected Impact:** Published benchmark matrix showing VDD matches/exceeds 90%+ of best-practice criteria. VDD becomes the default recommendation for projects that need methodology + compliance in one package.
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |
