@@ -69,7 +69,7 @@ Derived from: `vdd/strategy.md`
 
 | ID | Action Item | Priority | Strategy Pillar | Estimated Spec Size | Dependencies |
 |----|------------|----------|----------------|--------------------|--------------|
-| A-001 | Build VDD Getting Started tutorial (walkthrough from vision→validate) | MUST | P1 | M | None |
+| A-001 | Build VDD Getting Started tutorial (walkthrough from vision→validate) | MUST ✅ DONE | P1 | M | None |
 | A-002 | Create dogfood example: use VDD to build a simple webapp (complete vision→code, published as showcase repo) | MUST ✅ DONE | P1, P4 | L | A-001 |
 | A-003 | Create comparison page: VDD vs SDD vs vibe coding vs TDD | MUST ✅ DONE | P2 | S | None |
 | A-004 | Set up GitHub Discussions on the repo | MUST ✅ DONE | P3 | S | None |
