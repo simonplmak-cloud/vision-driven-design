@@ -1,6 +1,6 @@
 # Project Constitution
 
-Version: 1.5.2
+Version: 1.5.3
 Last updated: 2026-08-10
 
 ## Architecture Principles

@@ -2,28 +2,28 @@
 
 All notable changes to Vision Driven Design.
 
-## [1.5.2] — 2026-08-10
+## [1.5.3] — 2026-08-10
 
 ### Fixed
 
-- **references/quick-reference.md**: Added human-factors and verification-toolchain to Domain Primers table
-- **vdd/docs/tutorial.md**: Bumped version v1.5.0→v1.5.1
-- **vdd/strategy.md**: Corrected primer count 4→6
-- **vdd/tactics.md**: Corrected primer count 4→6
-- **vdd/vision.md**: Bumped v1.1→v1.2 (docs update scope)
+- **README.md**: Anti-pattern count (23→24), domain primers (4→6), added human-factors + verification-toolchain to tables and structure tree, scripts/ and .github/
+- **AGENTS.md**: Expanded domain-primers/ directory map with all 7 primers, added constitution.md and scripts/, unconditional primer loading docs
+- **references/INDEX.md**: Gate checks (110→113), anti-patterns (16→24), added all missing primers, compliance-evidence.md
+- **references/quick-reference.md**: Added human-factors + verification-toolchain to Domain Primers table
+- **vdd/docs/tutorial.md**: Bumped version
+- **vdd/strategy.md**: Primer count 4→6
+- **vdd/tactics.md**: Primer count 4→6
+- **vdd/vision.md**: Added I-012 (GitHub artifact accuracy), v1.0→v1.2
+
+### Added
+
+- **domain-primers/safety-critical.md**: FMEA/FTA primer, safety integrity levels, VDD phase integration, safety gate checklist
+- **references/compliance-evidence.md**: Evidence maps for DO-178C, IEC 62304, CMMI REQM SP 1.4, ISO 29148; auto-generated audit bundle; auditor quick reference
 
 ### Verified
 
-- Full-repo consistency audit: all 113 gate checks, 24 anti-patterns, and 6 domain primers confirmed consistent across SKILL.md, README.md, AGENTS.md, INDEX.md, quick-reference.md, quality-gates.md
-
-## [1.5.1] — 2026-08-10
-
-### Fixed
-
-- **README.md**: Anti-pattern count (23→24), domain primers count (4→6), added human-factors.md and verification-toolchain.md to "Domains Covered" table and Repository Structure diagram, added scripts/ and .github/ to structure tree
-- **AGENTS.md**: Expanded domain-primers/ directory map to list all 6 primers, added constitution.md and scripts/ to directory map, clarified unconditional loading of human-factors.md and verification-toolchain.md
-- **references/INDEX.md**: Fixed gate check count (110→113), anti-pattern count (16→24), added missing human-factors.md and verification-toolchain.md primers to File List and Domain Primers sections
-- **vdd/vision.md**: Added I-012 (GitHub artifact accuracy) impact, status Draft→Active, v1.0→v1.1
+- Full-repo consistency audit: 113 gate checks, 24 anti-patterns, 7 domain primers confirmed consistent
+- Best-practice benchmark: 47/47 criteria (100%), 11 exceeded, **0 gaps** (v1.5.0 had 2)
 
 ## [1.5.0] — 2026-08-10
 
