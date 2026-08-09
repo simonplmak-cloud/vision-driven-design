@@ -1,0 +1,119 @@
+# Tactics
+
+> Impact Chain: V-001 → S-002 → T-003
+
+Status: Draft
+Version: 1.0
+Last updated: 2026-08-10
+
+## Strategy Reference
+Derived from: `vdd/strategy.md`
+
+## Codebase Audit
+
+### What Exists
+
+| Asset | Location | Purpose | Strategic Pillar Trace | Quality |
+|-------|----------|---------|----------------------|---------|
+| SKILL.md | `/` | OpenCode skill entry point | P1 (Adoption), P2 (Authority) | Good |
+| README.md | `/` | GitHub landing page with diagram, badges, TOC | P1, P3 (Community) | Good |
+| reference docs | `references/` | All 9 reference files (2390+ lines) | P2 (Authority) | Good |
+| domain-primers | `domain-primers/` | 4 domain research+impact patterns | P2, P4 (Impact Proof) | Good |
+| AGENTS.md | `/` | Agent instructions for repo contributors | P3 (Community) | Good |
+| CONTRIBUTING.md | `/` | Contribution guidelines | P3 | Good |
+| issue templates | `.github/ISSUE_TEMPLATE/` | Bug, feature, docs templates | P3 | Good |
+| social-preview.svg | `docs/` | GitHub OpenGraph image | P3 | Good |
+| constitution.md | `/` | Project constitution (VDD Phase 0) | P1, P4 | Good |
+| vision.md | `vdd/` | Vision and impact model | P1, P4 | Good |
+| strategy.md | `vdd/` | 5 strategic pillars with research | P2 | Good |
+
+### Technical Debt Assessment
+
+| Debt Item | Location | Severity | Impact on Strategy |
+|-----------|----------|----------|-------------------|
+| No tutorial/getting-started guide | — | High | Blocks P1 (adoption friction) |
+| No example dogfood project showing VDD usage end-to-end | — | High | Blocks P1 (no tangible proof) |
+| No comparison page (VDD vs SDD vs vibe coding) | — | Medium | Weakens P2 (positioning) |
+| No translations or localization framework | — | Medium | Blocks P5 (accessibility) |
+| No community infrastructure (discussions, discord, etc.) | — | Medium | Blocks P3 (community growth) |
+| No case study data (no adopters yet to provide it) | — | Medium | Blocks P4 (impact proof) |
+| No CODEOWNERS file | — | Low | Minor P3 weakness |
+
+### Reusable Assets
+
+| Asset | How It Supports Strategy | Effort to Reuse |
+|-------|------------------------|----------------|
+| Reference documentation (2390+ lines) | VDD's methodology is already comprehensively documented — reduce to tutorial format | Low |
+| Bidirectional gate framework (113 checks) | Differentiator from SDD — highlight in comparisons and case studies | Low |
+| Domain primers (4 files) | Already cover the target domains — ready for community extensions | Low |
+| Impact Chain header format | Already defined — use in dogfood examples to prove traceability | Low |
+| OpenCode skill format | Distribution mechanism is already working | Zero |
+| GitHub release v1.0.0 + topic tags | SEO and discoverability infrastructure in place | Zero |
+
+## Gap Analysis
+
+| Gap | Strategic Pillar Affected | Impact if Unaddressed |
+|-----|--------------------------|----------------------|
+| No tutorial or getting-started guide | P1 (Adoption) | Developers won't try VDD; adoption stalls |
+| No example project (VDD used to build something real) | P1, P4 | No proof that VDD works; "show don't tell" missing |
+| No comparison/positioning content (VDD vs alternatives) | P2 (Authority) | VDD gets lumped with SDD; differentiators invisible |
+| No community infrastructure (discussions, chat, calls) | P3 (Community) | Contributors have nowhere to collaborate; community doesn't form |
+| No case study data from adopters | P4 (Impact Proof) | Claims are unsubstantiated; methodology doesn't gain trust |
+| No translations or localization | P5 (Accessibility) | Non-English-speaking developers cannot adopt; underserved communities excluded |
+| No simplified templates for non-expert users | P5 | Vision-first methodology requires technical knowledge to use; excludes non-developer visionaries |
+| No demo video or visual walkthrough | P1 | Repos with demos see higher engagement; VDD is abstract without a visual |
+| No awesome-list or directory submissions | P3 | Discoverability limited to GitHub search and word-of-mouth |
+| No instrumentation for VDD usage metrics | P4 | Can't measure leading indicators (installs, `/vdd:init` usage, satisfaction) |
+
+## Prioritized Action Items
+
+| ID | Action Item | Priority | Strategy Pillar | Estimated Spec Size | Dependencies |
+|----|------------|----------|----------------|--------------------|--------------|
+| A-001 | Build VDD Getting Started tutorial (walkthrough from vision→validate) | MUST | P1 | M | None |
+| A-002 | Create dogfood example: use VDD to build a simple webapp (complete vision→code, published as showcase repo) | MUST | P1, P4 | L | A-001 |
+| A-003 | Create comparison page: VDD vs SDD vs vibe coding vs TDD | MUST | P2 | S | None |
+| A-004 | Set up GitHub Discussions on the repo | MUST | P3 | S | None |
+| A-005 | Add CODEOWNERS file | SHOULD | P3 | S | None |
+| A-006 | Submit VDD to awesome-lists (awesome-opencode, awesome-claude-code, awesome-ai-agents) | SHOULD | P3 | S | A-003 |
+| A-007 | Create demo video (screen recording of `/vdd:vision` → full chain) | SHOULD | P1 | M | A-002 |
+| A-008 | Instrument `/vdd:validate` to optionally collect opt-in usage metrics | SHOULD | P4 | M | None |
+| A-009 | Create simplified "Vision Canvas" template for non-technical visionaries | SHOULD | P5 | S | None |
+| A-010 | Set up localization framework (i18n directory, translation guide, community call for translators) | COULD | P5 | M | None |
+| A-011 | Write and publish methodology whitepaper (arXiv or similar) | COULD | P2 | L | A-003 |
+| A-012 | Create community call schedule (monthly VDD office hours) | COULD | P3 | S | A-004 |
+| A-013 | Build impact survey template for VDD adopters (before/after metrics) | COULD | P4 | S | A-002 |
+
+## Dependency Map
+
+```
+A-001 (Tutorial) ──┬──→ A-002 (Dogfood Example) ──→ A-007 (Demo Video)
+                   │
+A-003 (Comparison) ──→ A-006 (Awesome Lists)
+                   │
+                   └──→ A-011 (Whitepaper)
+
+A-004 (Discussions) ──→ A-012 (Community Calls)
+
+A-002 (Dogfood) ──→ A-013 (Impact Survey)
+
+No dependencies: A-005, A-008, A-009, A-010
+```
+
+## Infrastructure Requirements
+
+| Requirement | Domain | Priority | Notes |
+|-------------|--------|----------|-------|
+| GitHub Discussions enabled | Infrastructure | MUST | Already supported by GitHub; just needs enabling on repo settings |
+| Dogfood showcase repo | WebApp | MUST | New public repo showing VDD used to build a real project |
+| Opt-in usage telemetry | WebApp | SHOULD | Minimal, privacy-respecting — count `/vdd:init` invocations |
+| i18n directory structure | Infrastructure | COULD | `/i18n/` with language subdirectories, translation guide |
+
+## S&T Assumptions (Tactics → Specs)
+
+**Necessity:** Spec-level requirements are necessary to execute these Tactical action items because each item requires precise acceptance criteria — what "tutorial complete" means, what "comparison page published" means, what the dogfood example must demonstrate.
+
+**Achievability:** These Tactical items are achievable given the planned Spec approach because every item is concrete and bounded — no action item requires external dependencies beyond what exists (GitHub, Markdown, AI agents).
+
+**Sufficiency:** The planned Spec approach is sufficient to implement these Tactical items because the 13 action items collectively cover all 5 strategic pillars and all 10 identified gaps. P1 (Adoption) gets tutorial + dogfood + video; P2 (Authority) gets comparison + whitepaper; P3 (Community) gets discussions + awesome-lists + community calls; P4 (Impact) gets instrumentation + survey template; P5 (Accessibility) gets simplified templates + localization.
+
+**Warnings:** (1) A-002 (dogfood example) is L size — may need splitting if it proves larger than estimated. (2) A-008 (instrumentation) requires a design decision about privacy that could be contentious — must default to opt-in. (3) A-010 (localization) is community-dependent — can't force translations; must attract translators organically through Pillar 3 success.
