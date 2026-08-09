@@ -109,6 +109,10 @@ Navigation map for all VDD reference files.
 - Infrastructure → `../domain-primers/infrastructure.md`
 - Human Factors (loaded unconditionally) → `../domain-primers/human-factors.md`
 - Verification Toolchain (loaded unconditionally) → `../domain-primers/verification-toolchain.md`
+- Safety-Critical → `../domain-primers/safety-critical.md`
+
+### Compliance
+- Compliance Evidence Templates → `compliance-evidence.md`
 
 ---
 
@@ -149,3 +153,5 @@ Navigation map for all VDD reference files.
 | `../domain-primers/infrastructure.md` | Infrastructure research patterns | Medium |
 | `../domain-primers/human-factors.md` | Human factors research patterns (loaded unconditionally) | Medium |
 | `../domain-primers/verification-toolchain.md` | Verification toolchain patterns (loaded unconditionally) | Medium |
+| `../domain-primers/safety-critical.md` | Safety analysis primer (FMEA/FTA, DO-178C/IEC 62304) | Medium |
+| `compliance-evidence.md` | Compliance evidence templates (DO-178C, IEC 62304, CMMI, ISO 29148) | Medium |

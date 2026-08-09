@@ -110,28 +110,30 @@ VDD benchmarked against 7 industry gold standards across all 8 phases.
 
 ## Gap Analysis
 
-| Gap | Standard | Severity | Action |
-|-----|----------|----------|--------|
-| No formal safety analysis (FMEA/FTA) | DO-178C, IEC 62304 | Medium | Add safety-analysis primer for safety-critical domains |
-| No formal configuration management | NASA SE | Low | Constitution + git already provides CM; document explicitly |
-| No qualification testing evidence templates | DO-178C | Medium | A-033: compliance evidence templates |
-| No formal peer review process | CMMI | Low | Critic agents serve as automated peer review |
+| Gap | Standard | Severity | Resolution |
+|-----|----------|----------|------------|
+| No formal safety analysis (FMEA/FTA) | DO-178C, IEC 62304 | Medium | ✅ `domain-primers/safety-critical.md` — FMEA/FTA primer with safety gate checklist, RPN registration, hazard→AC→test→evidence chain |
+| No formal configuration management | NASA SE | Low | ✅ `constitution.md` (immutable project rules) + git (versioned artifacts) — documented in `references/compliance-evidence.md` |
+| No qualification testing evidence templates | DO-178C | Medium | ✅ `references/compliance-evidence.md` — complete evidence maps for DO-178C, IEC 62304, CMMI REQM SP 1.4, ISO 29148 |
+| No formal peer review process | CMMI | Low | ✅ Critic agents (Phases 4–6 automated review) + PR review (Phase 7) + human sign-off (gated mode) — documented in `references/compliance-evidence.md` |
+
+**All 4 gaps resolved — 0 gaps remaining.**
 
 ## Summary
 
 | Standard | Criteria | VDD Matches | VDD Exceeds | Gaps |
 |----------|----------|-------------|-------------|------|
-| NASA SE | 5 | 5 (100%) | 0 | 1 (config mgmt — low) |
-| CMMI REQM | 5 | 5 (100%) | 3 | 1 (peer review — low) |
-| DO-178C | 7 | 7 (100%) | 0 | 2 (safety analysis, qualification templates) |
-| IEC 62304 | 6 | 6 (100%) | 0 | 2 (safety analysis, qualification templates) |
+| NASA SE | 5 | 5 (100%) | 0 | 0 |
+| CMMI REQM | 5 | 5 (100%) | 3 | 0 |
+| DO-178C | 7 | 7 (100%) | 0 | 0 |
+| IEC 62304 | 6 | 6 (100%) | 0 | 0 |
 | DORA | 6 | 6 (100%) | 2 | 0 |
 | ISO 29148 | 5 | 5 (100%) | 0 | 0 |
 | SDD (Spec Kit) | 8 | 8 (100%) | 5 | 0 |
 | VDD v1.5.2 | 5 | 5 (100%) | 1 | 0 |
 
-**Overall: 47/47 criteria matched (100%), 11 exceeded, 2 actionable gaps.**
+**Overall: 47/47 criteria matched (100%), 11 exceeded, 0 gaps.**
 
 ## Verdict
 
-VDD **matches or exceeds** every industry best practice benchmarked. The two identified gaps (safety analysis template, qualification evidence templates) are domain-specific (aerospace/medical) and addressed by A-033. VDD can defensibly claim: *"Better than or in-line with the best practices available."*
+VDD **matches or exceeds** every industry best practice benchmarked. All four previously identified gaps — safety analysis (FMEA/FTA), qualification evidence templates, configuration management, and peer review — are now fully resolved via `domain-primers/safety-critical.md`, `references/compliance-evidence.md`, and documented processes. VDD can defensibly claim: *"Better than or in-line with the best practices available — zero gaps."*
