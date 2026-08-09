@@ -3,7 +3,7 @@
 > Impact Chain: V-001
 
 Status: Active
-Version: 1.2
+Version: 1.3
 Last updated: 2026-08-10
 
 ## Vision Statement
@@ -47,6 +47,7 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | I-010 | VDD is benchmarked as matching or exceeding every industry best practice (NASA SE, CMMI, DO-178C, IEC 62304, DORA, SDD) | Enterprise architects, tech leads | Benchmark compliance matrix; % of best-practice criteria that VDD matches/exceeds |
 | I-011 | Every VDD project is verified through an extensive integrated toolset — Playwright/Browserless pre-deploy, Sentry post-deploy, full CI/CD quality pipeline | Developers, QA engineers | Tool coverage %; % of MUST ACs verified by automated tools; production error rate via Sentry |
 | I-012 | GitHub artifacts (README.md, SKILL.md, AGENTS.md, CHANGELOG.md, CONTRIBUTING.md) accurately reflect the current repo state — no stale counts, no missing files, no mismatched domain primer listings | GitHub community, contributors, evaluators | README anti-pattern count matches actual; domain-primers listing matches directory; repository structure diagram matches disk; all generated docs are consistent with canonical sources |
+| I-013 | VDD leverages every GitHub platform feature — Pages (docs site), Wiki (community knowledge), Discussions (Q&A/ideas), Projects (roadmap), Actions (CI/CD quality gates), full topic taxonomy, social preview, homepage linking to best content | GitHub community, discoverers, contributors | Pages deployed with documentation; Wiki populated with primers and FAQs; Discussions active with categories; Projects board tracking roadmap; Actions running quality-gate workflow on PRs |
 
 ## Stakeholder Map
 
