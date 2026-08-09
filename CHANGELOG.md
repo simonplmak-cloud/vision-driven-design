@@ -2,6 +2,20 @@
 
 All notable changes to Vision Driven Design.
 
+## [1.5.2] — 2026-08-10
+
+### Fixed
+
+- **references/quick-reference.md**: Added human-factors and verification-toolchain to Domain Primers table
+- **vdd/docs/tutorial.md**: Bumped version v1.5.0→v1.5.1
+- **vdd/strategy.md**: Corrected primer count 4→6
+- **vdd/tactics.md**: Corrected primer count 4→6
+- **vdd/vision.md**: Bumped v1.1→v1.2 (docs update scope)
+
+### Verified
+
+- Full-repo consistency audit: all 113 gate checks, 24 anti-patterns, and 6 domain primers confirmed consistent across SKILL.md, README.md, AGENTS.md, INDEX.md, quick-reference.md, quality-gates.md
+
 ## [1.5.1] — 2026-08-10
 
 ### Fixed
