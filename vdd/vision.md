@@ -3,7 +3,7 @@
 > Impact Chain: V-001
 
 Status: Active
-Version: 1.1
+Version: 1.2
 Last updated: 2026-08-10
 
 ## Vision Statement

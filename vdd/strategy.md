@@ -166,7 +166,7 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Vision Trace:** I-008 (full vertical spectrum coverage)
 
-**Key Research Finding:** The #1 reason developers abandon methodologies is uncovered edge cases — "this works for CRUD but not my graph database" or "covers code but not my design process." VDD's domain primers must close these gaps. The existing 4 primers (webapp, data-storage, ETL, infrastructure) need depth expansion — each adding technology-specific sections (SurrealDB, PostgreSQL, Neo4j, MongoDB, Redis) and human-factors sections (behavioral economics, cognitive load theory, habit formation).
+**Key Research Finding:** The #1 reason developers abandon methodologies is uncovered edge cases — "this works for CRUD but not my graph database" or "covers code but not my design process." VDD's domain primers must close these gaps. The existing 6 primers (webapp, data-storage, ETL, infrastructure, human-factors, verification-toolchain) need depth expansion — each adding technology-specific sections (SurrealDB, PostgreSQL, Neo4j, MongoDB, Redis) and human-factors sections (behavioral economics, cognitive load theory, habit formation).
 
 **Expected Impact:** 0 vertical gaps. Domain primers expanded with technology-specific and human-factors depth. "VDD covers everything — from psychology to SurrealDB" becomes the tagline.
 

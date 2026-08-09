@@ -116,6 +116,8 @@ Every artifact carries this header. It's the traceability backbone.
 | Data Storage | `domain-primers/data-storage.md` | Schema design, indexing, data governance |
 | ETL | `domain-primers/etl.md` | Pipeline architecture, data quality, error handling |
 | Infrastructure | `domain-primers/infrastructure.md` | Deployment, CI/CD, observability, security |
+| Human Factors | `domain-primers/human-factors.md` | Behavioral economics, cognitive load, habit formation (loaded unconditionally) |
+| Verification Toolchain | `domain-primers/verification-toolchain.md` | Playwright, Browserless, Sentry, CI/CD pipeline (loaded unconditionally) |
 
 ## Auto-Mode Configuration
 

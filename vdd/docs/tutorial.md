@@ -1,6 +1,6 @@
 # VDD Getting Started Tutorial
 
-*Last verified: 2026-08-10 | VDD v1.5.0 | Time to complete: ~30 minutes*
+*Last verified: 2026-08-10 | VDD v1.5.1 | Time to complete: ~30 minutes*
 
 This tutorial walks you through building a **personal task tracker** using Vision Driven Design. You'll see every phase of the VDD chain — from a human vision statement to validated, impact-traced code.
 

@@ -18,7 +18,7 @@ Derived from: `vdd/strategy.md`
 | SKILL.md | `/` | OpenCode skill entry point | P1 (Adoption), P2 (Authority) | Good |
 | README.md | `/` | GitHub landing page with diagram, badges, TOC | P1, P3 (Community) | Good |
 | reference docs | `references/` | All 9 reference files (2390+ lines) | P2 (Authority) | Good |
-| domain-primers | `domain-primers/` | 4 domain research+impact patterns | P2, P4 (Impact Proof) | Good |
+| domain-primers | `domain-primers/` | 6 domain research+impact patterns | P2, P4 (Impact Proof) | Good |
 | AGENTS.md | `/` | Agent instructions for repo contributors | P3 (Community) | Good |
 | CONTRIBUTING.md | `/` | Contribution guidelines | P3 | Good |
 | issue templates | `.github/ISSUE_TEMPLATE/` | Bug, feature, docs templates | P3 | Good |
