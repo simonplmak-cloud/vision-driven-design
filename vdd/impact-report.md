@@ -1,6 +1,6 @@
 # Impact Verification Report — Final
 
-> Full Chain: V-001 → S-002 → T-003 → SP-004..SP-005 → PL-005..PL-006 → TK-006..TK-007 → commits (19)
+> Impact Chain: V-001 → S-002 → T-003 → IM-008
 
 Date: 2026-08-10 | Status: **COMPLETE**
 
