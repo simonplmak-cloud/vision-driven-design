@@ -3,7 +3,7 @@
 > Impact Chain: V-001
 
 Status: Active
-Version: 1.3
+Version: 1.4
 Last updated: 2026-08-10
 
 ## Vision Statement
@@ -12,7 +12,9 @@ Vision Driven Design (VDD) exists to transform how software gets built — from 
 
 VDD changes this by making vision the root of all traceability. A human states the impact they want to create. AI agents handle the rest — researching the domain, auditing the codebase, generating specs grounded in real-world goals, planning, implementing, and validating — with bi-directional verification at every junction to ensure no requirement is missed and no scope is invented.
 
-The vision for VDD itself is to make **quality output the top priority — verified through an extensive, integrated toolset spanning pre-deployment and post-deployment**. VDD must not just produce code; it must produce *verified* code, validated through every verification tool available: Playwright and Browserless for end-to-end browser testing and visual regression, Sentry for runtime error tracking and performance monitoring, the full CI/CD pipeline (lint, typecheck, unit test, integration test, accessibility audit, security scan, performance audit) pre-deployment, and production telemetry + alerting post-deployment. Every phase of VDD must have tool-specific guidance — when Phase 5 (Plan) designs the architecture, it must specify *which* tools verify *which* ACs. When Phase 7 (Implement) generates code, it must generate the accompanying Playwright spec, the Sentry initialization, the CI workflow step. The verification toolchain must be as extensive as the development chain — Playwright is to browser behavior what SurrealDB schema design is to data modeling, and Sentry is to production quality what strategy research is to vision alignment. This quality-first, tool-integrated approach complements VDD's other pillars: best-practice alignment, substance enforcement, full-spectrum coverage, agent auto-integration, and GitHub-native distribution — all working together to make VDD the definitive standard for AI-native software development.
+The vision for VDD itself is to make **quality output the top priority — verified through an extensive, integrated toolset spanning pre-deployment and post-deployment**. VDD must not just produce code; it must produce *verified* code, validated through every verification tool available: Playwright and Browserless for end-to-end browser testing and visual regression, Sentry for runtime error tracking and performance monitoring, the full CI/CD pipeline (lint, typecheck, unit test, integration test, accessibility audit, security scan, performance audit) pre-deployment, and production telemetry + alerting post-deployment.
+
+VDD operates with a **"no stone unturned" mentality** — when it undertakes an assignment, it covers every inch. No surface is left unexamined. No edge case is dismissed as unlikely. No documentation page ships stale. No benchmark gap goes unresolved. No GitHub feature goes unused. No domain goes unprimed. No audit skips a file. This is not perfectionism — it is the mechanical consequence of bi-directional gates. Every parent goal demands its children collectively cover it (forward check). Every child artifact must trace to an authorized parent (backward check). Together, they make omission structurally impossible. VDD doesn't hope for completeness; it enforces it.
 
 ## Impact Model
 
@@ -48,6 +50,7 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | I-011 | Every VDD project is verified through an extensive integrated toolset — Playwright/Browserless pre-deploy, Sentry post-deploy, full CI/CD quality pipeline | Developers, QA engineers | Tool coverage %; % of MUST ACs verified by automated tools; production error rate via Sentry |
 | I-012 | GitHub artifacts (README.md, SKILL.md, AGENTS.md, CHANGELOG.md, CONTRIBUTING.md) accurately reflect the current repo state — no stale counts, no missing files, no mismatched domain primer listings | GitHub community, contributors, evaluators | README anti-pattern count matches actual; domain-primers listing matches directory; repository structure diagram matches disk; all generated docs are consistent with canonical sources |
 | I-013 | VDD leverages every GitHub platform feature — Pages (docs site), Wiki (community knowledge), Discussions (Q&A/ideas), Projects (roadmap), Actions (CI/CD quality gates), full topic taxonomy, social preview, homepage linking to best content | GitHub community, discoverers, contributors | Pages deployed with documentation; Wiki populated with primers and FAQs; Discussions active with categories; Projects board tracking roadmap; Actions running quality-gate workflow on PRs |
+| I-014 | VDD undertakes every assignment with a "cover every inch, leave no stone unturned" mentality — completeness is mechanically enforced by bi-directional gates, not left to human discipline | All actors, evaluators, auditors | Every file audited; every count verified; every gap resolved; every gate passed in both directions; every GitHub feature leveraged; every domain primed; every benchmark criterion met |
 
 ## Stakeholder Map
 
