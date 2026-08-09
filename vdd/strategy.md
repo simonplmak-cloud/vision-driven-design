@@ -150,6 +150,16 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Expected Impact:** 10,000+ stars within 3 years. Monthly trending appearances. GitHub Topics rank #1-3 for "vision-driven-design", "spec-driven-development", "ai-skill", "opencode-skill".
 
+### Pillar 7: Agent-Native Auto-Integration — Zero-Friction Onboarding
+
+**Rationale:** The biggest barrier to VDD adoption is installation friction. If VDD is already built into the agent the developer is using — auto-detecting their project, auto-generating constitution, and auto-wiring context — adoption becomes a non-decision. Every agent becomes a VDD distribution channel.
+
+**Vision Trace:** I-007 (coding agents auto-detect and integrate VDD), I-001 (developer adoption)
+
+**Key Research Finding:** The 3 primary AI coding agents (Copilot, Cursor, Claude Code) all support custom instructions via file-based configuration (`.cursor/rules/`, `.claude/skills/`, `.github/copilot-instructions.md`). VDD can auto-generate these files from its templates, making integration a single command. Claude Code skills use the same SKILL.md format as OpenCode — VDD is already cross-compatible.
+
+**Expected Impact:** 3+ agents natively supporting VDD. Auto-detection of project conventions eliminates the `/vdd:init` manual Q&A step. New users experience VDD as "already there" when they open their project in any supported agent.
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |

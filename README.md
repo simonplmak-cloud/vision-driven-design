@@ -62,10 +62,11 @@ graph LR
 ## Quick Start
 
 ```bash
-# One-line install (OpenCode)
-git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
-  ~/.config/opencode/skills/vision-driven-design/
+# One-line install (auto-detects your agent and project)
+curl -sSL https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-design/main/scripts/install.sh | bash
 ```
+
+Or manually:
 
 Then in your project:
 

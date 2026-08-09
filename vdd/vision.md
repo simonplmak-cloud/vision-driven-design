@@ -12,13 +12,13 @@ Vision Driven Design (VDD) exists to transform how software gets built — from 
 
 VDD changes this by making vision the root of all traceability. A human states the impact they want to create. AI agents handle the rest — researching the domain, auditing the codebase, generating specs grounded in real-world goals, planning, implementing, and validating — with bi-directional verification at every junction to ensure no requirement is missed and no scope is invented.
 
-The vision for VDD itself is to **maximize its impact on society by promoting VDD on GitHub** — to become the default methodology for any team building software that matters, driven by GitHub-native distribution, community growth, and discoverability. By leveraging GitHub's 150M+ developer ecosystem as the primary adoption channel — stars as social proof, topics for discoverability, Discussions for community, and the dogfood repo as living proof — VDD can multiply the number of successful software projects, reduce the billions wasted on failed or misaligned software, and ultimately channel more of humanity's engineering effort toward work that demonstrably improves lives.
+The vision for VDD itself is to **maximize its impact on society by promoting VDD on GitHub and integrating it automatically into coding agents' existing tools** — to make VDD the invisible methodology that every AI coding agent already knows how to use, without the developer needing to install or configure anything. VDD should auto-detect existing project conventions (package.json, tsconfig, AGENTS.md), auto-generate constitution.md, and auto-wire itself into the agent's context — whether that agent is OpenCode, Claude Code, Cursor, Copilot, or any future AI coding tool. The developer should simply write `/vdd:vision` and the rest happens transparently. By making VDD zero-friction at the agent level, spreading through GitHub-native channels, and embedding into the tools developers already use, VDD can multiply the number of successful software projects, reduce the billions wasted on failed or misaligned software, and ultimately channel more of humanity's engineering effort toward work that demonstrably improves lives.
 
 ## Impact Model
 
 ### Goal
 
-Make VDD a Top-10 trending methodology on GitHub, reaching 10,000 stars, 2,000+ skill installations, and measurably improving software project success rates within 3 years — all driven through GitHub-native promotion channels.
+Make VDD the default methodology auto-integrated into every major AI coding agent, reaching 10,000+ projects using VDD (with zero manual installation) and appearing as a Top-10 trending methodology on GitHub within 3 years.
 
 ### Actors
 
@@ -41,6 +41,7 @@ Make VDD a Top-10 trending methodology on GitHub, reaching 10,000 stars, 2,000+ 
 | I-004 | AI-generated code becomes demonstrably more aligned with business goals | All actors | Drift report scores, traceability matrix completeness |
 | I-005 | Underserved communities gain access to impact-driven software development | Underserved communities | Number of vision-first projects targeting these communities |
 | I-006 | GitHub community discovers and adopts VDD organically through trending and search | GitHub community | GitHub stars, forks, clones, Discussions activity, topic-rank position |
+| I-007 | Coding agents auto-detect and integrate VDD into any project with zero manual setup | AI coding agent users | Number of agents supporting VDD natively; `/vdd:init` auto-triggered by agent |
 
 ## Stakeholder Map
 
@@ -51,6 +52,7 @@ Make VDD a Top-10 trending methodology on GitHub, reaching 10,000 stars, 2,000+ 
 | Product managers | Features that demonstrably advance business goals | Medium — they write the visions | Templates, vision workshop guides, impact measurement frameworks |
 | Open source community | Quality, coherence, contributor alignment | Medium — they spread it | GitHub stars, awesome lists, conference talks |
 | GitHub community (organic discoverers) | Discover quality projects, signal trust through stars | High — they drive virality and trending | GitHub trending, topics, Discussions, showcase repos |
+| AI coding agent platforms (OpenCode, Claude Code, Cursor, Copilot) | Compete on features; lack a standard methodology layer | Bundle VDD as the default methodology — auto-detect and activate | Every agent becomes a VDD distribution channel; users get impact-driven development out of the box |
 | Underserved communities | Access to high-quality software built for their needs | Low but critical | Free tier, community partnerships, localized documentation |
 
 ## Success Metrics
@@ -73,6 +75,7 @@ Make VDD a Top-10 trending methodology on GitHub, reaching 10,000 stars, 2,000+ 
 | GitHub stars | 5,000+ | GitHub API |
 | GitHub trending appearances | Weekly during launch month | GitHub trending page |
 | GitHub Discussions activity | 50+ weekly participants | Discussions API |
+| AI agents natively integrating VDD | 3+ (OpenCode, Claude Code, Cursor/Copilot via rules/skills) | Agent feature announcements, documentation |
 | Skill installations (clones) | 2,000+ | GitHub clone traffic |
 | Community contributors | 100+ | GitHub contributors |
 | Dogfood repos using VDD | 20+ showcase repos | GitHub topic: `vision-driven-design` |

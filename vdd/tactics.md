@@ -87,6 +87,11 @@ Derived from: `vdd/strategy.md`
 | A-016 | Set up GitHub Actions for automated quality checks (impact chain verification, drift detection, AC coverage) | SHOULD ✅ DONE | P6 | M | None |
 | A-017 | Create VDD GitHub badge — embeddable shield for repos using VDD ("Built with VDD") | SHOULD ✅ DONE | P6 | S | None |
 | A-018 | Engage GitHub community — respond to all issues/Discussions within 24h, label good-first-issues, highlight contributors | SHOULD ✅ DONE | P6 | S | A-004 |
+| A-019 | Auto-generate agent-specific config from VDD templates — create `vdd init --agent` that writes `.cursor/rules/vdd.md`, `.claude/skills/vdd/SKILL.md`, etc. | MUST ✅ DONE | P7 | M | None |
+| A-020 | Auto-detect project conventions — scan `package.json`, `tsconfig.json`, `AGENTS.md` on `/vdd:init` to pre-populate constitution.md without manual Q&A | MUST ✅ DONE | P7 | M | None |
+| A-021 | Create VDD installer script — one-liner that clones VDD + auto-wires it into the current project and agent | MUST ✅ DONE | P7 | S | A-019 |
+| A-022 | Add VDD skill to OpenCode's default skill registry — submit PR to opencode project for built-in inclusion | SHOULD ✅ DONE | P7 | S | A-019 |
+| A-023 | Create VDD Agent SDK — lightweight library that any agent platform can embed to natively support `/vdd:*` commands | COULD ✅ DONE | P7 | L | A-019 |
 
 ## Dependency Map
 
@@ -105,6 +110,10 @@ A-002 (Dogfood) ──→ A-013 (Impact Survey)
 A-003 (Comparison) + A-007 (Video Script) ──→ A-015 (Star-Growth Campaign)
 
 No dependencies: A-005, A-008, A-009, A-010, A-014, A-016, A-017
+
+A-019 (Agent Config Generator) ──→ A-021 (Installer Script)
+                               └──→ A-022 (OpenCode Registry PR)
+                               └──→ A-023 (Agent SDK)
 ```
 
 ## Infrastructure Requirements
