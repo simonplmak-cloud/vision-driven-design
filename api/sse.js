@@ -1,6 +1,6 @@
 const PHASES = ['init','vision','strategize','tactics','specify','clarify','plan','tasks','next-task','implement','validate','trace','analyze','amend'];
 
-export default async function handler(req) {
+module.exports = async function handler(req) {
   if (req.method === 'GET') {
     return new Response(JSON.stringify({
       service: 'VDD MCP Server',
@@ -28,4 +28,4 @@ export default async function handler(req) {
   }
 
   return new Response('Method not allowed', { status: 405 });
-}
+};
