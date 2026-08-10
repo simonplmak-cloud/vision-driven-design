@@ -68,7 +68,7 @@ Numbered sequentially from AP1 upward. Each has: Symptoms, Fix. When adding a ne
 - **Phase numbering** (0–8) is stable. Phase 0 is Constitution. Phases 1–3 are VDD additions. Phases 4–8 are the SDD chain. Do not renumber phases.
 - **Gate check counts** in `quality-gates.md` Gate Summary Table must match the actual checklist items above it. The total (113) is the sum of all F/B/A columns across G1–G7.
 - **Domain primers** are loaded dynamically by Phase 2 based on `vision.md` → Target Domains. The original 4 (webapp, data-storage, etl, infrastructure) are loaded per-domain. `human-factors.md` and `verification-toolchain.md` (added v1.5.0) are loaded unconditionally. When editing a primer, its two sections (Research Patterns, Impact Verification) are used by different subagents.
-- **No build/toolchain** — this repo has no code, tests, linting, or CI. Don't add build configuration.
+- **API and packages** — the `api/` directory contains the Vercel MCP endpoint (deployed at vdd.simonmak.com). The `packages/` directory contains the TypeScript monorepo (vdd-engine, vdd-mcp, vdd-cli). Build configuration is scoped to these directories; core documentation (SKILL.md, references/, domain-primers/) remains build-free.
 
 ## Superset Relationship
 

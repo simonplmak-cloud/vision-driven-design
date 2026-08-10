@@ -2,6 +2,8 @@
   "name": "vision-driven-design",
   "private": true,
   "scripts": {
-    "build": "mkdir -p public && cp index.html public/"
+    "build": "mkdir -p public && cp index.html public/",
+    "build:packages": "pnpm -r build",
+    "check": "pnpm -r check"
   }
 }

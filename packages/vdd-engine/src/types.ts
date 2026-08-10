@@ -1,0 +1,39 @@
+import { z } from 'zod';
+
+export const VddMode = z.enum(['auto', 'gated']);
+export type VddMode = z.infer<typeof VddMode>;
+
+export const Constitution = z.object({
+  version: z.string().optional(),
+  mode: VddMode.optional().default('auto'),
+  stack: z.record(z.string(), z.string()).optional(),
+  conventions: z.record(z.string(), z.string()).optional(),
+});
+export type Constitution = z.infer<typeof Constitution>;
+
+export const VddContext = z.object({
+  projectRoot: z.string().describe('Path to project root'),
+  constitution: Constitution.optional(),
+  mode: VddMode.default('auto'),
+});
+export type VddContext = z.infer<typeof VddContext>;
+
+export const VddOutput = z.object({
+  success: z.boolean(),
+  artifact: z.string().optional(),
+  gateResult: z.object({ passed: z.boolean(), checks: z.number(), total: z.number() }).optional(),
+  error: z.string().optional(),
+});
+export type VddOutput = z.infer<typeof VddOutput>;
+
+export const VddPhaseInput = z.object({
+  statement: z.string().optional(),
+  actionItemId: z.string().optional(),
+  feature: z.string().optional(),
+  taskId: z.string().optional(),
+  description: z.string().optional(),
+  json: z.boolean().default(false),
+});
+export type VddPhaseInput = z.infer<typeof VddPhaseInput>;
+
+export type VddPhaseFn = (input: VddPhaseInput, context: VddContext) => Promise<VddOutput>;

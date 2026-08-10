@@ -259,6 +259,10 @@ All reference docs live in `references/`:
 │   └── vdd-substance-audit.sh       # Low-substance artifact detection
 ├── api/                             # Vercel MCP server endpoint
 │   └── sse.js                       # GET → service info, POST → phase results
+├── packages/                        # TypeScript monorepo (CLI + MCP engine)
+│   ├── vdd-engine/                  # Shared core — 14 phase functions
+│   ├── vdd-mcp/                     # MCP server — 14 tools, stdio + SSE
+│   └── vdd-cli/                     # CLI binary — 14 subcommands
 ├── index.html                       # GitHub Pages landing page
 ├── vercel.json                      # Vercel deployment config
 ├── package.json                     # Vercel runtime config

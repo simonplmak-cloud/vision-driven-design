@@ -5,7 +5,7 @@ Last updated: 2026-08-10
 
 ## Architecture Principles
 
-- **Static documentation only** — this repo contains no executable code, no build pipeline, no runtime
+- **Static documentation + Thin API layer** — this repo contains markdown documentation and a minimal MCP server (api/sse.js). TypeScript packages under `packages/` provide the CLI and MCP server engine.
 - **Single source of truth per concept** — every concept has one canonical reference file; all other mentions derive from it
 - **SKILL.md is the entry point** — it is loaded by OpenCode and must always match the OpenCode skill spec format
 - **Bi-directional gate consistency** — gate check counts (113) must stay consistent across SKILL.md, README.md, quick-reference.md, and quality-gates.md
@@ -19,7 +19,7 @@ Last updated: 2026-08-10
 | Content | Markdown | All files are `.md` |
 | Version Control | Git + GitHub | Public repo at simonplmak-cloud/vision-driven-design |
 | Skill Platform | OpenCode | Compatible with Claude Code and Cursor skills |
-| Build/Runtime | None | No code to compile, test, or deploy |
+| Build/Runtime | None | API layer uses Vercel serverless (Node.js); packages use TypeScript + pnpm |
 
 ## Conventions
 
@@ -65,7 +65,7 @@ docs/                       ← Assets (social preview images, etc.)
 
 ## Banned Patterns
 
-- No build configuration (package.json, tsconfig.json, Makefile, Dockerfile, etc.) — this repo is documentation only
+- No build configuration outside of `packages/` and `api/` — core documentation remains build-free
 - No auto-generated files edited outside their canonical sources
 - No renumbering phases or anti-patterns
 - No adding content to derived files without updating the canonical source first
