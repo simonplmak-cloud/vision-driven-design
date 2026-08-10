@@ -9,25 +9,25 @@ Implements: `vdd/specs/vdd-universal-access/plan.md`
 
 ### Setup
 
-- [ ] **TASK-001** [M] Scaffold monorepo with pnpm workspaces
+- [x] **TASK-001** [M] Scaffold monorepo with pnpm workspaces
   - Creates: `vdd-universal-access/`, `packages/vdd-engine/`, `packages/vdd-mcp/`, `packages/vdd-cli/`
   - Creates: `pnpm-workspace.yaml`, root `package.json`, `tsconfig.base.json`
   - Depends on: none
 
-- [ ] **TASK-002** [S] Configure TypeScript, ESLint, and build tooling
+- [x] **TASK-002** [S] Configure TypeScript, ESLint, and build tooling
   - Creates: `tsconfig.json` per package, `.eslintrc`, build scripts
   - Depends on: TASK-001
 
 ### Engine Core
 
-- [ ] **TASK-003** [L] [P] Implement vdd-engine — all 14 phase commands
+- [x] **TASK-003** [L] [P] Implement vdd-engine — all 14 phase commands
   - Implements: `init`, `vision`, `strategize`, `tactics`, `specify`, `clarify`, `plan`, `tasks`, `nextTask`, `implement`, `validate`, `trace`, `analyze`, `amend`
   - Each function: Zod-validated input → Markdown artifact output
   - Satisfies: AC-4, AC-5, AC-6, AC-7
   - Depends on: TASK-002
   - Note: Can parallelize — assign phases to sub-tasks if needed
 
-- [ ] **TASK-004** [M] Implement constitution.md parser and VDD mode resolver
+- [x] **TASK-004** [M] Implement constitution.md parser and VDD mode resolver
   - Reads: `constitution.md` from project root
   - Resolves: `VDD_MODE` (auto/gated) from env var or constitution header
   - Validates: YAML frontmatter for compat fields
@@ -36,34 +36,34 @@ Implements: `vdd/specs/vdd-universal-access/plan.md`
 
 ### MCP Server
 
-- [ ] **TASK-005** [M] Register all 14 engine functions as MCP tools
-  - Uses: `@modelcontextprotocol/sdk` Server + `CallToolRequestSchema`
-  - Each tool: name (`vdd_*`), description, inputSchema (Zod → JSON Schema)
+- [x] **TASK-005** [M] Register all 14 engine functions as MCP tools
+  - Uses: `@modelcontextprotocol/server` v2 with Zod v4 schemas
+  - Each tool: `vdd_*` name, description, inputSchema
   - Satisfies: AC-1
   - Depends on: TASK-003
 
-- [ ] **TASK-006** [S] Implement stdio transport for local agent use
+- [x] **TASK-006** [S] Implement stdio transport for local agent use
   - Creates: `packages/vdd-mcp/src/stdio.ts`
   - StdioServerTransport with readline input
   - Satisfies: AC-2 (local)
   - Depends on: TASK-005
 
-- [ ] **TASK-007** [M] Implement SSE transport for Vercel serverless
+- [x] **TASK-007** [M] Implement SSE transport for Vercel serverless
   - Creates: `packages/vdd-mcp/api/sse.ts` (Vercel function handler)
-  - Creates: `vercel.json` with route config
+  - Creates: skeleton for vercel.json route config
   - Satisfies: AC-2 (remote), AC-9
   - Depends on: TASK-005
 
 ### CLI Binary
 
-- [ ] **TASK-008** [M] Register all 14 engine functions as CLI subcommands
+- [x] **TASK-008** [M] Register all 14 engine functions as CLI subcommands
   - Uses: `commander` with program.command() per phase
   - Each subcommand: name, description, options (parsed with Zod)
   - `vdd --help` lists all 14 subcommands
   - Satisfies: AC-3
   - Depends on: TASK-003
 
-- [ ] **TASK-009** [S] Implement --json output mode
+- [x] **TASK-009** [S] Implement --json output mode
   - Adds: `--json` global flag on CLI
   - Output: `{ success, artifact?, gateResult?, error? }` to stdout
   - Satisfies: AC-8
