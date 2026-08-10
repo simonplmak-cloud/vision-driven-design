@@ -2,8 +2,8 @@
 
 > Impact Chain: V-001 → S-002 → T-003
 
-Status: Draft
-Version: 1.0
+Status: Active
+Version: 2.0
 Last updated: 2026-08-10
 
 ## Strategy Reference
@@ -17,53 +17,62 @@ Derived from: `vdd/strategy.md`
 |-------|----------|---------|----------------------|---------|
 | SKILL.md | `/` | OpenCode skill entry point | P1 (Adoption), P2 (Authority) | Good |
 | README.md | `/` | GitHub landing page with diagram, badges, TOC | P1, P3 (Community) | Good |
-| reference docs | `references/` | All 9 reference files (2390+ lines) | P2 (Authority) | Good |
-| domain-primers | `domain-primers/` | 6 domain research+impact patterns | P2, P4 (Impact Proof) | Good |
+| reference docs | `references/` | 10 reference files | P2 (Authority), P10 (Benchmark) | Good |
+| domain-primers | `domain-primers/` | 7 domain research+impact patterns | P2, P4 (Impact Proof), P8 (Spectrum) | Good |
 | AGENTS.md | `/` | Agent instructions for repo contributors | P3 (Community) | Good |
 | CONTRIBUTING.md | `/` | Contribution guidelines | P3 | Good |
 | issue templates | `.github/ISSUE_TEMPLATE/` | Bug, feature, docs templates | P3 | Good |
 | social-preview.svg | `docs/` | GitHub OpenGraph image | P3 | Good |
 | constitution.md | `/` | Project constitution (VDD Phase 0) | P1, P4 | Good |
 | vision.md | `vdd/` | Vision and impact model | P1, P4 | Good |
-| strategy.md | `vdd/` | 5 strategic pillars with research | P2 | Good |
+| strategy.md | `vdd/` | 12 strategic pillars with research, competitive analysis, risk register | P2 | Good |
 
 ### Technical Debt Assessment
 
-| Debt Item | Location | Severity | Impact on Strategy |
-|-----------|----------|----------|-------------------|
-| No tutorial/getting-started guide | — | High | Blocks P1 (adoption friction) |
-| No example dogfood project showing VDD usage end-to-end | — | High | Blocks P1 (no tangible proof) |
-| No comparison page (VDD vs SDD vs vibe coding) | — | Medium | Weakens P2 (positioning) |
-| No translations or localization framework | — | Medium | Blocks P5 (accessibility) |
-| No community infrastructure (discussions, discord, etc.) | — | Medium | Blocks P3 (community growth) |
-| No case study data (no adopters yet to provide it) | — | Medium | Blocks P4 (impact proof) |
-| No CODEOWNERS file | — | Low | Minor P3 weakness |
+| Debt Item | Status | Resolution |
+|-----------|--------|------------|
+| No tutorial/getting-started guide | ✅ Resolved | `vdd/docs/tutorial.md` |
+| No example dogfood project | ✅ Resolved | `github.com/simonplmak-cloud/vdd-dogfood-task-tracker` |
+| No comparison page | ✅ Resolved | `vdd/docs/comparison.md` |
+| No translations or localization framework | ✅ Resolved | `vdd/docs/localization.md` |
+| No community infrastructure | ✅ Resolved | GitHub Discussions, Wiki, Pages enabled |
+| No case study data | ⏳ Lagging | Awaiting adopter metrics (I-003) |
+| No CODEOWNERS file | ✅ Resolved | `.github/CODEOWNERS` |
+| No safety-critical domain primer | ✅ Resolved | `domain-primers/safety-critical.md` |
+| No compliance evidence templates | ✅ Resolved | `references/compliance-evidence.md` |
+| No universal access layer (MCP/CLI) | 🔲 Not started | A-038 — VDD universal access (MCP server, CLI, Vercel deployment) |
 
 ### Reusable Assets
 
 | Asset | How It Supports Strategy | Effort to Reuse |
 |-------|------------------------|----------------|
-| Reference documentation (2390+ lines) | VDD's methodology is already comprehensively documented — reduce to tutorial format | Low |
-| Bidirectional gate framework (113 checks) | Differentiator from SDD — highlight in comparisons and case studies | Low |
-| Domain primers (4 files) | Already cover the target domains — ready for community extensions | Low |
-| Impact Chain header format | Already defined — use in dogfood examples to prove traceability | Low |
-| OpenCode skill format | Distribution mechanism is already working | Zero |
-| GitHub release v1.0.0 + topic tags | SEO and discoverability infrastructure in place | Zero |
+| Reference documentation | VDD's methodology is comprehensively documented (52 .md files) — ready for tutorial, API, MCP embedding | Low |
+| Bidirectional gate framework (113 checks) | Differentiator from SDD — verified at every gate; all 113 checks pass | Low |
+| Domain primers (7 files) | Cover target domains + human-factors + verification-toolchain + safety-critical | Low |
+| Impact Chain header format | Already defined — used in every artifact to prove traceability | Low |
+| OpenCode skill format | Distribution mechanism already working | Zero |
+| GitHub release + tags + topics | SEO and discoverability infrastructure in place | Zero |
+| Compliance evidence templates | DO-178C, IEC 62304, CMMI, ISO 29148 evidence maps ready | Low |
+| Benchmark matrix | 47/47 criteria, 11 exceeded, 0 gaps — ready for publication | Zero |
 
 ## Gap Analysis
 
-| Gap | Strategic Pillar Affected | Impact if Unaddressed |
-|-----|--------------------------|----------------------|
-| No tutorial or getting-started guide | P1 (Adoption) | Developers won't try VDD; adoption stalls |
-| No example project (VDD used to build something real) | P1, P4 | No proof that VDD works; "show don't tell" missing |
-| No comparison/positioning content (VDD vs alternatives) | P2 (Authority) | VDD gets lumped with SDD; differentiators invisible |
-| No community infrastructure (discussions, chat, calls) | P3 (Community) | Contributors have nowhere to collaborate; community doesn't form |
-| No case study data from adopters | P4 (Impact Proof) | Claims are unsubstantiated; methodology doesn't gain trust |
-| No translations or localization | P5 (Accessibility) | Non-English-speaking developers cannot adopt; underserved communities excluded |
-| No simplified templates for non-expert users | P5 | Vision-first methodology requires technical knowledge to use; excludes non-developer visionaries |
-| No demo video or visual walkthrough | P1 | Repos with demos see higher engagement; VDD is abstract without a visual |
-| No awesome-list or directory submissions | P3 | Discoverability limited to GitHub search and word-of-mouth |
-| No instrumentation for VDD usage metrics | P4 | Can't measure leading indicators (installs, `/vdd:init` usage, satisfaction) |
+| Gap | Status |
+|-----|--------|
+| No tutorial or getting-started guide | ✅ A-001 (tutorial.md) |
+| No example project (VDD used to build something real) | ✅ A-002 (dogfood repo) |
+| No comparison/positioning content | ✅ A-003 (comparison.md) |
+| No community infrastructure | ✅ A-004, A-018 (Discussions, Wiki, Pages) |
+| No case study data from adopters | ⏳ Lagging I-003 (requires real adopters) |
+| No translations or localization | ✅ A-010 (localization.md) |
+| No simplified templates for non-expert users | ✅ A-009 (vision-canvas.md) |
+| No demo video | ✅ A-007 (demo-video-script.md) |
+| No awesome-list submissions | ✅ A-006 (awesome-lists.md) |
+| No usage metrics instrumentation | ✅ A-008 (telemetry.md) |
+| No safety-critical domain coverage | ✅ A-026 (safety-critical.md) |
+| No compliance evidence templates | ✅ A-033 (compliance-evidence.md) |
+| No universal access layer (MCP/CLI/public service) | 🔲 A-038 (vdd-universal-access spec) |
+| No CI/CD quality pipeline template | ✅ A-037 (vdd-quality.yml workflow) |
 
 ## Prioritized Action Items
 
@@ -129,25 +138,28 @@ No dependencies: A-005, A-008, A-009, A-010, A-014, A-016, A-017
 A-024 + A-025 + A-026 ──→ A-027 (Vertical Spectrum Audit)
 
 A-019 (Agent Config Generator) ──→ A-021 (Installer Script)
-                               └──→ A-022 (OpenCode Registry PR)
-                               └──→ A-023 (Agent SDK)
+                                └──→ A-022 (OpenCode Registry PR)
+                                └──→ A-023 (Agent SDK)
+                                └──→ A-038 (Universal Access — MCP + CLI + Vercel)
 ```
 
 ## Infrastructure Requirements
 
 | Requirement | Domain | Priority | Notes |
 |-------------|--------|----------|-------|
-| GitHub Discussions enabled | Infrastructure | MUST | Already supported by GitHub; just needs enabling on repo settings |
-| Dogfood showcase repo | WebApp | MUST | New public repo showing VDD used to build a real project |
-| Opt-in usage telemetry | WebApp | SHOULD | Minimal, privacy-respecting — count `/vdd:init` invocations |
-| i18n directory structure | Infrastructure | COULD | `/i18n/` with language subdirectories, translation guide |
+| GitHub Discussions enabled | Infrastructure | MUST ✅ DONE | Enabled on repo |
+| Dogfood showcase repo | WebApp | MUST ✅ DONE | github.com/simonplmak-cloud/vdd-dogfood-task-tracker |
+| Opt-in usage telemetry | WebApp | SHOULD ✅ DONE | vdd/docs/telemetry.md |
+| i18n directory structure | Infrastructure | COULD ✅ DONE | vdd/docs/localization.md |
+| GitHub Pages + Wiki | Infrastructure | MUST ✅ DONE | Pages: simonplmak-cloud.github.io/vision-driven-design; Wiki: navigation hub |
+| Vercel deployment for public MCP service | Infrastructure | MUST | A-038 — MCP server at vdd.simonmak.com |
 
 ## S&T Assumptions (Tactics → Specs)
 
-**Necessity:** Spec-level requirements are necessary to execute these Tactical action items because each item requires precise acceptance criteria — what "tutorial complete" means, what "comparison page published" means, what the dogfood example must demonstrate.
+**Necessity:** Spec-level requirements are necessary to execute these Tactical action items because each item requires precise acceptance criteria — what "MCP server published" means, what "CLI binary shippable" means, what "Vercel deployment complete" means.
 
-**Achievability:** These Tactical items are achievable given the planned Spec approach because every item is concrete and bounded — no action item requires external dependencies beyond what exists (GitHub, Markdown, AI agents).
+**Achievability:** These Tactical items are achievable given the planned Spec approach because every item is concrete and bounded — no action item requires external dependencies beyond what exists (GitHub, npm, Vercel, Node.js).
 
-**Sufficiency:** The planned Spec approach is sufficient to implement these Tactical items because the 13 action items collectively cover all 5 strategic pillars and all 10 identified gaps. P1 (Adoption) gets tutorial + dogfood + video; P2 (Authority) gets comparison + whitepaper; P3 (Community) gets discussions + awesome-lists + community calls; P4 (Impact) gets instrumentation + survey template; P5 (Accessibility) gets simplified templates + localization.
+**Sufficiency:** The planned Spec approach is sufficient to implement these Tactical items because the 38 action items collectively cover all 12 strategic pillars and all 14 identified gaps. P1 (Adoption) gets tutorial + dogfood + video; P2 (Authority) gets comparison + whitepaper; P3 (Community) gets discussions + wiki + pages; P4 (Impact) gets instrumentation + survey; P5 (Accessibility) gets canvas + localization; P6 (GitHub) gets topics + campaign + badge; P7 (Agents) gets config generator + SDK + universal access (A-038); P8 (Spectrum) gets all 7 primers; P9 (Substance) gets gate checks + audit script; P10 (Benchmark) gets matrix + compliance evidence; P11 (Toolchain) gets CI/CD pipeline + verification primer; P12 (Universal Access) gets MCP + CLI + Vercel deployment.
 
-**Warnings:** (1) A-002 (dogfood example) is L size — may need splitting if it proves larger than estimated. (2) A-008 (instrumentation) requires a design decision about privacy that could be contentious — must default to opt-in. (3) A-010 (localization) is community-dependent — can't force translations; must attract translators organically through Pillar 3 success.
+**Warnings:** (1) A-038 (universal access) is the only open item — requires TypeScript/Node.js development, npm publishing, and Vercel deployment. (2) Case study data (I-003) remains lagging — requires real adopter metrics which can't be forced. (3) Vercel free tier has limits; public service may need monitoring for cost overruns.
