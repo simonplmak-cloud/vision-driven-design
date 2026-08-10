@@ -23,8 +23,8 @@ Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3
 | I-013 | VDD leverages every GitHub platform feature | ✅ Achieved | Pages (landing page), Wiki (navigation), Discussions, Issues, Actions, 20 topics |
 | I-014 | "No stone unturned" — completeness mechanically enforced | ✅ Achieved | Bi-directional gates make omission structurally impossible; full-repo audit confirmed 0 stale references |
 | I-015 | Exhaustive internal review process | ✅ Active | Critic agents per phase; canonical-source verification; substance audit on every commit |
-| I-016 | VDD accessible through every developer interface | ✅ Delivered | MCP server (14 tools), CLI binary (14 subcommands), consolidated in simonplmak-cloud/vision-driven-design; code at simonplmak-cloud/vdd-access |
-| I-017 | Free public VDD MCP deployed on Vercel | ✅ Delivered | Consolidated in vision-driven-design; vdd-access repo ready for Vercel deploy |
+| I-016 | VDD accessible through every developer interface | ✅ Delivered | MCP server (14 tools), CLI binary (14 subcommands), delivered in simonplmak-cloud/vision-driven-design |
+| I-017 | Free public VDD MCP deployed on Vercel | ✅ Delivered | Consolidated in simonplmak-cloud/vision-driven-design; ready for Vercel deploy |
 
 **16/17 verified or in progress. 1 lagging (I-003 requires longitudinal data).**
 

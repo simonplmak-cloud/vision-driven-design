@@ -1,6 +1,7 @@
 # VDD Universal Access — MCP Server + CLI + API
 
 > Impact Chain: V-001 → S-002 → T-003 → I-016 → SP-008
+> Delivered: simonplmak-cloud/vision-driven-design
 
 Status: Draft
 Version: 1.0

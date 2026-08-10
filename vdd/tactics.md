@@ -115,7 +115,7 @@ Derived from: `vdd/strategy.md`
 | A-035 | Create Verification Toolchain Primer (`domain-primers/verification-toolchain.md`) — covers Playwright, Browserless, Sentry, CI/CD pipeline integration patterns | MUST ✅ DONE | P11 | M | None |
 | A-036 | Add tool-specific verification requirements to Phase 5 (Plan) and Phase 7 (Implement) — every AC must specify which tool verifies it; every plan component must specify CI stage | MUST ✅ DONE | P11 | M | A-035 |
 | A-037 | Create CI/CD quality pipeline template (`.github/workflows/vdd-quality.yml`) — lint → typecheck → unit → e2e → visual → a11y → security → perf → sentry | MUST ✅ DONE | P11 | M | A-035 |
-| A-038 | Build VDD universal access layer — MCP server (14 tools), CLI binary (`vdd`), shared engine module, npm-publishable package | MUST ✅ DONE (consolidated in simonplmak-cloud/vision-driven-design, code at simonplmak-cloud/vdd-access) | P12 (Universal Access), P7 (Agent Integration) | L | A-019, A-023 |
+| A-038 | Build VDD universal access layer — MCP server (14 tools), CLI binary (`vdd`), shared engine module, npm-publishable package | MUST ✅ DONE (delivered in simonplmak-cloud/vision-driven-design) | P12 (Universal Access), P7 (Agent Integration) | L | A-019, A-023 |
 
 ## Dependency Map
 

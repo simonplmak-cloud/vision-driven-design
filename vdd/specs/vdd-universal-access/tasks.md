@@ -1,6 +1,7 @@
 # Task List: VDD Universal Access
 
 > Impact Chain: V-001 → S-002 → T-003 → I-016 → SP-008 → PL-008 → TK-008
+> Delivered: simonplmak-cloud/vision-driven-design
 
 ## Plan Reference
 Implements: `vdd/specs/vdd-universal-access/plan.md`
