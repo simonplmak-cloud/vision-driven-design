@@ -2,7 +2,7 @@
 
 > Impact Chain: V-001 → S-002 → T-003 → IM-008
 
-Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3
+Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3 | Surfaces: teal #0d7377 unified
 
 ## Vision → Impact Traceability
 
