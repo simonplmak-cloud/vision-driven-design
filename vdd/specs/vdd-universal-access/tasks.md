@@ -71,14 +71,14 @@ Implements: `vdd/specs/vdd-universal-access/plan.md`
 
 ### Deploy & Publish
 
-- [ ] **TASK-010** [M] Deploy MCP server to Vercel
+- [x] **TASK-010** [M] Deploy MCP server to Vercel
   - Configures: custom domain `vdd.simonmak.com`
   - Configures: Vercel project settings (Node 20, SSE keep-alive)
   - Verifies: MCP tools discoverable at public endpoint
   - Satisfies: AC-2
   - Depends on: TASK-007
 
-- [ ] **TASK-011** [S] Publish packages to npm
+- [x] **TASK-011** [S] Publish packages to npm
   - Publishes: `@vdd/engine`, `@vdd/mcp`, `@vdd/cli`
   - Configures: package.json fields (name, version, bin, main, files)
   - Satisfies: AC-9
@@ -86,7 +86,7 @@ Implements: `vdd/specs/vdd-universal-access/plan.md`
 
 ### Verification
 
-- [ ] **TASK-012** [L] Cross-interface integration test
+- [x] **TASK-012** [L] Cross-interface integration test
   - Initializes: test project with `constitution.md`
   - Runs: same vision through agent slash cmd, MCP tool, CLI
   - Asserts: identical Impact Chain headers, section structure, gate results
