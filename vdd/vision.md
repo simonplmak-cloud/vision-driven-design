@@ -3,7 +3,7 @@
 > Impact Chain: V-001
 
 Status: Active
-Version: 1.5
+Version: 1.6
 Last updated: 2026-08-10
 
 ## Vision Statement
@@ -17,6 +17,8 @@ The vision for VDD itself is to make **quality output the top priority — verif
 VDD operates with a **"no stone unturned" mentality** — when it undertakes an assignment, it covers every inch. No surface is left unexamined. No edge case is dismissed as unlikely. No documentation page ships stale. No benchmark gap goes unresolved. No GitHub feature goes unused. No domain goes unprimed. No audit skips a file. This is not perfectionism — it is the mechanical consequence of bi-directional gates. Every parent goal demands its children collectively cover it (forward check). Every child artifact must trace to an authorized parent (backward check). Together, they make omission structurally impossible. VDD doesn't hope for completeness; it enforces it.
 
 This mentality is operationalized through VDD's **internal review process** — a multi-layered, exhaustive quality regimen that covers every inch of every artifact. After every phase, a critic agent reviews the output against the phase's quality gate, checking every forward and backward trace, every S&T assumption, every count, every reference. After the full chain completes, `/vdd:validate` runs a comprehensive cross-artifact audit: drift detection on every AC, traceability on every commit, impact verification against every vision metric, and a substance audit rejecting cosmetic-only contributions. For this repo itself — the VDD skill — the review process extends to every public-facing file (README, AGENTS, INDEX, quick-reference, changelog, benchmarks) verified against every canonical source. VDD reviews itself with the same unsparing thoroughness it demands of its adopters.
+
+VDD is designed for **universal access** — it must not be locked to any single tool or platform. Users should invoke VDD however they work: as agent slash commands (`/vdd:vision`) inside OpenCode or Claude Code, as MCP server tools (`vdd_init`, `vdd_vision`) callable from any MCP-compatible client, as a standalone CLI binary (`vdd init`, `vdd vision`) for terminal-native workflows, as a REST API for programmatic integration, or as IDE plugins (VS Code, JetBrains) for graphical interaction. Every access path calls the same canonical VDD engine — the methodology, the 8-phase chain, the 7 bi-directional gates, and the 113 checks are invariant regardless of how you reach them. The access layer is a shell; the VDD core is the kernel.
 
 ## Impact Model
 
@@ -54,6 +56,7 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | I-013 | VDD leverages every GitHub platform feature — Pages (docs site), Wiki (community knowledge), Discussions (Q&A/ideas), Projects (roadmap), Actions (CI/CD quality gates), full topic taxonomy, social preview, homepage linking to best content | GitHub community, discoverers, contributors | Pages deployed with documentation; Wiki populated with primers and FAQs; Discussions active with categories; Projects board tracking roadmap; Actions running quality-gate workflow on PRs |
 | I-014 | VDD undertakes every assignment with a "cover every inch, leave no stone unturned" mentality — completeness is mechanically enforced by bi-directional gates, not left to human discipline | All actors, evaluators, auditors | Every file audited; every count verified; every gap resolved; every gate passed in both directions; every GitHub feature leveraged; every domain primed; every benchmark criterion met |
 | I-015 | VDD has an exhaustive internal review process — critic agents per phase, full-chain cross-artifact audit via /vdd:validate, substance enforcement on every commit, and canonical-source verification for every public-facing file | VDD itself, contributors, evaluators | Every phase output gate-checked by critic agent; every commit substance-audited; every public-facing file audited against canonical sources; zero stale references across entire repo |
+| I-016 | VDD is accessible through every developer interface — agent slash commands (`/vdd:*`), MCP server tools (`vdd_init`, `vdd_vision`, etc.), CLI binary (`vdd init`, `vdd vision`), REST API, and IDE plugins — so users invoke VDD however they work, never forced into a single tool | All actors, agent platforms, tooling ecosystems | MCP server published; CLI binary distributable via npm/pnpm; REST API documented; IDE extensions for VS Code/JetBrains; every access path calls the same canonical VDD engine |
 
 ## Stakeholder Map
 
@@ -65,6 +68,8 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | Open source community | Quality, coherence, contributor alignment | Medium — they spread it | GitHub stars, awesome lists, conference talks |
 | GitHub community (organic discoverers) | Discover quality projects, signal trust through stars | High — they drive virality and trending | GitHub trending, topics, Discussions, showcase repos |
 | AI coding agent platforms (OpenCode, Claude Code, Cursor, Copilot) | Compete on features; lack a standard methodology layer | Bundle VDD as the default methodology — auto-detect and activate | Every agent becomes a VDD distribution channel; users get impact-driven development out of the box |
+| MCP server ecosystem (clients, hosts, tool builders) | MCP is the emerging standard for AI-tool interoperability but lacks a methodology tool | VDD exposed as MCP tools — any MCP client (Claude Desktop, OpenCode, Continue.dev) discovers and invokes VDD natively | MCP becomes VDD's universal integration layer; one server serves every MCP-compatible client |
+| CLI/terminal-native developers | Prefer terminal over IDE agents; need scriptable, pipeable tools | `vdd` CLI — `vdd init`, `vdd vision "..."`, `vdd validate` as a standalone binary | npm/pnpm package; shell completions; works in any terminal, CI pipeline, or Docker container |
 | Behavioral scientists / UX researchers | Research informs product but doesn't connect to implementation | Feed human behavior insights directly into Vision phase; VDD traces UX decisions → code → outcomes | Psychology research becomes a first-class engineering input |
 | Database architects / backend engineers | Make schema decisions in isolation from product goals | VDD traces SurrealDB 3.x RELATE edges back to the vision impact they serve | No "cool tech for its own sake" — every schema choice justified by impact |
 | Underserved communities | Access to high-quality software built for their needs | Low but critical | Free tier, community partnerships, localized documentation |
