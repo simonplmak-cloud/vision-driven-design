@@ -61,7 +61,10 @@ docs/                       ← Assets (social preview images, etc.)
 
 ## Security Constraints
 
-*Not applicable — this repo contains no code, no API keys, no secrets, no user data.*
+- MCP server (`api/sse.js`): stateless, no-auth (public endpoint), rate-limited via Vercel
+- No secrets, no API keys, no user data stored — all state lives in user's repository
+- CORS: wildcard for public access
+- Vercel environment: deployment protection disabled for public access
 
 ## Banned Patterns
 
