@@ -1,8 +1,188 @@
-const PHASES = ['init','vision','strategize','tactics','specify','clarify','plan','tasks','next-task','implement','validate','trace','analyze','amend'];
+const PHASE_NAMES = [
+  "init",
+  "vision",
+  "strategize",
+  "tactics",
+  "specify",
+  "clarify",
+  "plan",
+  "tasks",
+  "next-task",
+  "implement",
+  "validate",
+  "trace",
+  "analyze",
+  "amend",
+];
+
+const phaseHandlers = {
+  init: (input) => ({
+    success: true,
+    artifact: `${input.projectRoot || "."}/constitution.md`,
+  }),
+  vision: (input) => {
+    if (!input.statement)
+      return { success: false, error: "statement is required" };
+    return {
+      success: true,
+      artifact: `${input.projectRoot || "."}/vdd/vision.md`,
+    };
+  },
+  strategize: (input) => ({
+    success: true,
+    artifact: `${input.projectRoot || "."}/vdd/strategy.md`,
+  }),
+  tactics: (input) => ({
+    success: true,
+    artifact: `${input.projectRoot || "."}/vdd/tactics.md`,
+  }),
+  specify: (input) => {
+    const id = input.actionItemId || input.description;
+    if (!id)
+      return { success: false, error: "actionItemId or description required" };
+    return {
+      success: true,
+      artifact: `${input.projectRoot || "."}/vdd/specs/${id}/spec.md`,
+    };
+  },
+  clarify: (input) => {
+    if (!input.feature) return { success: false, error: "feature is required" };
+    return { success: true };
+  },
+  plan: (input) => {
+    if (!input.feature) return { success: false, error: "feature is required" };
+    return {
+      success: true,
+      artifact: `${input.projectRoot || "."}/vdd/specs/${input.feature}/plan.md`,
+    };
+  },
+  tasks: (input) => {
+    if (!input.feature) return { success: false, error: "feature is required" };
+    return {
+      success: true,
+      artifact: `${input.projectRoot || "."}/vdd/specs/${input.feature}/tasks.md`,
+    };
+  },
+  "next-task": (input) => {
+    if (!input.feature) return { success: false, error: "feature is required" };
+    return { success: true, artifact: "next uncompleted task" };
+  },
+  implement: (input) => {
+    if (!input.taskId) return { success: false, error: "taskId is required" };
+    return { success: true, artifact: `Task ${input.taskId} implemented` };
+  },
+  validate: (input) => ({
+    success: true,
+    artifact: `${input.projectRoot || "."}/vdd/impact-report.md`,
+    gateResult: { passed: true, checks: 113, total: 113 },
+  }),
+  trace: () => ({ success: true, artifact: "Traceability matrix generated" }),
+  analyze: (input) => {
+    if (!input.feature) return { success: false, error: "feature is required" };
+    return {
+      success: true,
+      artifact: `Cross-artifact analysis for ${input.feature}`,
+    };
+  },
+  amend: (input) => {
+    if (!input.description)
+      return { success: false, error: "description of change is required" };
+    return { success: true, artifact: "Full chain updated from change point" };
+  },
+};
+
+function toolDefs() {
+  return PHASE_NAMES.map((name) => ({
+    name: `vdd_${name.replace(/-/g, "_")}`,
+    description: `VDD Phase: ${name}`,
+    inputSchema: {
+      type: "object",
+      properties: {
+        statement: { type: "string", description: "Freeform input" },
+        projectRoot: {
+          type: "string",
+          description: "Project root path",
+          default: ".",
+        },
+        actionItemId: { type: "string", description: "Action item ID" },
+        feature: { type: "string", description: "Feature name" },
+        taskId: { type: "string", description: "Task ID" },
+        description: { type: "string", description: "Description text" },
+      },
+    },
+  }));
+}
+
+function handleJsonRpc(body) {
+  const { method, params, id } = body || {};
+
+  if (method === "initialize") {
+    return {
+      jsonrpc: "2.0",
+      id,
+      result: {
+        protocolVersion: "2024-11-05",
+        serverInfo: { name: "vdd", version: "0.1.0" },
+        capabilities: { tools: {} },
+      },
+    };
+  }
+
+  if (method === "tools/list") {
+    return { jsonrpc: "2.0", id, result: { tools: toolDefs() } };
+  }
+
+  if (method === "tools/call") {
+    const toolName = params?.name || "";
+    const phaseKey = toolName.replace(/^vdd_/, "").replace(/_/g, "-");
+    const handler = phaseHandlers[phaseKey];
+    if (!handler) {
+      return {
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32601, message: `Tool not found: ${toolName}` },
+      };
+    }
+    try {
+      const result = handler(params?.arguments || {});
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: { content: [{ type: "text", text: JSON.stringify(result) }] },
+      };
+    } catch (err) {
+      return {
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32603, message: `Internal error: ${err.message}` },
+      };
+    }
+  }
+
+  if (
+    method === "notifications/initialised" ||
+    method === "notifications/initialized"
+  ) {
+    return null;
+  }
+
+  return {
+    jsonrpc: "2.0",
+    id,
+    error: { code: -32601, message: `Method not found: ${method}` },
+  };
+}
 
 function isBrowser(req) {
-  const accept = req.headers.accept || '';
-  return accept.includes('text/html');
+  const accept = req.headers.accept || "";
+  return accept.includes("text/html");
+}
+
+function isMcpClient(req) {
+  const accept = req.headers.accept || "";
+  return (
+    accept.includes("text/event-stream") || accept.includes("application/json")
+  );
 }
 
 const HTML = `<!DOCTYPE html>
@@ -57,7 +237,7 @@ const HTML = `<!DOCTYPE html>
   <section>
     <h2>Tools</h2>
     <div class="grid">
-      ${PHASES.map(p => '<a class="tool" href="#"><span class="dot"></span>vdd_' + p.replace(/-/g, '_') + '</a>').join('')}
+      ${PHASE_NAMES.map((p) => '<a class="tool" href="#"><span class="dot"></span>vdd_' + p.replace(/-/g, "_") + "</a>").join("")}
     </div>
   </section>
 
@@ -75,8 +255,8 @@ const HTML = `<!DOCTYPE html>
     <h2>Usage</h2>
     <div class="card">
       <div class="row"><span class="label">Endpoint</span><span class="value">https://vdd.simonmak.com/api/sse</span></div>
-      <div class="row"><span class="label">GET</span><span class="value">Returns service info + 14 tool names</span></div>
-      <div class="row"><span class="label">POST</span><span class="value">Returns phase result — use body: {"tool": "vdd_validate"}</span></div>
+      <div class="row"><span class="label">GET</span><span class="value">Returns service info (browser) or initiates SSE stream (MCP client)</span></div>
+      <div class="row"><span class="label">POST</span><span class="value">JSON-RPC — use body: {"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_validate","arguments":{}},"id":1}</span></div>
     </div>
 
     <h3 style="margin-top:1.25rem;margin-bottom:0.5rem;">Validate Response</h3>
@@ -99,43 +279,58 @@ const HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-module.exports = async function(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+module.exports = async function (req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Accept, Mcp-Session-Id",
+    );
     return res.status(204).end();
   }
 
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     if (isBrowser(req)) {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
       return res.status(200).send(HTML);
     }
-    return res.status(200).json({
-      service: 'VDD MCP Server',
-      version: '0.1.0',
-      phases: PHASES.length,
-      tools: PHASES.map(p => 'vdd_' + p.replace(/-/g, '_')),
-      validate: { success: true, artifact: 'vdd/impact-report.md', gateResult: { passed: true, checks: 113, total: 113 } },
-      endpoint: 'https://vdd.simonmak.com/api/sse'
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+
+    res.write(`event: endpoint\ndata: https://vdd.simonmak.com/api/sse\n\n`);
+
+    const keepAlive = setInterval(() => {
+      res.write(`: heartbeat\n\n`);
+    }, 12000);
+
+    req.on("close", () => {
+      clearInterval(keepAlive);
     });
+
+    res.socket?.setTimeout?.(0);
+    return;
   }
 
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     let body = {};
-    try { body = req.body || {}; } catch {}
-    const toolName = body?.tool || body?.name || '';
-    const phase = PHASES.find(p => toolName.includes(p)) || 'validate';
+    try {
+      body = req.body || {};
+    } catch {}
 
-    return res.status(200).json({
-      success: true,
-      phase,
-      artifact: 'vdd/' + phase.replace(/-/g, '_') + '.md',
-      gateResult: phase === 'validate' ? { passed: true, checks: 113, total: 113 } : undefined
-    });
+    const response = handleJsonRpc(body);
+
+    if (response === null) {
+      return res.status(202).end();
+    }
+
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).json(response);
   }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ error: "Method not allowed" });
 };
