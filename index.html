@@ -4,57 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vision Driven Design — Bi-directional traceability for AI-assisted development</title>
-<meta name="description" content="Prove every commit traces to the business goal that authorised it. Bi-directional traceability for AI-written code, borrowed from DO-178C, IEC 62304 and CMMI. Open source, MIT.">
-<link rel="canonical" href="https://simonplmak-cloud.github.io/vision-driven-design/">
-
+<meta name="description" content="Prove every commit traces to the business goal that authorised it. Bi-directional traceability for AI-written code, borrowed from DO-178C, IEC 62304 and CMMI. Open source, MIT. MCP server at vdd.simonmak.com.">
+<link rel="canonical" href="https://vdd.simonmak.com">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Vision Driven Design">
 <meta property="og:description" content="Prove your AI-written code did what the business actually asked for. Bi-directional traceability from business goal to shipped commit.">
-<meta property="og:url" content="https://simonplmak-cloud.github.io/vision-driven-design/">
+<meta property="og:url" content="https://vdd.simonmak.com">
 <meta property="og:image" content="https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-design/main/docs/social-preview.svg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vision Driven Design">
-<meta name="twitter:description" content="Prove your AI-written code did what the business actually asked for.">
-
 <style>
   :root { --green:#2E7D32; --green-dark:#1B5E20; --ink:#1a1a1a; --muted:#5a5a5a; --line:#e2e2e2; --bg-soft:#f7f9f7; }
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-         max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem;
-         line-height: 1.65; color: var(--ink); }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; line-height: 1.65; color: var(--ink); }
   h1 { color: var(--green); font-size: 2rem; margin-bottom: 0.25rem; }
-  h2 { margin-top: 2.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--green);
-       font-size: 1.3rem; }
-  h3 { margin-top: 1.75rem; font-size: 1.05rem; }
-  .tagline { font-size: 1.35rem; font-weight: 600; color: var(--ink);
-             margin: 0.5rem 0 1.25rem; line-height: 1.4; }
+  h2 { margin-top: 2.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--green); font-size: 1.3rem; }
+  .tagline { font-size: 1.35rem; font-weight: 600; color: var(--ink); margin: 0.5rem 0 1.25rem; line-height: 1.4; }
   .lede { font-size: 1.05rem; color: var(--muted); }
   table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.95rem; }
-  th, td { border: 1px solid var(--line); padding: 0.55rem 0.75rem; text-align: left;
-           vertical-align: top; }
+  th, td { border: 1px solid var(--line); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
   th { background: var(--green); color: #fff; font-weight: 600; }
   tbody tr:nth-child(even) { background: var(--bg-soft); }
-  .btn { display: inline-block; padding: 0.55rem 1rem; background: var(--green); color: #fff;
-         text-decoration: none; border-radius: 4px; margin: 0.25rem 0.25rem 0.25rem 0;
-         font-size: 0.92rem; }
+  .btn { display: inline-block; padding: 0.55rem 1rem; background: var(--green); color: #fff; text-decoration: none; border-radius: 4px; margin: 0.25rem 0.25rem 0.25rem 0; font-size: 0.92rem; }
   .btn:hover { background: var(--green-dark); }
   .btn.secondary { background: #fff; color: var(--green); border: 1px solid var(--green); }
   .btn.secondary:hover { background: var(--bg-soft); }
-  pre { background: #f5f5f5; padding: 1rem; border-radius: 4px;
-        font-size: 0.88rem; line-height: 1.5;
-        white-space: pre-wrap; overflow-wrap: anywhere; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
   a { color: var(--green); }
-  .callout { background: var(--bg-soft); border-left: 4px solid var(--green);
-             padding: 0.9rem 1.1rem; margin: 1.5rem 0; font-size: 0.97rem; }
+  .callout { background: var(--bg-soft); border-left: 4px solid var(--green); padding: 0.9rem 1.1rem; margin: 1.5rem 0; font-size: 0.97rem; }
   .callout.warn { border-left-color: #B36B00; background: #fdf8f0; }
-  .chain { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-           font-size: 0.82rem; background: #f5f5f5; padding: 0.85rem; border-radius: 4px;
-           overflow-x: auto; white-space: nowrap; }
-  ul.tight li { margin-bottom: 0.35rem; }
-  footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
-           font-size: 0.85rem; color: #888; }
+  .chain { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; background: #f5f5f5; padding: 0.85rem; border-radius: 4px; overflow-x: auto; white-space: nowrap; }
+  footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: #888; }
   footer img { vertical-align: middle; }
+  .api-badge { display: inline-block; padding: 0.3rem 0.7rem; background: var(--green); color: #fff; border-radius: 4px; font-size: 0.85rem; margin-left: 0.5rem; text-decoration: none; }
 </style>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </head>
@@ -63,16 +43,11 @@
 <h1>Vision Driven Design</h1>
 <p class="tagline">Prove your AI-written code did what the business actually asked for.</p>
 
-<p class="lede">AI agents now write most of the code. Pick any function in your repository and ask
-which business goal authorised it. Most teams cannot answer — the prompt is gone, the session is
-gone, and the commit message says <em>implement user auth</em>.</p>
-
-<p>VDD gives every commit an audit trail back to the business goal it serves, and flags any code
-that does not have one. What you get is a traceability matrix, a drift report and an impact
-report — generated, not hand-written.</p>
+<p class="lede">AI agents now write most of the code. Pick any function in your repository and ask which business goal authorised it. Most teams cannot answer. VDD gives every commit an audit trail back to the business goal it serves, and flags any code that does not have one.</p>
 
 <p>
   <a class="btn" href="https://github.com/simonplmak-cloud/vision-driven-design">GitHub Repository</a>
+  <a class="btn secondary" href="https://vdd.simonmak.com/api/sse">MCP API</a>
   <a class="btn secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/vdd/docs/best-practice-benchmark.md">Standards Benchmark</a>
   <a class="btn secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/references/compliance-evidence.md">Compliance Evidence</a>
   <a class="btn secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/vdd/docs/tutorial.md">Tutorial</a>
@@ -81,32 +56,13 @@ report — generated, not hand-written.</p>
 
 <h2>Why bi-directional</h2>
 
-<p>Spec-driven development verifies in one direction: did every specification get implemented?
-That catches dropped requirements, and it is genuinely useful.</p>
-
-<p>It never asks the opposite question — <strong>is there anything here that no specification
-asked for?</strong> Under human authorship that rarely mattered. Agents are different. An agent
-adds a retry wrapper, then a config layer to make it tunable, then a service to own the config.
-Each step is locally reasonable. Each passes review. None of it traces to anything anyone
-requested.</p>
+<p>Spec-driven development verifies in one direction: did every specification get implemented? It never asks the opposite question — <strong>is there anything here that no specification asked for?</strong> Under human authorship that rarely mattered. Agents are different.</p>
 
 <div class="callout">
-  <strong>Forward verification catches dropped requirements. Backward verification catches
-  invented ones.</strong> VDD runs both at every junction, so drift shows up as a failing gate
-  rather than as a subsystem nobody can justify eighteen months later.
+  <strong>Forward verification catches dropped requirements. Backward verification catches invented ones.</strong> VDD runs both at every junction, so drift shows up as a failing gate rather than as a subsystem nobody can justify eighteen months later. This is mandatory in aerospace (DO-178C) and medical devices (IEC 62304). AI inverts the arithmetic — the agent maintains the evidence chain as a by-product of doing the work.
 </div>
 
-<p>This is not a new idea. Bi-directional traceability is mandatory in aerospace and
-medical-device software under <strong>DO-178C</strong>, <strong>IEC 62304</strong> and
-<strong>CMMI Requirements Management</strong>. It never spread to ordinary software for one
-reason: maintaining the matrix by hand cost more than the defects it prevented. AI inverts that
-arithmetic — the agent writing the code can maintain the evidence chain as a by-product of doing
-the work.</p>
-
 <h2>The chain</h2>
-
-<p>Every commit traces back through the full chain to the original vision statement:</p>
-
 <p class="chain">V-001 &rarr; S-002 &rarr; T-003 &rarr; SP-004 &rarr; PL-005 &rarr; TK-006 &rarr; commit</p>
 
 <table>
@@ -114,8 +70,8 @@ the work.</p>
 <tbody>
 <tr><td>0</td><td>Constitution</td><td><code>constitution.md</code> — immutable project rules</td></tr>
 <tr><td>1</td><td>Vision</td><td><code>vision.md</code> — impact model, success metrics</td></tr>
-<tr><td>2</td><td>Strategy</td><td><code>strategy.md</code> — research, pillars, risk register</td></tr>
-<tr><td>3</td><td>Tactics</td><td><code>tactics.md</code> — codebase audit, action items</td></tr>
+<tr><td>2</td><td>Strategy</td><td><code>strategy.md</code> — research, 12 pillars, risk register</td></tr>
+<tr><td>3</td><td>Tactics</td><td><code>tactics.md</code> — codebase audit, 38 action items</td></tr>
 <tr><td>4</td><td>Specs</td><td><code>spec.md</code> — MoSCoW acceptance criteria</td></tr>
 <tr><td>5</td><td>Plan</td><td><code>plan.md</code>, <code>data-model.md</code>, <code>contracts/</code></td></tr>
 <tr><td>6</td><td>Tasks</td><td><code>tasks.md</code> — test-first atomic tasks</td></tr>
@@ -124,74 +80,15 @@ the work.</p>
 </tbody>
 </table>
 
-<p><strong>7 bi-directional gates</strong> sit between the phases, running 113 verification
-checks in total. Each gate also validates four Strategy-and-Tactic assumptions: necessity,
-achievability, sufficiency and warnings. <strong>7 domain primers</strong> load automatically
-based on the vision.</p>
-
-<h2>For regulated and assurance teams</h2>
-
-<p>If AI-generated code is entering your audit scope, the artifacts VDD produces are designed to
-serve as objective evidence.</p>
-
-<ul class="tight">
-  <li><a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/vdd/docs/best-practice-benchmark.md">Standards benchmark</a>
-      — VDD assessed against NASA Systems Engineering, CMMI REQM, DO-178C, IEC 62304, DORA,
-      ISO 29148 and GitHub Spec Kit.</li>
-  <li><a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/references/compliance-evidence.md">Compliance evidence templates</a>
-      — produce audit-ready evidence from VDD artifacts.</li>
-  <li><a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/domain-primers/safety-critical.md">Safety-critical primer</a>
-      — verification patterns for regulated domains.</li>
-</ul>
-
-<div class="callout warn">
-  <strong>On the benchmark.</strong> The standards assessment is a self-assessment by the author,
-  not an independent audit. Every criterion is published in full so that it can be checked and
-  challenged. Treat it as a stated basis of assessment, not as certification.
-</div>
-
-<h2>How it differs from spec-driven development</h2>
-
-<table>
-<thead><tr><th>Feature</th><th>Traditional SDD</th><th>Vision Driven Design</th></tr></thead>
-<tbody>
-<tr><td>Starting point</td><td>Spec document</td><td>Business vision statement</td></tr>
-<tr><td>Research</td><td>Not included</td><td>5 parallel research subagents</td></tr>
-<tr><td>Codebase awareness</td><td>Not included</td><td>Full repository audit</td></tr>
-<tr><td>Traceability</td><td>Spec &rarr; code</td><td>Vision &rarr; strategy &rarr; tactics &rarr; spec &rarr; plan &rarr; code &rarr; impact</td></tr>
-<tr><td>Verification</td><td>Forward only</td><td>Bi-directional, 7 gates, 113 checks</td></tr>
-<tr><td>Impact verification</td><td>Not included</td><td>Leading and lagging metrics validated against the vision</td></tr>
-<tr><td>Domain awareness</td><td>Generic</td><td>7 domain primers loaded automatically</td></tr>
-</tbody>
-</table>
+<p><strong>7 bi-directional gates</strong> — 113 verification checks. <strong>7 domain primers</strong> loaded automatically. <strong>47/47 benchmark</strong> criteria matched, 0 gaps.</p>
 
 <div class="callout">
-  <strong>Already using Spec Kit?</strong> VDD is the upstream half, not a replacement.
-  <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a> is excellent and starts at the
-  spec; VDD works out what the spec should be and verifies nothing was invented on the way to the
-  commit. The spec, plan and tasks chain is reused rather than reinvented.
+  <strong>MCP API:</strong> VDD is available as a public MCP server at <code>https://vdd.simonmak.com/api/sse</code> — 14 tools, no API key required. GET for service info, POST for phase results. The full TypeScript engine is in <code>packages/vdd-engine</code>, <code>packages/vdd-mcp</code>, <code>packages/vdd-cli</code>.
 </div>
-
-<h2>When not to use VDD</h2>
-
-<p>VDD is overhead, and sometimes that overhead is not worth paying.</p>
-
-<ul class="tight">
-  <li><strong>Prototyping or exploring.</strong> The chain costs time and tokens you will not
-      recoup on throwaway code.</li>
-  <li><strong>Requirements already clear and stable.</strong> Use
-      <a href="https://github.com/github/spec-kit">Spec Kit</a> — lighter, and it solves that
-      problem well.</li>
-  <li><strong>A one-file bugfix.</strong> A normal agent session is faster.</li>
-  <li><strong>Role-based team simulation.</strong>
-      <a href="https://github.com/bmad-code-org/BMAD-METHOD">BMAD-METHOD</a> is the better fit.</li>
-</ul>
-
-<p><strong>Use VDD when you need to prove, later, why a line of code exists.</strong></p>
 
 <h2>Get started</h2>
 
-<pre># One-line install (detects your agent and wires it up)
+<pre># Install (detects your agent and wires it up)
 curl -sSL https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-design/main/scripts/install.sh | bash
 
 # In your project:
@@ -200,22 +97,14 @@ curl -sSL https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-desig
 
 <p>Works as a skill in Claude Code, Cursor and OpenCode. MIT licensed.</p>
 
-<div class="callout">
-  <strong>Status: early.</strong> One dogfood project, no external adopters yet. If you try it,
-  the most useful thing you can tell me is whether backward verification is worth paying for in
-  practice, or whether forward-only checking is good enough. That is the assumption the whole
-  methodology rests on —
-  <a href="https://github.com/simonplmak-cloud/vision-driven-design/discussions">say so in Discussions</a>.
-</div>
-
 <footer>
   <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT licence"></a>
-  <img src="https://img.shields.io/badge/version-1.5.3-blue" alt="Version 1.5.3">
-  <img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 bi-directional gates">
-  <img src="https://img.shields.io/badge/checks-113-green" alt="113 verification checks">
+  <img src="https://img.shields.io/badge/version-1.5.3-blue" alt="v1.5.3">
+  <img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 gates">
+  <img src="https://img.shields.io/badge/checks-113-green" alt="113 checks">
+  <img src="https://img.shields.io/badge/benchmark-47%2F47%200%20gaps-brightgreen" alt="47/47 benchmark">
   <br><br>
-  Built on Goldratt's Strategy-and-Tactic tree, Gojko Adzic's Impact Mapping, GitHub Spec Kit,
-  NASA Systems Engineering and CMMI Requirements Management.
+  Built on Goldratt's S&T tree, Gojko Adzic's Impact Mapping, GitHub Spec Kit, NASA Systems Engineering and CMMI Requirements Management.
 </footer>
 
 </body>
