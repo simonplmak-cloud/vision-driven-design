@@ -2,7 +2,7 @@
 
 > Impact Chain: V-001 → S-002 → T-003 → IM-008
 
-Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3
+Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3 | Updated: post-packages rebuild
 
 ## Vision → Impact Traceability
 
@@ -23,8 +23,8 @@ Date: 2026-08-10 | Status: **COMPLETE** | Release: v1.5.3
 | I-013 | Every GitHub platform feature leveraged | ✅ Achieved | Pages, Wiki, Discussions, Issues, Actions, 20 topics |
 | I-014 | "No stone unturned" completeness | ✅ Achieved | Bi-directional gates; 0 stale references |
 | I-015 | Exhaustive internal review process | ✅ Active | Critic agents; canonical-source verification; substance audit |
-| I-016 | Universal access — MCP + CLI | ✅ Delivered | Delivered in simonplmak-cloud/vision-driven-design |
-| I-017 | Free public VDD MCP on Vercel | ✅ Delivered | Consolidated; ready for Vercel deploy |
+| I-016 | Universal access — MCP + CLI | ✅ Delivered | packages/vdd-engine, vdd-mcp, vdd-cli in vision-driven-design; MCP live at vdd.simonmak.com (14 tools) |
+| I-017 | Free public VDD MCP on Vercel | ✅ Delivered | api/sse.js deployed; GET returns 14 tools; validate returns 113/113 passed |
 
 **16/17 verified active. 1 lagging (I-003 requires longitudinal data).**
 
