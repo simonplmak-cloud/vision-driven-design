@@ -8,9 +8,15 @@ This is an **OpenCode AI skill repository** — static documentation, not an app
 SKILL.md                 ← Entry point loaded by OpenCode. YAML frontmatter with name, description, keywords.
 README.md                ← GitHub landing page. Keep in sync with SKILL.md overview and command table.
 constitution.md          ← This repo's own constitution (dogfooded). No build/toolchain — documentation only.
+index.html               ← GitHub Pages landing page (served at simonplmak-cloud.github.io/vision-driven-design).
+api/                     ← Vercel MCP server endpoint (deployed at vdd.simonmak.com).
+  sse.js                 ← GET returns VDD service info + tools; POST returns phase results.
+vercel.json              ← Vercel deployment config (Framework: Other).
+package.json             ← Minimal Vercel runtime config.
 domain-primers/           ← Loaded during Phase 2 (Strategy) based on vision's target domains.
   webapp.md, data-storage.md, etl.md, infrastructure.md  ← Original 4 domain primers.
   human-factors.md, verification-toolchain.md             ← Added in v1.5.0 (loaded unconditionally).
+  safety-critical.md                                      ← Added in v1.5.3 (FMEA/FTA, DO-178C/IEC 62304).
 references/               ← All detailed reference docs. SKILL.md's "Reference Index" links into here.
   INDEX.md                ← Navigation map; update when adding/renaming reference files.
   artifact-templates.md   ← Authoritative source for all artifact structures (vision, strategy, tactics, spec, plan, data-model, contracts, tasks, impact-report).
@@ -19,6 +25,8 @@ references/               ← All detailed reference docs. SKILL.md's "Reference
   quality-gates.md        ← Authoritative source for gate checklists, counts, and CI/CD snippets.
   ai-agent-patterns.md    ← Authoritative source for agent orchestration, parallel execution, context management.
   quick-reference.md      ← Derived from the sources above. Update counts and commands here when sources change.
+  compliance-evidence.md  ← DO-178C/IEC 62304/CMMI/ISO 29148 evidence maps.
+  traceability-matrix.md  ← RTM format + generation + CI/CD.
 scripts/                  ← Installer and helper scripts. Not part of the skill loaded at runtime.
 ```
 

@@ -125,7 +125,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | **Traceability** | Spec → Code | Vision → Strategy → Tactics → Spec → Plan → Code → Impact |
 | **Verification** | Forward only | Bi-directional at every level (7 gates, 113 checks) |
 | **Impact verification** | Not included | Leading + lagging metrics validated against vision |
-| **Domain awareness** | Generic | 6 domain primers (4 conditional + 2 unconditional) |
+| **Domain awareness** | Generic | 7 domain primers (4 conditional + 2 unconditional + 1 safety-critical) |
 | **Autonomy** | Per-phase human gates | Full-auto mode — human provides vision only |
 
 ---
@@ -232,7 +232,8 @@ All reference docs live in `references/`:
 │   ├── etl.md
 │   ├── infrastructure.md
 │   ├── human-factors.md             # Behavioral economics, cognitive load, habit formation
-│   └── verification-toolchain.md    # Playwright, Browserless, Sentry, CI/CD pipeline
+│   ├── verification-toolchain.md    # Playwright, Browserless, Sentry, CI/CD pipeline
+│   └── safety-critical.md           # FMEA/FTA, DO-178C/IEC 62304 patterns
 ├── references/                      # All reference documentation
 │   ├── INDEX.md                     # Navigation map
 │   ├── quick-reference.md           # 1-page cheat sheet
@@ -242,12 +243,25 @@ All reference docs live in `references/`:
 │   ├── quality-gates.md             # 7 gates with 113 checks
 │   ├── ai-agent-patterns.md         # Multi-agent orchestration and auto-mode
 │   ├── anti-patterns.md             # 24 failure modes and fixes
-│   └── traceability-matrix.md       # RTM format + CI/CD automation
+│   ├── traceability-matrix.md       # RTM format + CI/CD automation
+│   └── compliance-evidence.md       # DO-178C/IEC 62304/CMMI evidence templates
+├── vdd/                             # VDD chain artifacts
+│   ├── vision.md                    # Vision statement, impact model
+│   ├── strategy.md                  # Research, pillars, risks
+│   ├── tactics.md                   # Codebase audit, action items
+│   ├── impact-report.md             # Full-chain traceability + drift
+│   ├── docs/                        # Guides and references (16 files)
+│   └── specs/                       # Feature specs, plans, tasks
 ├── scripts/                         # Installer and helper scripts
 │   ├── install.sh                   # One-line installer
 │   ├── vdd-agent-setup.sh           # Multi-agent config generator
 │   ├── vdd-detect.sh                # Project convention auto-detector
 │   └── vdd-substance-audit.sh       # Low-substance artifact detection
+├── api/                             # Vercel MCP server endpoint
+│   └── sse.js                       # GET → service info, POST → phase results
+├── index.html                       # GitHub Pages landing page
+├── vercel.json                      # Vercel deployment config
+├── package.json                     # Vercel runtime config
 └── .github/                         # GitHub-specific config
     ├── CODEOWNERS
     ├── ISSUE_TEMPLATE/

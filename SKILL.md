@@ -232,6 +232,7 @@ based on the vision's target domains:
 | `domain-primers/data-storage.md` | Vision involves persistent data | Schema design, indexing, data governance, storage technology evaluation |
 | `domain-primers/etl.md` | Vision involves data pipelines | Pipeline architecture, data quality, error handling, streaming vs batch |
 | `domain-primers/infrastructure.md` | Vision involves deployment/platform | CI/CD, observability, security, scaling, disaster recovery |
+| `domain-primers/safety-critical.md` | Vision involves aerospace, medical, automotive, or industrial control | FMEA/FTA, safety integrity levels (DO-178C/IEC 62304), safety gate checklist |
 
 Each primer also includes **impact verification patterns** — how to measure real-world
 impact in that domain after deployment.
