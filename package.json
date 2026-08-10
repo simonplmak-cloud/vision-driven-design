@@ -1,0 +1,7 @@
+{
+  "name": "vision-driven-design",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p public && cp index.html public/"
+  }
+}
