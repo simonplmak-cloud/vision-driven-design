@@ -147,7 +147,7 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Rationale:** GitHub is the primary distribution and discovery channel for VDD. Stars, trending, topics, Discussions, and the dogfood repo are the growth engine. Every GitHub feature must be optimized for discoverability and conversion.
 
-**Vision Trace:** I-006 (GitHub community discovers and adopts VDD through trending and search), I-001 (developer adoption)
+**Vision Trace:** I-006 (GitHub community discovers and adopts VDD through trending and search), I-001 (developer adoption), I-013 (leverages every GitHub platform feature)
 
 **Key Research Finding:** GitHub's trending algorithm rewards concentrated star bursts. Repositories with optimized READMEs (demo videos, badges, clear value proposition) see higher conversion. Projects with active Discussions and labeled good-first-issues attract more contributors. 15+ well-chosen topics significantly improve search discoverability.
 
@@ -177,7 +177,7 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Rationale:** Methodologies can become ceremony factories — producing artifacts that look complete but change nothing. VDD must bake "substance" into its verification mechanism. Every bidirectional gate must have a substance check: did the artifact actually make a difference, or just add ceremonial noise? A spec with zero MUST ACs is rejected. A strategy pillar with no research citation is flagged. A PR that only changes comments fails the gate. The substance principle makes VDD self-policing — the chain cannot proceed with empty-calorie contributions.
 
-**Vision Trace:** I-009 (every artifact produces tangible, demonstrable change)
+**Vision Trace:** I-009 (every artifact produces tangible, demonstrable change), I-012 (GitHub artifacts accurately reflect current state), I-014 (no stone unturned completeness mentality), I-015 (exhaustive internal review process)
 
 **Key Research Finding:** The #2 reason developers abandon methodologies (after "doesn't cover my edge cases") is "too much process for too little value." Ceremony without substance is process overhead. Developers tolerate process only when it demonstrably improves outcomes. VDD's gates must prove their value at every junction — if a gate check can't answer "what bad outcome did this prevent?", it's ceremony and should be removed.
 
@@ -214,6 +214,8 @@ The methodology layer sits above and across agents. Key enablers:
 **Expected Impact:** VDD MCP server published on npm and deployed to Vercel. CLI binary (`vdd`) installable via `npm install -g vdd`. All 14 VDD commands accessible through every interface. Public service at `vdd.simonmak.com` handles free-tier traffic. MCP becomes VDD's universal integration layer.
 
 ## GitHub Platform Leverage — Executed
+
+> Vision Trace: I-013
 
 VDD's GitHub presence is fully optimized (I-013 ✅):
 - **Pages**: Landing page at `simonplmak-cloud.github.io/vision-driven-design/` with full feature comparison and quick links
