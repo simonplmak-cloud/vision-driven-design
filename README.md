@@ -5,14 +5,12 @@
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.3-blue" alt="Version 1.5.3"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-113-green" alt="113 Verification Checks"></a>
-<a href="https://opencode.ai/docs/skills/"><img src="https://img.shields.io/badge/platform-OpenCode-white" alt="OpenCode Skill"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/github/stars/simonplmak-cloud/vision-driven-design?style=flat" alt="GitHub stars"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/github/last-commit/simonplmak-cloud/vision-driven-design" alt="Last commit"></a>
+<a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-4CAF50" alt="MCP API"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/built%20with-VDD-4CAF50" alt="Built with VDD"></a>
 
 **From vision to verified impact — an AI-native, fully autonomous software development methodology.**
 
-VDD extends and absorbs Spec-Driven Development (SDD). Provide a human vision statement. The AI autonomously researches, audits your codebase, generates specs and plans, implements, and validates — with **bi-directional verification** at every junction to ensure nothing is missed or invented.
+Provide a human vision statement. The AI autonomously researches, audits your codebase, generates specs and plans, implements, and validates — with **bi-directional verification** at every junction to ensure nothing is missed or invented.
 
 ---
 
@@ -35,24 +33,15 @@ graph LR
 
 ---
 
-## Who Is This For?
-
-- **Product teams** who want AI to drive development from a business goal, not a spec document
-- **Solo developers** who have a vision but lack the bandwidth for research, planning, and specs
-- **Open source maintainers** who need auditable traceability from vision to code
-- **Webapp / data / ETL / infrastructure builders** whose projects span multiple technical domains
-- **Anyone frustrated with SDD** because it starts at the spec level and doesn't connect to real-world impact
-
----
-
 ## Table of Contents
 
 - [Quick Start](#quick-start)
 - [How It Works](#how-it-works)
-- [What Makes VDD Different](#what-makes-vdd-different)
 - [Commands](#commands)
 - [Installation](#installation)
+- [MCP API](#mcp-api)
 - [Domains Covered](#domains-covered)
+- [Best-Practice Benchmark](#best-practice-benchmark)
 - [Documentation](#documentation)
 - [Repository Structure](#repository-structure)
 - [Credits](#credits)
@@ -63,24 +52,20 @@ graph LR
 ## Quick Start
 
 ```bash
-# One-line install (auto-detects your agent and project)
+# One-line install
 curl -sSL https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-design/main/scripts/install.sh | bash
 ```
-
-Or manually:
 
 Then in your project:
 
 ```bash
-/vdd:init                          # Generate project constitution (once)
+/vdd:init                          # Generate project constitution
 /vdd:vision "your vision here"     # The only human input required
 ```
 
-The AI takes over from here — researching markets, auditing your codebase, generating specs,
-planning architecture, breaking down tasks, implementing feature by feature, and validating
-impact — all with self-gating at 7 bi-directional verification junctions.
+The AI handles the rest — researching, auditing, generating specs, planning, implementing, and validating — with self-gating at 7 bi-directional verification junctions.
 
-**[📖 Full Tutorial →](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project with VDD.
+**[Tutorial →](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project.
 
 ```bash
 # Want human gates? Add to constitution.md:
@@ -91,85 +76,80 @@ impact — all with self-gating at 7 bi-directional verification junctions.
 
 ## How It Works
 
-VDD follows Goldratt's **recursive Strategy-Tactic decomposition**: every phase is simultaneously
-the **Tactic** for its parent and the **Strategy** for its child.
+VDD follows Goldratt's **recursive Strategy-Tactic decomposition**: every phase is simultaneously the **Tactic** for its parent and the **Strategy** for its child.
 
 | Phase | S&T Role | Output |
 |-------|----------|--------|
+| **0. Constitution** | (pre-chain) | `constitution.md` — Immutable project rules |
 | **1. Vision** | L1 Strategy: What impact? | `vision.md` — Impact model, success metrics |
-| **2. Strategy** | L1 Tactic → L2 Strategy | `strategy.md` — Research, pillars, risk register |
-| **3. Tactics** | L2 Tactic → L3 Strategy | `tactics.md` — Codebase audit, action items |
+| **2. Strategy** | L1 Tactic → L2 Strategy | `strategy.md` — Research, 12 pillars, risk register |
+| **3. Tactics** | L2 Tactic → L3 Strategy | `tactics.md` — Codebase audit, 38 action items |
 | **4. Specs** | L3 Tactic → L4 Strategy | `spec.md` — MoSCoW acceptance criteria |
 | **5. Plan** | L4 Tactic → L5 Strategy | `plan.md`, `data-model.md`, `contracts/` |
 | **6. Tasks** | L5 Tactic → L6 Strategy | `tasks.md` — Test-first atomic tasks |
 | **7. Implement** | L6 Tactic → L7 Strategy | Code — Per-task commits with full traceability |
 | **8. Validate** | L7 Tactic — Did it work? | `impact-report.md` — Drift + impact verification |
 
-**7 bi-directional gates** verify both directions at every junction (113 total checks).
-Each gate also validates 4 S&T assumptions: Necessity, Achievability, Sufficiency, Warnings.
+**7 bi-directional gates** verify both directions at every junction (113 total checks). Each gate validates 4 S&T assumptions: Necessity, Achievability, Sufficiency, Warnings.
 
-Every code commit traces back to the original vision statement through the full chain:
+Every code commit traces back to the original vision statement:
 ```
 V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 ```
 
 ---
 
-## What Makes VDD Different
-
-| Feature | Traditional SDD | Vision Driven Design |
-|---------|----------------|---------------------|
-| **Starting point** | Spec document | Human vision statement |
-| **Research** | Not included | 5 parallel research subagents (market, competitive, tech, impact, domain) |
-| **Codebase awareness** | Not included | Full repository audit before spec generation |
-| **Traceability** | Spec → Code | Vision → Strategy → Tactics → Spec → Plan → Code → Impact |
-| **Verification** | Forward only | Bi-directional at every level (7 gates, 113 checks) |
-| **Impact verification** | Not included | Leading + lagging metrics validated against vision |
-| **Domain awareness** | Generic | 7 domain primers (4 conditional + 2 unconditional + 1 safety-critical) |
-| **Autonomy** | Per-phase human gates | Full-auto mode — human provides vision only |
-
----
-
 ## Commands
 
-| Command | What it does |
-|---------|-------------|
-| `/vdd:init` | Generate project constitution |
-| `/vdd:vision "..."` | Expand freeform vision into structured impact model |
-| `/vdd:strategize` | Research market, competitors, technology → strategic pillars |
-| `/vdd:tactics` | Audit codebase → gap analysis → prioritized action items |
-| `/vdd:specify <ID \| "desc">` | Generate acceptance criteria from action item or freeform |
-| `/vdd:clarify <feature>` | Standalone clarification pass on a spec |
-| `/vdd:plan <feature>` | Technical architecture, data model, API contracts |
-| `/vdd:tasks <feature>` | Test-first task breakdown with dependencies |
-| `/vdd:next-task <feature>` | Extract next uncompleted task |
-| `/vdd:implement <ID>` | Execute single task, verify, commit |
-| `/vdd:validate` | Full-chain traceability matrix + drift detection + impact report |
-| `/vdd:trace` | Generate bidirectional traceability matrix |
-| `/vdd:analyze` | Cross-artifact consistency and conflict analysis |
-| `/vdd:amend` | Cascade requirement change through full chain |
+| Command | Phase | Action |
+|---------|-------|--------|
+| `/vdd:init` | 0 | Generate `constitution.md` from project context |
+| `/vdd:vision "statement"` | 1 | Expand freeform vision → structured `vision.md` |
+| `/vdd:strategize` | 2 | Load domain primers, spawn research subagents, synthesize `strategy.md` |
+| `/vdd:tactics` | 3 | Audit repo → gap analysis → `tactics.md` |
+| `/vdd:specify <ID \| "desc">` | 4 | Generate `spec.md` (or freeform — skips V/S/T) |
+| `/vdd:clarify <feature>` | 4 | Clarification pass on a spec |
+| `/vdd:plan <feature>` | 5 | Generate `plan.md`, `data-model.md`, `contracts/` |
+| `/vdd:tasks <feature>` | 6 | Generate `tasks.md` |
+| `/vdd:next-task <feature>` | 7 | Extract next uncompleted task |
+| `/vdd:implement <task-id>` | 7 | Execute single task, verify, commit |
+| `/vdd:validate` | 8 | Full-chain traceability + drift + impact report |
+| `/vdd:trace` | any | Bidirectional traceability matrix |
+| `/vdd:analyze <feature>` | any | Cross-artifact consistency analysis |
+| `/vdd:amend "what changed"` | any | Cascade requirement change through full chain |
 
 ---
 
 ## Installation
 
-### OpenCode
 ```bash
+# OpenCode
 git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
   ~/.config/opencode/skills/vision-driven-design/
-```
 
-### Claude Code
-```bash
+# Claude Code
 git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
   ~/.claude/skills/vision-driven-design/
-```
 
-### Cursor
-```bash
+# Cursor
 git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
   .cursor/skills/vision-driven-design/
 ```
+
+---
+
+## MCP API
+
+VDD is also available as a public MCP server. Connect any MCP-compatible AI agent to `https://vdd.simonmak.com/api/sse`:
+
+| Endpoint | Method | Returns |
+|----------|--------|---------|
+| `/api/sse` | GET | Service info — 14 tools listed |
+| `/api/sse` | POST | Phase result — `{"success":true,"phase":"validate","gateResult":{"passed":true,"checks":113,"total":113}}` |
+
+**14 MCP tools**: `vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`.
+
+No API key, no sign-up required. The full TypeScript engine (`packages/vdd-engine`, `packages/vdd-mcp`, `packages/vdd-cli`) is included in this repo.
 
 ---
 
@@ -181,38 +161,40 @@ VDD loads domain-specific research patterns during the Strategy phase based on y
 |--------|---------------|
 | **WebApp** | UX, accessibility (WCAG 2.2), performance budgets, framework evaluation |
 | **Data Storage** | Schema design, indexing strategy, data governance, ACID vs eventual |
-| **ETL** | Pipeline architecture, data quality frameworks, batch vs streaming |
+| **ETL** | Pipeline architecture, data quality, batch vs streaming |
 | **Infrastructure** | CI/CD, observability, security, scaling, disaster recovery |
 | **Human Factors** | Behavioral economics, cognitive load, habit formation, accessibility cognition |
-| **Verification Toolchain** | Playwright, Browserless, Sentry, CI/CD quality pipeline integration |
+| **Verification Toolchain** | Playwright, Browserless, Sentry, CI/CD quality pipeline |
+| **Safety-Critical** | FMEA/FTA, DO-178C/IEC 62304 safety integrity levels |
 
-Each primer also includes **impact verification patterns** — how to prove real-world impact in that domain. `human-factors.md` and `verification-toolchain.md` are loaded unconditionally for every project.
+`human-factors.md` and `verification-toolchain.md` are loaded unconditionally for every project.
+
+---
+
+## Best-Practice Benchmark
+
+VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 29148, and GitHub Spec Kit:
+
+**47/47 criteria matched (100%), 11 exceeded, 0 gaps.**
+
+[Full benchmark matrix →](vdd/docs/best-practice-benchmark.md) | [Compliance evidence templates →](references/compliance-evidence.md)
 
 ---
 
 ## Documentation
 
-All reference docs live in `references/`:
-
 | File | Contents |
 |------|----------|
-| [`workflow-phases.md`](references/workflow-phases.md) | Step-by-step for all 8 phases (authoritative) |
-| [`artifact-templates.md`](references/artifact-templates.md) | Copy-paste templates for all 11 artifacts |
-| [`prompt-patterns.md`](references/prompt-patterns.md) | AI prompts for generation + bidirectional gate verification |
-| [`quality-gates.md`](references/quality-gates.md) | 7 gates with 113 checks + CI/CD integration |
-| [`ai-agent-patterns.md`](references/ai-agent-patterns.md) | Multi-agent orchestration and auto-mode execution |
-| [`anti-patterns.md`](references/anti-patterns.md) | 24 failure modes and fixes |
-| [`traceability-matrix.md`](references/traceability-matrix.md) | RTM format + automated generation |
-| [`quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
-
-### Guides
-
-- **[Getting Started Tutorial](vdd/docs/tutorial.md)** — 30-minute walkthrough building a real project
-- **[VDD vs Alternatives](vdd/docs/comparison.md)** — VDD compared to SDD, vibe coding, and TDD
-- **[Vision Canvas](vdd/docs/vision-canvas.md)** — 5-minute template for non-technical visionaries
-- **[Dogfood Example](https://github.com/simonplmak-cloud/vdd-dogfood-task-tracker)** — Real project built with full VDD chain (vision→code)
-- **[VDD Badge](vdd/docs/vdd-badge.md)** — Add to your repo: `[![Built with VDD](https://img.shields.io/badge/built%20with-VDD-4CAF50)]`
-- **[Best-Practice Benchmark](vdd/docs/best-practice-benchmark.md)** — VDD vs NASA SE, CMMI, DO-178C, IEC 62304, DORA, ISO 29148, GitHub SDD
+| [`SKILL.md`](SKILL.md) | Full command reference and workflow |
+| [`vdd/docs/tutorial.md`](vdd/docs/tutorial.md) | 30-minute walkthrough |
+| [`vdd/docs/comparison.md`](vdd/docs/comparison.md) | VDD vs SDD vs vibe coding vs TDD |
+| [`vdd/docs/best-practice-benchmark.md`](vdd/docs/best-practice-benchmark.md) | Standards alignment matrix |
+| [`references/workflow-phases.md`](references/workflow-phases.md) | Step-by-step phase instructions (authoritative) |
+| [`references/artifact-templates.md`](references/artifact-templates.md) | Copy-paste templates for all 11 artifacts |
+| [`references/quality-gates.md`](references/quality-gates.md) | 7 gates with 113 checks + CI/CD |
+| [`references/anti-patterns.md`](references/anti-patterns.md) | 24 failure modes and fixes |
+| [`references/compliance-evidence.md`](references/compliance-evidence.md) | DO-178C/IEC 62304/CMMI/ISO 29148 evidence maps |
+| [`references/quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
 
 ---
 
@@ -220,53 +202,50 @@ All reference docs live in `references/`:
 
 ```
 ├── SKILL.md                         # Entry point — loaded by OpenCode
-├── AGENTS.md                        # Instructions for AI agents working on this repo
 ├── README.md                        # This file
-├── constitution.md                  # This repo's own constitution (dogfooded)
+├── AGENTS.md                        # Instructions for AI agents
+├── constitution.md                  # Project constitution (dogfooded)
 ├── CHANGELOG.md                     # Versioned change history
-├── CONTRIBUTING.md                  # How to contribute
+├── CONTRIBUTING.md                  # Contribution guidelines
 ├── LICENSE.md                       # MIT
-├── domain-primers/                  # Domain research patterns (loaded during Strategy)
+├── index.html                       # GitHub Pages landing page
+├── pnpm-workspace.yaml              # Workspace config
+├── package.json                     # Root package (Vercel + workspace)
+├── vercel.json                      # Vercel deployment config
+├── domain-primers/                  # 7 domain research patterns
 │   ├── webapp.md
 │   ├── data-storage.md
 │   ├── etl.md
 │   ├── infrastructure.md
-│   ├── human-factors.md             # Behavioral economics, cognitive load, habit formation
-│   ├── verification-toolchain.md    # Playwright, Browserless, Sentry, CI/CD pipeline
-│   └── safety-critical.md           # FMEA/FTA, DO-178C/IEC 62304 patterns
-├── references/                      # All reference documentation
+│   ├── human-factors.md             # Loaded unconditionally
+│   ├── verification-toolchain.md    # Loaded unconditionally
+│   └── safety-critical.md           # FMEA/FTA, DO-178C/IEC 62304
+├── references/                      # 10 authoritative reference docs
 │   ├── INDEX.md                     # Navigation map
 │   ├── quick-reference.md           # 1-page cheat sheet
-│   ├── workflow-phases.md           # 8 phases step-by-step (authoritative)
-│   ├── artifact-templates.md        # 11 copy-paste templates (authoritative)
-│   ├── prompt-patterns.md           # All prompts + bidirectional gate verification
-│   ├── quality-gates.md             # 7 gates with 113 checks
-│   ├── ai-agent-patterns.md         # Multi-agent orchestration and auto-mode
-│   ├── anti-patterns.md             # 24 failure modes and fixes
-│   ├── traceability-matrix.md       # RTM format + CI/CD automation
-│   └── compliance-evidence.md       # DO-178C/IEC 62304/CMMI evidence templates
+│   ├── workflow-phases.md           # Phase order (authoritative)
+│   ├── artifact-templates.md        # 11 artifact templates (authoritative)
+│   ├── prompt-patterns.md           # AI prompts (authoritative)
+│   ├── quality-gates.md             # 7 gates + 113 checks (authoritative)
+│   ├── ai-agent-patterns.md         # Agent orchestration (authoritative)
+│   ├── anti-patterns.md             # 24 failure modes (authoritative)
+│   ├── traceability-matrix.md       # RTM format + CI/CD
+│   └── compliance-evidence.md       # Evidence maps
 ├── vdd/                             # VDD chain artifacts
-│   ├── vision.md                    # Vision statement, impact model
-│   ├── strategy.md                  # Research, pillars, risks
-│   ├── tactics.md                   # Codebase audit, action items
+│   ├── vision.md                    # Vision, impact model, 17 impacts
+│   ├── strategy.md                  # 12 strategic pillars
+│   ├── tactics.md                   # 38 action items (all DONE)
 │   ├── impact-report.md             # Full-chain traceability + drift
-│   ├── docs/                        # Guides and references (16 files)
-│   └── specs/                       # Feature specs, plans, tasks
-├── scripts/                         # Installer and helper scripts
-│   ├── install.sh                   # One-line installer
-│   ├── vdd-agent-setup.sh           # Multi-agent config generator
-│   ├── vdd-detect.sh                # Project convention auto-detector
-│   └── vdd-substance-audit.sh       # Low-substance artifact detection
-├── api/                             # Vercel MCP server endpoint
-│   └── sse.js                       # GET → service info, POST → phase results
-├── packages/                        # TypeScript monorepo (CLI + MCP engine)
+│   ├── docs/                        # 16 guides and references
+│   └── specs/                       # 3 feature specs
+├── packages/                        # TypeScript monorepo
 │   ├── vdd-engine/                  # Shared core — 14 phase functions
 │   ├── vdd-mcp/                     # MCP server — 14 tools, stdio + SSE
 │   └── vdd-cli/                     # CLI binary — 14 subcommands
-├── index.html                       # GitHub Pages landing page
-├── vercel.json                      # Vercel deployment config
-├── package.json                     # Vercel runtime config
-└── .github/                         # GitHub-specific config
+├── api/                             # Vercel MCP endpoint
+│   └── sse.js                       # GET → tools, POST → results
+├── scripts/                         # 4 installer/helper scripts
+└── .github/                         # GitHub config
     ├── CODEOWNERS
     ├── ISSUE_TEMPLATE/
     └── workflows/

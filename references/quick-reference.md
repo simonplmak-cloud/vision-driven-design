@@ -1,16 +1,14 @@
-# Quick Reference — Vision Driven Design
+# VDD Quick Reference
 
 One-page cheat sheet. For full details, see referenced files.
 
----
-
-## The VDD Chain (8 Phases)
+## The VDD Chain (9 Phases)
 
 ```
 [CONSTITUTION] ── (once per project)
        ↓
 [VISION] → [STRATEGY] → [TACTICS] → [SPECS] → [PLAN] → [TASKS] → [IMPLEMENT] → [VALIDATE]
-  vision.md  strategy.md  tactics.md  spec.md   plan.md   tasks.md   per-task     full-chain
+ vision.md  strategy.md  tactics.md  spec.md   plan.md   tasks.md   per-task     full-chain
              + research   + repo audit           data-model           commit       drift report
              + domain                               contracts/         after each   impact verify
              primers
@@ -20,22 +18,22 @@ One-page cheat sheet. For full details, see referenced files.
 
 ## Phase Commands
 
-| Command | Phase | Reads | Creates |
-|---------|-------|-------|---------|
-| `/vdd:init` | 0 | project context | `constitution.md` |
-| `/vdd:vision "statement"` | 1 | human freeform | `vdd/vision.md` |
-| `/vdd:strategize` | 2 | vision.md + domain-primers | `vdd/strategy.md` |
-| `/vdd:tactics` | 3 | strategy.md + repository | `vdd/tactics.md` |
-| `/vdd:specify [action-item \| "description"]` | 4 | tactics.md → action item (or freeform) | `vdd/specs/[feature]/spec.md` |
-| `/vdd:clarify [feature]` | 4 | spec.md | delta of resolutions and edge cases |
-| `/vdd:plan [feature]` | 5 | spec.md + constitution | `plan.md`, `data-model.md`, `contracts/` |
-| `/vdd:tasks [feature]` | 6 | plan.md + contracts/ | `tasks.md` |
-| `/vdd:next-task [feature]` | 7 | tasks.md | next uncompleted task |
-| `/vdd:implement [task-id]` | 7 | task + all artifacts | code commit |
-| `/vdd:validate` | 8 | full chain + code | impact-report.md, drift report |
-| `/vdd:trace` | any | all artifacts | traceability matrix |
-| `/vdd:analyze [feature]` | any | spec + all specs | cross-artifact analysis |
-| `/vdd:amend [what changed]` | any | full chain | updated chain from change point down |
+| Command | Phase | Creates |
+|---------|-------|---------|
+| `/vdd:init` | 0 | `constitution.md` |
+| `/vdd:vision "statement"` | 1 | `vdd/vision.md` |
+| `/vdd:strategize` | 2 | `vdd/strategy.md` |
+| `/vdd:tactics` | 3 | `vdd/tactics.md` |
+| `/vdd:specify [action-item \| "description"]` | 4 | `vdd/specs/[feature]/spec.md` |
+| `/vdd:clarify [feature]` | 4 | delta of resolutions and edge cases |
+| `/vdd:plan [feature]` | 5 | `plan.md`, `data-model.md`, `contracts/` |
+| `/vdd:tasks [feature]` | 6 | `tasks.md` |
+| `/vdd:next-task [feature]` | 7 | next uncompleted task |
+| `/vdd:implement [task-id]` | 7 | code commit |
+| `/vdd:validate` | 8 | `impact-report.md`, drift report |
+| `/vdd:trace` | any | traceability matrix |
+| `/vdd:analyze [feature]` | any | cross-artifact analysis |
+| `/vdd:amend [what changed]` | any | updated chain from change point down |
 
 ## 7 Bi-Directional Gates
 
@@ -43,15 +41,13 @@ One-page cheat sheet. For full details, see referenced files.
 G1: V↔S  ───  G2: S↔T  ───  G3: T↔SP  ───  G4: SP↔PL  ───  G5: PL↔TK  ───  G6: TK↔IM  ───  G7: IM↔VS
 ```
 
-Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). Total: 113 checks across 7 gates.
+Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). **Total: 113 checks across 7 gates.**
 
 ## Impact Chain Format
 
 ```
 > Impact Chain: V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006
 ```
-
-Every artifact carries this header. It's the traceability backbone.
 
 ## ID Prefixes
 
@@ -77,20 +73,24 @@ Every artifact carries this header. It's the traceability backbone.
 | `[COULD]` | Nice to have | No gate impact |
 | `[WONT]` | Explicitly excluded | Documents decision |
 
-## Hard Rules
+## Domain Primers (7)
 
-| Rule | Consequence of Violation |
-|------|------------------------|
-| Constitution before any vision | Every phase reinvents the wheel |
-| Metrics in vision (measurable) | Can't verify impact |
-| Research before strategy | Opinions, not strategy |
-| Repo audit before tactics | Duplicated or impossible work |
-| Bi-directional gates at every junction | Untraceable work, scope creep |
-| Lock contracts after Plan | Drift between frontend and backend |
-| Fresh context per task | Accumulated hallucinations |
-| Commit after each task | Can't rollback individual task failures |
-| Code must match spec (never reverse) | Spec loses value as source of truth |
-| Impact verification in Validate | Ship features that don't advance the vision |
+| Domain | File | Key Patterns |
+|--------|------|-------------|
+| WebApp | `domain-primers/webapp.md` | UX, accessibility, performance |
+| Data Storage | `domain-primers/data-storage.md` | Schema design, indexing, data governance |
+| ETL | `domain-primers/etl.md` | Pipeline architecture, data quality |
+| Infrastructure | `domain-primers/infrastructure.md` | Deployment, CI/CD, observability |
+| Human Factors | `domain-primers/human-factors.md` | Behavioral economics, cognitive load (unconditional) |
+| Verification Toolchain | `domain-primers/verification-toolchain.md` | Playwright, Browserless, Sentry (unconditional) |
+| Safety-Critical | `domain-primers/safety-critical.md` | FMEA/FTA, DO-178C/IEC 62304 |
+
+## MCP API
+
+**Endpoint**: `https://vdd.simonmak.com/api/sse`
+- GET: 14 tools + service info
+- POST: Phase result (validate: 113/113 checks passed)
+- Packages: `packages/vdd-engine` · `packages/vdd-mcp` · `packages/vdd-cli`
 
 ## When NOT to Use VDD
 
@@ -98,29 +98,12 @@ Every artifact carries this header. It's the traceability backbone.
 - Refactor with no behavior change
 - Trivial config change
 - Throwaway prototype
-- The change doesn't relate to any vision goal
+- Change unrelated to any vision goal
 
 ## When to Require VDD
 
-- Any work that advances a vision goal
+- Work that advances a vision goal
 - Auth logic, DB schema changes, new API endpoints
 - Features touching security, compliance, or data integrity
 - Cross-cutting changes affecting multiple components
 - New product or major feature launch
-
-## Domain Primers
-
-| Domain | File | Key Patterns |
-|--------|------|-------------|
-| WebApp | `domain-primers/webapp.md` | UX, accessibility, performance, frontend frameworks |
-| Data Storage | `domain-primers/data-storage.md` | Schema design, indexing, data governance |
-| ETL | `domain-primers/etl.md` | Pipeline architecture, data quality, error handling |
-| Infrastructure | `domain-primers/infrastructure.md` | Deployment, CI/CD, observability, security |
-| Human Factors | `domain-primers/human-factors.md` | Behavioral economics, cognitive load, habit formation (loaded unconditionally) |
-| Verification Toolchain | `domain-primers/verification-toolchain.md` | Playwright, Browserless, Sentry, CI/CD pipeline (loaded unconditionally) |
-
-## Auto-Mode Configuration
-
-Default: fully autonomous (AI self-gates all junctions, human provides vision only).
-Override in constitution.md: `## VDD Mode: gated`
-Override per-project: `export VDD_MODE=gated`
