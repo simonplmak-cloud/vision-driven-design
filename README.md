@@ -2,7 +2,7 @@
 
 <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.3-blue" alt="Version 1.5.3"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.4-blue" alt="Version 1.5.4"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-113-green" alt="113 Verification Checks"></a>
 <a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-0d7377" alt="MCP API"></a>
@@ -140,16 +140,53 @@ git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
 
 ## MCP API
 
-VDD is also available as a public MCP server. Connect any MCP-compatible AI agent to `https://vdd.simonmak.com/api/sse`:
+VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 14 tools, SSE transport with JSON-RPC 2.0, no API key required.
 
-| Endpoint | Method | Returns |
-|----------|--------|---------|
-| `/api/sse` | GET | Service info — 14 tools listed |
-| `/api/sse` | POST | Phase result — `{"success":true,"phase":"validate","gateResult":{"passed":true,"checks":113,"total":113}}` |
+### Agent Configuration
 
-**14 MCP tools**: `vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`.
+**OpenCode** — add to `opencode.json`:
+```json
+"vdd": {
+  "type": "remote",
+  "url": "https://vdd.simonmak.com/api/sse",
+  "timeout": 120000
+}
+```
 
-No API key, no sign-up required. The full TypeScript engine (`packages/vdd-engine`, `packages/vdd-mcp`, `packages/vdd-cli`) is included in this repo.
+**Claude Desktop** — add to `claude_desktop_config.json`:
+```json
+"vdd": {
+  "command": "npx",
+  "args": ["-y", "@vdd/mcp"],
+  "type": "stdio"
+}
+```
+
+**Cursor** — add MCP server URL: `https://vdd.simonmak.com/api/sse`
+
+**Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
+
+### Tools (14)
+
+`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`.
+
+All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`.
+
+### API Reference
+
+| Method | Description |
+|--------|-------------|
+| GET `/api/sse` | SSE stream (MCP client) or HTML docs (browser) |
+| POST `/api/sse` | JSON-RPC — `initialize`, `tools/list`, `tools/call` |
+
+```bash
+# JSON-RPC call example
+curl -X POST https://vdd.simonmak.com/api/sse \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_validate","arguments":{"projectRoot":"."}},"id":1}'
+```
+
+The full TypeScript engine (`packages/vdd-engine`, `packages/vdd-mcp`, `packages/vdd-cli`) is included in this repo.
 
 ---
 
@@ -243,7 +280,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   ├── vdd-mcp/                     # MCP server — 14 tools, stdio + SSE
 │   └── vdd-cli/                     # CLI binary — 14 subcommands
 ├── api/                             # Vercel MCP endpoint
-│   └── sse.js                       # GET → tools, POST → results
+│   └── sse.js                       # MCP SSE + JSON-RPC 2.0 handler
 ├── scripts/                         # 4 installer/helper scripts
 └── .github/                         # GitHub config
     ├── CODEOWNERS

@@ -37,7 +37,21 @@ VDD extends and absorbs Spec-Driven Development (SDD). SDD's `Specs → Plan →
 
 ## MCP Server
 
-Available as a public MCP server — connect any MCP-compatible agent to `https://vdd.simonmak.com/api/sse`. 14 tools, no API key required.
+Available as a public MCP server — 14 tools, SSE + JSON-RPC 2.0, no API key.
+
+**OpenCode** — add to `opencode.json`:
+```json
+"vdd": { "type": "remote", "url": "https://vdd.simonmak.com/api/sse", "timeout": 120000 }
+```
+
+**Claude Desktop** — add to `claude_desktop_config.json`:
+```json
+"vdd": { "command": "npx", "args": ["-y", "@vdd/mcp"], "type": "stdio" }
+```
+
+**Cursor** — add MCP server URL: `https://vdd.simonmak.com/api/sse`
+
+**Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
 ---
 

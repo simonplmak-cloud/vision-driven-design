@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.4] — 2026-08-11
+
+### Fixed
+- **MCP SSE transport**: `api/sse.js` now returns proper `text/event-stream` with `endpoint` event for MCP clients (was `application/json`)
+- **JSON-RPC 2.0**: POST handler supports full MCP lifecycle — `initialize`, `tools/list`, `tools/call`, notifications
+- **HTML landing page**: updated with agent-specific config examples (OpenCode, Claude Desktop, Cursor)
+- **index.html**: fixed broken CSS `var(--green)` → `var(--teal)`, updated MCP callout with config snippets
+- **README.md**: MCP section rewritten with JSON-RPC examples, agent configuration, and curl example
+- **SKILL.md**: added per-agent MCP connection instructions
+- **AGENTS.md**: corrected api/sse.js transport description
+- Removed dead `isMcpClient()` function from api/sse.js
+
 ## [1.5.3] — 2026-08-10
 
 ### Added

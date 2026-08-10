@@ -10,7 +10,7 @@ README.md                ← GitHub landing page.
 constitution.md          ← Project constitution (dogfooded).
 index.html               ← GitHub Pages landing page at simonplmak-cloud.github.io/vision-driven-design.
 api/                     ← Vercel MCP endpoint (deployed at vdd.simonmak.com).
-  sse.js                 ← GET → 14 tools, POST → phase results.
+  sse.js                 ← MCP SSE transport — GET returns SSE stream (or HTML for browsers), POST handles JSON-RPC 2.0 (initialize, tools/list, tools/call). 14 VDD tools.
 vercel.json              ← Vercel deploy config (Framework: Other).
 package.json             ← Root workspace + Vercel runtime config.
 pnpm-workspace.yaml      ← Monorepo workspace config.

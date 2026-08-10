@@ -178,13 +178,6 @@ function isBrowser(req) {
   return accept.includes("text/html");
 }
 
-function isMcpClient(req) {
-  const accept = req.headers.accept || "";
-  return (
-    accept.includes("text/event-stream") || accept.includes("application/json")
-  );
-}
-
 const HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -243,8 +236,28 @@ const HTML = `<!DOCTYPE html>
 
   <section>
     <h2>Quick Start</h2>
-    <p style="margin-bottom:1rem;">Connect any MCP-compatible AI agent (Claude Desktop, Cursor, OpenCode) to <code>https://vdd.simonmak.com/api/sse</code>.</p>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+    <p style="margin-bottom:1rem;">Add this to your MCP agent config:</p>
+    <pre>{
+  "mcpServers": {
+    "vdd": {
+      "type": "sse",
+      "url": "https://vdd.simonmak.com/api/sse"
+    }
+  }
+}</pre>
+    <p style="margin-bottom:1rem;"><strong>OpenCode</strong> — add to <code>opencode.json</code>:</p>
+    <pre>"vdd": {
+  "type": "remote",
+  "url": "https://vdd.simonmak.com/api/sse",
+  "timeout": 120000
+}</pre>
+    <p style="margin-bottom:1rem;"><strong>Claude Desktop</strong> — add to <code>claude_desktop_config.json</code>:</p>
+    <pre>"vdd": {
+  "command": "npx",
+  "args": ["-y", "@vdd/mcp"],
+  "type": "stdio"
+}</pre>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;">
       <a class="cta" href="https://github.com/simonplmak-cloud/vision-driven-design">GitHub Repo</a>
       <a class="cta secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/SKILL.md#command-reference">Command Reference</a>
       <a class="cta secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/vdd/docs/tutorial.md">Tutorial</a>
@@ -254,20 +267,27 @@ const HTML = `<!DOCTYPE html>
   <section>
     <h2>Usage</h2>
     <div class="card">
+      <div class="row"><span class="label">Transport</span><span class="value">SSE (Server-Sent Events) + JSON-RPC 2.0</span></div>
       <div class="row"><span class="label">Endpoint</span><span class="value">https://vdd.simonmak.com/api/sse</span></div>
-      <div class="row"><span class="label">GET</span><span class="value">Returns service info (browser) or initiates SSE stream (MCP client)</span></div>
-      <div class="row"><span class="label">POST</span><span class="value">JSON-RPC — use body: {"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_validate","arguments":{}},"id":1}</span></div>
+      <div class="row"><span class="label">GET</span><span class="value">SSE stream — returns <code>endpoint</code> event (MCP client) or HTML page (browser)</span></div>
+      <div class="row"><span class="label">POST</span><span class="value">JSON-RPC — <code>initialize</code>, <code>tools/list</code>, <code>tools/call</code></span></div>
+      <div class="row"><span class="label">Auth</span><span class="value">None — public, no API key</span></div>
     </div>
 
-    <h3 style="margin-top:1.25rem;margin-bottom:0.5rem;">Validate Response</h3>
+    <h3 style="margin-top:1.25rem;margin-bottom:0.5rem;">Example: tools/call vdd_validate</h3>
+    <pre>curl -X POST https://vdd.simonmak.com/api/sse \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_validate","arguments":{"projectRoot":"."}},"id":1}'</pre>
+
+    <h3 style="margin-top:1.25rem;margin-bottom:0.5rem;">Response</h3>
     <pre>{
-  "success": true,
-  "phase": "validate",
-  "artifact": "vdd/validate.md",
-  "gateResult": {
-    "passed": true,
-    "checks": 113,
-    "total": 113
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [{
+      "type": "text",
+      "text": "{\\"success\\":true,\\"artifact\\":\\"./vdd/impact-report.md\\",\\"gateResult\\":{\\"passed\\":true,\\"checks\\":113,\\"total\\":113}}"
+    }]
   }
 }</pre>
   </section>
