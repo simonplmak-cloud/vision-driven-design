@@ -2,8 +2,8 @@
 
 > Impact Chain: V-001 → S-002
 
-Status: Draft
-Version: 1.0
+Status: Active
+Version: 2.0
 Last updated: 2026-08-10
 
 ## Vision Reference
@@ -14,6 +14,9 @@ Derived from: `vdd/vision.md` — Maximize VDD's impact on society
 - data-storage
 - etl
 - infrastructure
+- human-factors (unconditional)
+- verification-toolchain (unconditional)
+- safety-critical
 
 ## Research Synthesis
 
@@ -200,6 +203,28 @@ The methodology layer sits above and across agents. Key enablers:
 
 **Expected Impact:** Every VDD project ships with: Playwright E2E test suite, Browserless visual regression baseline, Sentry error tracking initialized, CI/CD pipeline with full quality gates. Tool coverage 100% for all MUST ACs.
 
+### Pillar 12: Universal Access — MCP, CLI, and Free Public Vercel Service
+
+**Rationale:** VDD must not be locked to a single agent platform. Users should invoke VDD through whatever interface they work in: agent slash commands (OpenCode, Claude Code, Cursor), MCP tools (any MCP-compatible client), CLI binary (terminal-native), REST API (programmatic), or IDE plugins. The ultimate expression of this is the VDD public MCP server deployed on Vercel at `https://vdd.simonmak.com` — any developer, anywhere, with zero installation, connects their AI agent and starts using VDD immediately.
+
+**Vision Trace:** I-016 (universal access through every interface), I-017 (free public VDD service on Vercel), I-007 (agent auto-integration)
+
+**Key Research Finding:** MCP (Model Context Protocol) is the emerging standard for AI-tool interoperability. Publishing VDD as an MCP server makes it discoverable by all MCP-compatible clients (Claude Desktop, Continue.dev, Cursor) without per-platform integration work. Vercel serverless functions are ideal for this workload: stateless, auto-scaling, zero cold-start for periodic usage, and generous free tier.
+
+**Expected Impact:** VDD MCP server published on npm and deployed to Vercel. CLI binary (`vdd`) installable via `npm install -g vdd`. All 14 VDD commands accessible through every interface. Public service at `vdd.simonmak.com` handles free-tier traffic. MCP becomes VDD's universal integration layer.
+
+## GitHub Platform Leverage — Executed
+
+VDD's GitHub presence is fully optimized (I-013 ✅):
+- **Pages**: Landing page at `simonplmak-cloud.github.io/vision-driven-design/` with full feature comparison and quick links
+- **Wiki**: Navigation hub linking to all primers, docs, and community
+- **Discussions**: Enabled for Q&A and community
+- **Issues**: Templates for bug, feature, and docs
+- **Actions**: Quality-gates workflow verifying impact chain headers, drift detection, and task progress
+- **Topics**: 20 targeted topics for search discoverability
+- **Homepage**: Links to best-practice benchmark
+- **Social preview**: SVG banner for link sharing
+
 ## Competitive Analysis
 
 | Competitor | Strengths | Weaknesses | VDD Differentiator |
@@ -223,17 +248,18 @@ The methodology layer sits above and across agents. Key enablers:
 
 ## S&T Assumptions (Strategy → Tactics)
 
-**Necessity:** Tactical-level action-item breakdown is necessary to execute this Strategy because the five pillars each require concrete, sequenced implementation steps — content production, community infrastructure, distribution mechanics, and measurement instrumentation.
+**Necessity:** Tactical-level action-item breakdown is necessary to execute this Strategy because each of the 11 pillars requires concrete, sequenced implementation steps — content production, community infrastructure, distribution mechanics, measurement instrumentation, domain primer expansion, substance enforcement, benchmark documentation, verification toolchain integration, universal access (MCP/CLI/Vercel), and GitHub platform leverage.
 
-**Achievability:** This Strategy is achievable given the planned Tactical approach because VDD's distribution is entirely GitHub-native and Markdown-based, requiring zero infrastructure investment beyond what already exists (GitHub repo + OpenCode skill directory). Every pillar has a clear, measurable action path.
+**Achievability:** This Strategy is achievable given the planned Tactical approach because VDD's distribution is entirely GitHub-native and Markdown-based, requiring zero infrastructure investment beyond what already exists (GitHub repo + OpenCode skill directory). The universal access layer (MCP server, CLI, Vercel deployment) adds a thin deployment layer on existing infrastructure. Every pillar has a clear, measurable action path.
 
-**Sufficiency:** The planned Tactical approach is sufficient to implement this Strategy because the five pillars collectively cover adoption (Pillar 1), authority (Pillar 2), growth (Pillar 3), proof (Pillar 4), and accessibility (Pillar 5) — no major dimension of the vision is uncovered.
+**Sufficiency:** The planned Tactical approach is sufficient to implement this Strategy because the eleven pillars collectively cover adoption (P1), authority (P2), community (P3), proof (P4), accessibility (P5), GitHub growth (P6), agent integration (P7), spectrum coverage (P8), substance enforcement (P9), benchmark excellence (P10), quality toolchain (P11), and universal access (P12). No major dimension of the vision is uncovered.
 
-**Warnings:** (1) Pillar 4 (Impact Proof) requires real project data — if early adopters don't share metrics, this pillar stalls. (2) Pillar 1 (Adoption) depends on the OpenCode skill platform remaining viable — have a fallback distribution channel (manual prompt reference). (3) Competing on GitHub against Spec Kit's 121K-star head start requires a strong narrative, not just feature parity.
+**Warnings:** (1) Pillar 4 (Impact Proof) requires real project data — if early adopters don't share metrics, this pillar stalls. (2) Pillar 1 (Adoption) depends on the OpenCode skill platform remaining viable — fallback distribution channel exists now via MCP/CLI (P12). (3) Pillar 12 (Universal Access — Vercel public deployment) introduces hosting costs and rate-limiting complexity; free tier sustainability requires monitoring. (4) Competing on GitHub against Spec Kit's 121K-star head start requires a strong narrative, not just feature parity — now addressed by benchmark matrix (47/47, 0 gaps).
 
 ## Out of Scope (Strategic)
 
-- Building a SaaS platform around VDD (stays open source methodology + skill)
+- Building a SaaS platform around VDD (stays open source methodology + skill; public MCP server is a free utility service, not a SaaS)
 - Competing on code generation quality (that's the AI agent's job)
 - Enterprise sales in year 1 (grassroots/community adoption first)
 - Replacing domain expertise (VDD is a framework, not a substitute for knowing the domain)
+- Per-user accounts, billing, or authentication for the public MCP service (stateless, no-auth, free-only)
