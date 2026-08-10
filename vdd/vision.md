@@ -3,7 +3,7 @@
 > Impact Chain: V-001
 
 Status: Active
-Version: 1.4
+Version: 1.5
 Last updated: 2026-08-10
 
 ## Vision Statement
@@ -15,6 +15,8 @@ VDD changes this by making vision the root of all traceability. A human states t
 The vision for VDD itself is to make **quality output the top priority — verified through an extensive, integrated toolset spanning pre-deployment and post-deployment**. VDD must not just produce code; it must produce *verified* code, validated through every verification tool available: Playwright and Browserless for end-to-end browser testing and visual regression, Sentry for runtime error tracking and performance monitoring, the full CI/CD pipeline (lint, typecheck, unit test, integration test, accessibility audit, security scan, performance audit) pre-deployment, and production telemetry + alerting post-deployment.
 
 VDD operates with a **"no stone unturned" mentality** — when it undertakes an assignment, it covers every inch. No surface is left unexamined. No edge case is dismissed as unlikely. No documentation page ships stale. No benchmark gap goes unresolved. No GitHub feature goes unused. No domain goes unprimed. No audit skips a file. This is not perfectionism — it is the mechanical consequence of bi-directional gates. Every parent goal demands its children collectively cover it (forward check). Every child artifact must trace to an authorized parent (backward check). Together, they make omission structurally impossible. VDD doesn't hope for completeness; it enforces it.
+
+This mentality is operationalized through VDD's **internal review process** — a multi-layered, exhaustive quality regimen that covers every inch of every artifact. After every phase, a critic agent reviews the output against the phase's quality gate, checking every forward and backward trace, every S&T assumption, every count, every reference. After the full chain completes, `/vdd:validate` runs a comprehensive cross-artifact audit: drift detection on every AC, traceability on every commit, impact verification against every vision metric, and a substance audit rejecting cosmetic-only contributions. For this repo itself — the VDD skill — the review process extends to every public-facing file (README, AGENTS, INDEX, quick-reference, changelog, benchmarks) verified against every canonical source. VDD reviews itself with the same unsparing thoroughness it demands of its adopters.
 
 ## Impact Model
 
@@ -51,6 +53,7 @@ Make VDD the methodology that covers the complete development spectrum — from 
 | I-012 | GitHub artifacts (README.md, SKILL.md, AGENTS.md, CHANGELOG.md, CONTRIBUTING.md) accurately reflect the current repo state — no stale counts, no missing files, no mismatched domain primer listings | GitHub community, contributors, evaluators | README anti-pattern count matches actual; domain-primers listing matches directory; repository structure diagram matches disk; all generated docs are consistent with canonical sources |
 | I-013 | VDD leverages every GitHub platform feature — Pages (docs site), Wiki (community knowledge), Discussions (Q&A/ideas), Projects (roadmap), Actions (CI/CD quality gates), full topic taxonomy, social preview, homepage linking to best content | GitHub community, discoverers, contributors | Pages deployed with documentation; Wiki populated with primers and FAQs; Discussions active with categories; Projects board tracking roadmap; Actions running quality-gate workflow on PRs |
 | I-014 | VDD undertakes every assignment with a "cover every inch, leave no stone unturned" mentality — completeness is mechanically enforced by bi-directional gates, not left to human discipline | All actors, evaluators, auditors | Every file audited; every count verified; every gap resolved; every gate passed in both directions; every GitHub feature leveraged; every domain primed; every benchmark criterion met |
+| I-015 | VDD has an exhaustive internal review process — critic agents per phase, full-chain cross-artifact audit via /vdd:validate, substance enforcement on every commit, and canonical-source verification for every public-facing file | VDD itself, contributors, evaluators | Every phase output gate-checked by critic agent; every commit substance-audited; every public-facing file audited against canonical sources; zero stale references across entire repo |
 
 ## Stakeholder Map
 
