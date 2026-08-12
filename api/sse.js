@@ -173,7 +173,7 @@ function handleJsonRpc(body) {
       return { jsonrpc: "2.0", id, error: { code: -32601, message: `Tool not found: ${toolName}` } };
     }
     try {
-      const result = handler();
+      const result = handler.call(handlers);
       return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] } };
     } catch (err) {
       return { jsonrpc: "2.0", id, error: { code: -32603, message: `Internal error: ${err.message}` } };
