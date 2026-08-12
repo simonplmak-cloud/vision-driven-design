@@ -4,3 +4,8 @@ vdd/strategy.md
 vdd/tactics.md
 vdd/impact-report.md
 vdd/specs/
+
+# Build artifacts
+node_modules/
+packages/*/dist/
+packages/*/node_modules/
