@@ -9,9 +9,9 @@ One-page cheat sheet. For full details, see referenced files.
        ↓
 [VISION] → [STRATEGY] → [TACTICS] → [SPECS] → [PLAN] → [TASKS] → [IMPLEMENT] → [VALIDATE]
  vision.md  strategy.md  tactics.md  spec.md   plan.md   tasks.md   per-task     full-chain
-             + research   + repo audit           data-model           commit       drift report
-             + domain                               contracts/         after each   impact verify
-             primers
+              + research   + repo audit           data-model           commit       drift report
+              + domain                               contracts/         after each   impact verify
+              primers
 
    L1 S     L1 T → L2 S  L2 T → L3 S  L3 T → L4 S  ...  (Goldratt recursive S&T pattern)
 ```
@@ -34,6 +34,7 @@ One-page cheat sheet. For full details, see referenced files.
 | `/vdd:trace` | any | traceability matrix |
 | `/vdd:analyze [feature]` | any | cross-artifact analysis |
 | `/vdd:amend [what changed]` | any | updated chain from change point down |
+| `/vdd:e2e [vision statement]` | 0–8 | full 8-phase chain in one call, writes 10+ template files |
 
 ## 7 Bi-Directional Gates
 
@@ -88,9 +89,10 @@ Each gate: Forward check (parent→children coverage) + Backward check (children
 ## MCP API
 
 **Endpoint**: `https://vdd.simonmak.com/api/sse`
-- GET: 14 tools + service info
+- GET: 15 tools + service info
 - POST: Phase result (validate: 113/113 checks passed)
 - Packages: `packages/vdd-engine` · `packages/vdd-mcp` · `packages/vdd-cli`
+- New: `vdd_e2e` — end-to-end full-chain execution in one call
 
 ## When NOT to Use VDD
 

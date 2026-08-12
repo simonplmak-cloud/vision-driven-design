@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.5] — 2026-08-12
+
+### Added
+- **`vdd:e2e` command**: End-to-end full-chain execution — runs init→vision→strategize→tactics→specify→clarify→plan→tasks→validate in one call, writes all 10+ template files with proper impact-chain headers. Accepts optional `--actionItemId`/`--feature` to customize feature name (default: "feature-1"). Available across all 4 surfaces: engine, MCP server, SSE endpoint, CLI.
+- **`VddOutput.output` field**: Structured metadata output (file lists, analysis results, instructions) for all phases.
+
+### Fixed
+- **Engine file I/O**: All 14 phase functions now use `fs/promises` to actually write template files to disk with full structured content based on `artifact-templates.md`. Previously returned artifact paths as strings without writing any files or generating content.
+- **`clarify` phase**: Now reads existing spec.md, scans for `[NEEDS CLARIFICATION]` markers and `[e.g.]` placeholders, returns real counts.
+- **`nextTask` phase**: Now reads tasks.md and returns the first uncompleted `TASK-*` line instead of a hardcoded string.
+- **`analyze` phase**: Now reads spec.md and reports AC count, unresolved clarifications, placeholder density, and plan/tasks readiness.
+- **MCP tool descriptions**: All 15 tools now have full phase context descriptions + AI agent instructions (previously just `"VDD Phase: <name>"`).
+- **SSE endpoint**: `api/sse.js` now returns template content alongside artifact paths for all phase tools, and supports the full e2e chain.
+
+### Changed
+- **15 tools** (was 14): `vdd_e2e` added across engine, MCP, SSE, and CLI.
+- **Version**: `vdd-engine`, `vdd-mcp`, `vdd-cli` still at `0.1.0`; API server info bumped to `0.2.0`.
+
 ## [1.5.4] — 2026-08-11
 
 ### Fixed

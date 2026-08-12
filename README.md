@@ -2,7 +2,7 @@
 
 <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.4-blue" alt="Version 1.5.4"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.5-blue" alt="Version 1.5.5"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-113-green" alt="113 Verification Checks"></a>
 <a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-0d7377" alt="MCP API"></a>
@@ -61,6 +61,9 @@ Then in your project:
 ```bash
 /vdd:init                          # Generate project constitution
 /vdd:vision "your vision here"     # The only human input required
+
+# Or run end-to-end in one command:
+/vdd:e2e "your vision here"        # Full chain: init→vision→...→validate
 ```
 
 The AI handles the rest — researching, auditing, generating specs, planning, implementing, and validating — with self-gating at 7 bi-directional verification junctions.
@@ -117,6 +120,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | `/vdd:trace` | any | Bidirectional traceability matrix |
 | `/vdd:analyze <feature>` | any | Cross-artifact consistency analysis |
 | `/vdd:amend "what changed"` | any | Cascade requirement change through full chain |
+| `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: run full 8-phase chain in one call, writes all 10+ template files |
 
 ---
 
@@ -140,7 +144,7 @@ git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
 
 ## MCP API
 
-VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 14 tools, SSE transport with JSON-RPC 2.0, no API key required.
+VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 15 tools, SSE transport with JSON-RPC 2.0, no API key required.
 
 ### Agent Configuration
 
@@ -166,9 +170,9 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 
 **Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
-### Tools (14)
+### Tools (15)
 
-`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`.
+`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_e2e`.
 
 All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`.
 
@@ -276,9 +280,9 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   ├── docs/                        # 16 guides and references
 │   └── specs/                       # 3 feature specs
 ├── packages/                        # TypeScript monorepo
-│   ├── vdd-engine/                  # Shared core — 14 phase functions
-│   ├── vdd-mcp/                     # MCP server — 14 tools, stdio + SSE
-│   └── vdd-cli/                     # CLI binary — 14 subcommands
+│   ├── vdd-engine/                  # Shared core — 15 phase functions
+│   ├── vdd-mcp/                     # MCP server — 15 tools, stdio + SSE
+│   └── vdd-cli/                     # CLI binary — 15 subcommands
 ├── api/                             # Vercel MCP endpoint
 │   └── sse.js                       # MCP SSE + JSON-RPC 2.0 handler
 ├── scripts/                         # 4 installer/helper scripts

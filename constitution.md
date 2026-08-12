@@ -1,50 +1,61 @@
 # Project Constitution
 
-Version: 1.5.4
-Last updated: 2026-08-11
+> Impact Chain: Phase 0 — Constitution (immutable)
+
+Version: 1.5.5
+Last updated: 2026-08-12
 
 ## Architecture Principles
 
-- **Static documentation + Thin API layer** — core methodology in markdown; MCP server in `api/sse.js`; TypeScript packages under `packages/`
-- **Single source of truth per concept** — every concept has one canonical reference file; all other mentions derive from it
-- **SKILL.md is the entry point** — loaded by OpenCode; must always match the OpenCode skill spec format
-- **Bi-directional gate consistency** — gate check counts (113) must stay consistent across SKILL.md, README.md, quick-reference.md, and quality-gates.md
-- **Superset rule** — VDD must always remain a superset of SDD; every SDD command, feature, gate check, and anti-pattern must have a VDD equivalent
-- **Stable phase numbering** — phases 0 through 8 never renumber
+- **Skill-first**: This is primarily a static documentation skill deployed as a Vercel MCP server. All content is markdown.
+- **Spec-first with AI**: Use VDD methodology to plan every change. SDD is optionally available as a simplified sub-mode.
+- **Version as directory**: Major deliverables are snapshotted into versioned directories.
+- **MCP as public service**: The SSE endpoint at `vdd.simonmak.com/api/sse` is the entry point for agent consumption.
+- **Package boundaries**: Documentation (SKILL.md, references/, domain-primers/) stays build-free. Only `api/` and `packages/` require build infrastructure.
+- **Dogfood VDD**: All significant changes follow the VDD chain (vision→strategy→tactics→specs→plan→tasks→implement→validate).
 
 ## Technology Stack
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Content | Markdown | All reference files are `.md` |
-| API | Node.js (Vercel serverless) | `api/sse.js` — Express-style handler, public, no-auth |
-| Packages | TypeScript + pnpm | `packages/vdd-engine`, `vdd-mcp`, `vdd-cli` — shared engine, MCP server, CLI |
-| Version Control | Git + GitHub | Public repo at simonplmak-cloud/vision-driven-design |
-| Skill Platform | OpenCode | Compatible with Claude Code and Cursor skills |
-
-## Conventions
-
-### Naming
-- Files: kebab-case (`workflow-phases.md`, `artifact-templates.md`)
-- Headers: Title Case (`## Phase 0 — Constitution`)
-- IDs: Prefix-based (`V-`, `S-`, `T-`, `A-`, `SP-`, `PL-`, `TK-`, `I-`, `R-`, `AC-`)
-- Tags: kebab-case in SKILL.md YAML frontmatter
+| Documentation | Markdown | All skill content, references, domain-primers |
+| Web | Static HTML | GitHub Pages landing page (`index.html`) |
+| MCP Server | Vercel Serverless | `api/sse.js` — SSE transport + JSON-RPC 2.0 |
+| Engine | TypeScript | `packages/vdd-engine` — 15 phase functions, Zod types |
+| MCP Package | TypeScript | `packages/vdd-mcp` — 15 tools, stdio + SSE transports |
+| CLI | TypeScript | `packages/vdd-cli` — Commander, 15 subcommands, `--json` mode |
 
 ## Security Constraints
 
-- MCP server (`api/sse.js`): stateless, public endpoint (no auth), rate-limited via Vercel
-- No secrets, no API keys, no user data stored — all state lives in user's repository
-- CORS: wildcard for public access
-- Deployment protection: disabled for public MCP access
+- The MCP SSE endpoint is **public**, no API key. Rate-limited by Vercel.
+- No user data is stored — the server is stateless.
+- The `packages/vdd-cli` tool runs on the user's local machine; no outbound calls from the CLI.
+- No secrets in commits. Use `.env` files (gitignored) for local configuration.
+
+## Naming Conventions
+
+- Files: kebab-case exce
+  pt for AGENTS.md (UPPER) and LICENSE.md (UPPER)
+- Skill frontmatter: OpenCode skill format
+- MCP tools: snake_case (`vdd_init`, `vdd_next_task`)
+- Package names: `@vdd/engine`, `@vdd/mcp`, `@vdd/cli`
 
 ## Banned Patterns
 
-- No build configuration in core documentation files — packages/ and api/ only
-- No auto-generated files edited outside their canonical sources
-- No renumbering phases or anti-patterns
-- No adding content to derived files without updating the canonical source first
-- No removing SDD compatibility features
+- Never edit generated files directly (dist/) — always edit source
+- Never reference absolute paths — use relative from project root
+- Never duplicate content — each concept has one canonical source
+- Never renumber anti-patterns or phases — append only
+- Never change the skill frontmatter format without checking OpenCode spec
+- Never hardcode API keys, tokens, or URLs that change per environment
 
 ## Domain Primitives
 
-This skill covers all domains: webapp, data-storage, etl, infrastructure, human-factors, verification-toolchain, safety-critical.
+- webapp
+- infrastructure
+
+## Open Questions / Deferred Decisions
+
+- [PENDING] [Multi-language docs]: Should domain-primers be translated to Korean/Japanese/Mandarin?
+- [PENDING] [npm publish]: Should `@vdd/mcp` and `@vdd/cli` be published to npm?
+- [PENDING] [OAuth]: Should the MCP server add optional OAuth for rate-limited tiers?
