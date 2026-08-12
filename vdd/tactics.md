@@ -33,14 +33,14 @@ Derived from: `vdd/strategy.md`
 | packages/vdd-cli | packages/ | CLI binary — 15 subcommands, Commander | P12 (Universal Access) | Good |
 | scripts/ | scripts/ | 4 installer & helper scripts | P13 (SEO & Awareness) | Good |
 | community docs | vdd/docs/ | GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CONTRIBUTING | P14 (Community) | Good |
-| CHANGELOG.md | root | Versioned change history (1.5.0–1.5.4) | P3 (Documentation) | Good |
+| CHANGELOG.md | root | Versioned change history (1.5.0–1.5.5) | P3 (Documentation) | Good |
 | LICENSE.md | root | MIT license | P13 | Good |
 
 ### Technical Debt Assessment
 
 | Debt Item | Location | Severity | Impact on Strategy |
 |-----------|----------|----------|-------------------|
-| Gate check consistency across files | Multiple | Low | Minor drift risk (14→15 tool count needed) |
+| Gate check consistency across files | Multiple | Low | Minor drift risk (counts verified at 15/113/24/7) |
 | api/sse.js duplicates engine.ts logic | api/, packages/ | Medium | Out-of-sync risk between SSE and engine |
 | No automated consistency checker | None | Medium | Manual verification of 113 gates |
 | Pending npm publish | packages/ | Low | CLI and MCP require local build |
@@ -59,12 +59,12 @@ Derived from: `vdd/strategy.md`
 
 | Gap | Strategic Pillar Affected | Impact if Unaddressed |
 |-----|--------------------------|----------------------|
-| E2E chain execution shortcut | P1, P4 | Users must manually call 8+ commands to scaffold a project |
+| E2E chain execution shortcut | P1, P4 | ✅ FIXED — vdd:e2e added across all 4 surfaces |
 | Automated consistency checker | P1 | Stale counts across docs |
 | npm publish for packages | P12 | Users must build locally |
 | GitHub Wiki out of date | P13 | Wiki may not reflect latest features |
 | No SSO/API key for MCP | P12 | No rate-limiting differentiation |
-| vdd:e2e not documented in references/ | P3 | Reference docs miss new feature |
+| vdd:e2e not documented in references/ | P3 | ✅ FIXED — README, quick-reference, SKILL.md, index.html all updated with e2e |
 
 ## Prioritized Action Items
 

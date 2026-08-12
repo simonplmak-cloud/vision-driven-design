@@ -1,159 +1,97 @@
-# Technical Plan: VDD Universal Access
+# Technical Plan: VDD Universal Access Layer
 
-> Impact Chain: V-001 → S-002 → T-003 → I-016 → SP-008 → PL-008
-> Delivered: simonplmak-cloud/vision-driven-design
+> Impact Chain: V-001 → S-002 → T-003 → SP-006 → PL-006
 
 ## Spec Reference
 Implements: `vdd/specs/vdd-universal-access/spec.md`
 
 ## Architecture Overview
 
-A TypeScript monorepo with three packages sharing a single VDD engine:
-
-```
-vdd-universal-access/
-  packages/
-    vdd-engine/       # Shared core — all 14 phase commands implemented once
-    vdd-mcp/           # MCP server — wraps engine as MCP tools (stdio + SSE transports)
-    vdd-cli/           # CLI binary — wraps engine as commander subcommands
-```
-
-The engine is the single source of truth for all VDD logic. MCP server and CLI are thin shells that:
-1. Accept user input (MCP tool params or CLI args)
-2. Call the same engine functions
-3. Return output in the appropriate format (MCP tool result or stdout)
-
-Deployment: MCP server published to npm, deployed to Vercel as a serverless function behind `vdd.simonmak.com`.
+Build a three-part TypeScript monorepo (`packages/`) that provides programmatic access to the VDD methodology: a shared engine (`vdd-engine`), an MCP server (`vdd-mcp`), and a CLI tool (`vdd-cli`). The MCP server is also deployed as a serverless function at `vdd.simonmak.com/api/sse` for public agent consumption.
 
 ## Component Breakdown
 
-### vdd-engine (shared core)
-- **Responsibility:** Implement all 14 VDD phase commands as pure functions
-- **Location:** `packages/vdd-engine/src/`
-- **Key exports:** `init()`, `vision()`, `strategize()`, `tactics()`, `specify()`, `clarify()`, `plan()`, `tasks()`, `nextTask()`, `implement()`, `validate()`, `trace()`, `analyze()`, `amend()`
-- **AC Coverage:** AC-5 (shared engine), AC-6 (Zod validation), AC-7 (constitution awareness)
+### vdd-engine (Shared Core)
 
-### vdd-mcp (MCP server)
-- **Responsibility:** Expose all 14 engine functions as MCP tools via stdio and SSE transports
+- **Responsibility:** Contains all phase logic as pure functions that produce VDD artifacts
+- **Location:** `packages/vdd-engine/src/`
+- **Key exports:** `VisionDrive`, `processVision`, `PHASES` object with 15 phase functions
+- **AC Coverage:** AC-1 (phase execution), AC-3 (Zod validation)
+
+### vdd-mcp (MCP Server)
+
+- **Responsibility:** Exposes VDD phases as MCP tools via stdio and SSE transports
 - **Location:** `packages/vdd-mcp/src/`
 - **Key exports:** MCP server instance, tool registrations
-- **AC Coverage:** AC-1 (14 tools exposed), AC-2 (standalone execution)
+- **AC Coverage:** AC-1 (15 tools exposed), AC-2 (standalone execution)
 
 ### vdd-cli (CLI binary)
-- **Responsibility:** Expose all 14 engine functions as CLI subcommands
-- **Location:** `packages/vdd-cli/src/`
-- **Key exports:** CLI entrypoint (`vdd`), commander subcommand definitions
-- **AC Coverage:** AC-3 (14 subcommands), AC-4 (identical output to agent), AC-8 (--json flag)
 
-### Vercel Deployment
-- **Responsibility:** Host the MCP server at `vdd.simonmak.com` via serverless functions
-- **Location:** `packages/vdd-mcp/api/`
-- **Transport:** SSE (Server-Sent Events) for MCP over HTTP
-- **AC Coverage:** AC-2 (standalone, no OpenCode required)
+- **Responsibility:** Provides a command-line interface to all VDD phases
+- **Location:** `packages/vdd-cli/src/`
+- **Key exports:** Commander-based CLI with 15 subcommands
+- **AC Coverage:** AC-2 (standalone execution), AC-4 (JSON output)
+
+### api/sse (Vercel Deployment)
+
+- **Responsibility:** Serverless MCP endpoint for agent consumption
+- **Location:** `api/sse.js`
+- **Key exports:** Express-like handler for Vercel
+- **AC Coverage:** AC-1 (MCP server accessible)
 
 ## Technology Choices
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Language | TypeScript 5.x (strict) | MCP SDK is TypeScript-native; Zod integrates seamlessly |
-| Runtime | Node.js 20+ (Vercel) | Vercel serverless supports Node.js 20; MCP SDK requires 18+ |
-| Package manager | pnpm | Workspace support for monorepo; faster than npm |
-| MCP SDK | `@modelcontextprotocol/sdk` | Official MCP TypeScript SDK — tool registration, transports, tool call handling |
-| CLI framework | `commander` | Mature, typed, handles --help, subcommands, --json flag natively |
-| Validation | `zod` | Runtime validation of all inputs; produces structured errors for MCP and CLI |
-| Deployment | Vercel serverless functions | Free tier, automatic HTTPS, zero-config TypeScript, custom domain support |
-| Monorepo | pnpm workspaces | Shared engine package consumed by both MCP and CLI without duplication |
-| Transport | SSE (MCP over HTTP) for Vercel; stdio for local | Vercel supports long-running HTTP; stdio for local agent use |
+| Language | TypeScript 5.x | Already in constitution, strict mode |
+| Package manager | pnpm | Workspace support, fast |
+| Monorepo tooling | pnpm workspaces | Native monorepo support |
+| Schema validation | Zod | Already in constitution, type-safe runtime validation |
+| MCP protocol | @modelcontextprotocol/sdk v1+ | Official MCP SDK |
+| CLI framework | Commander.js 12+ | Lightweight, widely adopted |
+| Transport (MCP) | StdioServerTransport + SSE | Stdio for local, SSE for remote |
+| Deployment | Vercel (serverless) | Already configured in `vercel.json` |
 
-## Data Flow
+## Integration Points
 
-```
-User Agent (MCP Client)          CLI Terminal
-        │                              │
-        ▼                              ▼
-  MCP Tool Call                 `vdd vision "..."`     
-        │                              │
-        ▼                              ▼
-    vdd-mcp ──┐                vdd-cli ──┐
-              │                          │
-              ▼                          ▼
-         vdd-engine (shared core)
-              │
-              ▼
-    vdd/vision.md (written to user's repo)
-```
+- **vdd-cli → vdd-engine**: CLI imports `PHASES` and calls phase functions directly
+- **vdd-mcp → vdd-engine**: MCP server imports `PHASES` and wraps each phase as an MCP tool
+- **api/sse → standalone**: SSE endpoint duplicates phase logic for serverless independence
+- **vdd-mcp → MCP clients**: Stdio transport for local agents, SSE transport for remote agents
 
 ## AC Coverage Map
 
-| AC | Component(s) | Contract(s) |
-|----|-------------|-------------|
-| AC-1 (14 MCP tools) | vdd-mcp | MCP tool schema per tool |
-| AC-2 (standalone MCP) | vdd-mcp, Vercel Deployment | SSE endpoint contract |
-| AC-3 (14 CLI subcommands) | vdd-cli | CLI --help output |
-| AC-4 (identical output) | vdd-engine, vdd-cli, vdd-mcp | Artifact structure contract |
-| AC-5 (shared engine) | vdd-engine | Engine API contract |
-| AC-6 (Zod validation) | vdd-engine | Error response schema |
-| AC-7 (constitution awareness) | vdd-engine | constitution.md parser |
-| AC-8 (--json output) | vdd-cli | JSON output schema |
-| AC-9 (npm publish) | vdd-mcp, vdd-cli, vdd-engine | npm publish workflow |
-| AC-10 (integration test) | All components | Cross-interface test harness |
+| AC | Component(s) | Contract(s) | Verified By |
+|----|-------------|-------------|-------------|
+| AC-1 (MCP server) | vdd-mcp, api/sse | MCP protocol | Manual: curling the SSE endpoint |
+| AC-2 (Standalone) | vdd-mcp, vdd-cli | — | Manual: running `vdd validate --project-root .` |
+| AC-3 (Zod validation) | vdd-engine | — | Vitest: `tests/unit/validate.test.ts` |
+| AC-4 (JSON output) | vdd-cli | — | Manual: `vdd validate --json` |
+| AC-5 (SSE transport) | api/sse, vdd-mcp | MCP SSE spec | Manual: `curl -N https://vdd.simonmak.com/api/sse` |
 
-## Contracts
+## Toolchain Verification
 
-### Engine API Contract
-```typescript
-// Every phase function follows this pattern:
-type VddPhaseFn = (input: ValidatedInput, context: VddContext) => Promise<VddOutput>;
-
-interface VddContext {
-  projectRoot: string;      // Path to user's project
-  constitution: Constitution; // Parsed constitution.md
-  mode: 'auto' | 'gated';   // From constitution or env
-}
-```
-
-### MCP Tool Schema Contract (per tool)
-```typescript
-{
-  name: "vdd_vision",
-  description: "Expand freeform vision into structured vision.md",
-  inputSchema: {
-    type: "object",
-    properties: {
-      statement: { type: "string", description: "Freeform vision statement" },
-      projectRoot: { type: "string", description: "Path to project root" }
-    },
-    required: ["statement"]
-  }
-}
-```
-
-### CLI Output Contract (--json mode)
-```typescript
-interface CliJsonOutput {
-  success: boolean;
-  artifact?: string;        // Path to created artifact
-  gateResult?: GateResult;  // If applicable
-  error?: ZodError;        // If validation failed
-}
-```
+| Tool | AC Coverage | CI Stage |
+|------|------------|----------|
+| Vitest | AC-3 | `unit-test` |
+| curl/Playwright | AC-1, AC-5 | `e2e-test` |
+| Manual CLI | AC-2, AC-4 | Manual |
 
 ## Risks
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|-----------|
-| MCP SDK API breaks between versions | Medium | High | Pin SDK version; add renovate/dependabot for automated updates |
-| Vercel cold starts impact MCP latency | Medium | Medium | Use Vercel Edge Functions for lower latency; SSE transport tolerates latency better than request/response |
-| Engine function signatures diverge across interfaces | Low | High | Single engine module imported by both; integration test (AC-10) catches divergence |
-| npm publish conflicts (multiple packages) | Low | Medium | Use changesets or lerna-lite for coordinated versioning |
-| Vercel free tier limits (execution time, bandwidth) | Medium | Medium | Monitor usage; add rate limiting; cache engine results where safe |
+| MCP SDK breaking changes | Low | High | Pin SDK version, test before upgrading |
+| Vercel cold starts | Medium | Low | Acceptable for public, free API |
+| SSE endpoint abuse | Low | Medium | Rate limiting via Vercel, optional API key in future |
+| Zod v3 vs v4 mismatch | Low | Medium | Use compatible API subset, test both versions |
 
 ## S&T Assumptions (Plan → Tasks)
 
-**Necessity:** Task breakdown is necessary to sequence engine implementation, MCP server wrapping, CLI binary creation, npm publishing, Vercel deployment, and integration testing.
+**Necessity:** A Task breakdown is necessary to implement each package independently while maintaining interface compatibility via vdd-engine.
 
-**Achievability:** This plan is achievable — TypeScript monorepo with pnpm workspaces, MCP SDK is mature and well-documented, Vercel deployment is a single command, npm publishing is standard CI.
+**Achievability:** This plan is achievable with a monorepo setup, pnpm workspaces, and Vercel for serverless deployment.
 
-**Sufficiency:** The planned tasks are sufficient to deliver all 10 ACs covering MCP, CLI, and shared engine with cross-interface validation.
+**Sufficiency:** The three-package structure (engine + MCP + CLI) plus a serverless endpoint is sufficient to provide universal access to VDD.
 
-**Warnings:** (1) MCP transport over SSE on Vercel serverless may require keep-alive or WebSocket upgrade — test early. (2) npm package naming (scoped vs unscoped) needs final decision before publish. (3) Vercel custom domain (`vdd.simonmak.com`) requires DNS configuration.
+**Warnings:** Must test SSE transport end-to-end before release. MCP SDK version must be compatible with OpenCode and Claude Desktop clients.
