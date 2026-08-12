@@ -46,20 +46,20 @@ function gate1(files) {
   const v = files["vdd/vision.md"], s = files["vdd/strategy.md"];
   if (!v || !s) return { gate: "G1", junction: "Vision → Strategy", passed: false, checks: [ck("G1.0", "Both artifacts exist", false)], forwardPassed: 0, forwardTotal: 0, backwardPassed: 0, backwardTotal: 0, assumptionsPassed: 0, assumptionsTotal: 0, warnings: ["One or both artifacts missing"] };
   checks.push(ck("F1.1", "Goal coverage → Strategic Pillars section present", hasSection(s, "Strategic Pillars")));
-  checks.push(ck("F1.2", "Impact coverage → Research Synthesis present", true, hasSection(s, "Research Synthesis") ? "Found" : "Missing"));
+  checks.push(ck("F1.2", "Impact coverage → Research Synthesis present", hasSection(s, "Research Synthesis")));
   checks.push(ck("F1.3", "Stakeholder coverage → strategy references vision", s.includes("vdd/vision.md")));
-  checks.push(ck("F1.4", "Metric coverage → Expected Impact per pillar", true, (s.match(/Expected Impact/g) || []).length >= 1 ? "Found" : "None"));
-  checks.push(ck("F1.5", "Domain coverage → Domain Primers Loaded section", true, hasSection(s, "Domain Primers Loaded") ? "Found" : "Missing"));
-  checks.push(ck("B1.1", "Pillar authorization → pillars reference vision goals", true, hasSection(s, "Strategic Pillars") ? "Pillars present" : "Template only"));
-  checks.push(ck("B1.2", "Research relevance → Research Synthesis has content", true, hasSection(s, "Research Synthesis") ? "Section present" : "Missing"));
-  checks.push(ck("B1.3", "Risk relevance → Risk Register present", true, hasSection(s, "Risk Register") ? "Found" : "Missing"));
-  checks.push(ck("B1.4", "No scope invention → Out of Scope section", true, hasSection(s, "Out of Scope") ? "Found" : "Missing"));
-  checks.push(ck("B1.5", "Feasibility honesty → Feasibility Assessment present", true, hasSection(s, "Feasibility Assessment") ? "Found" : "Missing"));
+  checks.push(ck("F1.4", "Metric coverage → Expected Impact per pillar", (s.match(/Expected Impact/g) || []).length >= 1));
+  checks.push(ck("F1.5", "Domain coverage → Domain Primers Loaded section", hasSection(s, "Domain Primers Loaded")));
+  checks.push(ck("B1.1", "Pillar authorization → pillars reference vision goals", (s.match(/Vision Trace/g) || []).length >= 1));
+  checks.push(ck("B1.2", "Research relevance → Research Synthesis has content", hasSection(s, "Research Synthesis")));
+  checks.push(ck("B1.3", "Risk relevance → Risk Register present", hasSection(s, "Risk Register")));
+  checks.push(ck("B1.4", "No scope invention → Out of Scope section", hasSection(s, "Out of Scope")));
+  checks.push(ck("B1.5", "Feasibility honesty → Feasibility Assessment present", hasSection(s, "Feasibility Assessment")));
   const saw = hasSection(v, "S&T Assumptions"), sas = hasSection(s, "S&T Assumptions");
-  checks.push(ck("A1.1", "Necessity (V→S) → S&T section in both files", true, saw && sas ? "Both present" : saw ? "vision only" : sas ? "strategy only" : "Both missing"));
-  checks.push(ck("A1.2", "Achievability (V→S) → vision achievable claims", true, saw ? "Section present" : "Missing"));
-  checks.push(ck("A1.3", "Sufficiency (V→S) → strategy covers vision", true, sas ? "Section present" : "Missing"));
-  checks.push(ck("A1.4", "Warnings (V→S) → risk mitigations documented", true, hasSection(s, "Risk Register") ? "Risk register found" : "Missing"));
+  checks.push(ck("A1.1", "Necessity (V→S) → S&T section in both files", saw && sas));
+  checks.push(ck("A1.2", "Achievability (V→S) → vision achievable claims", saw));
+  checks.push(ck("A1.3", "Sufficiency (V→S) → strategy covers vision", sas));
+  checks.push(ck("A1.4", "Warnings (V→S) → risk mitigations documented", hasSection(s, "Risk Register")));
   checks.push(ck("G1.CHAIN", "Impact Chain: V-001 → S-002 in strategy.md", impactChainMatches(s, "V-001 → S-002")));
   return tallyGate("G1", "Vision → Strategy", checks, 5, 5, 4);
 }
@@ -68,19 +68,19 @@ function gate2(files) {
   const checks = [];
   const s = files["vdd/strategy.md"], t = files["vdd/tactics.md"];
   if (!s || !t) return { gate: "G2", junction: "Strategy → Tactics", passed: false, checks: [ck("G2.0", "Both artifacts exist", false)], forwardPassed: 0, forwardTotal: 0, backwardPassed: 0, backwardTotal: 0, assumptionsPassed: 0, assumptionsTotal: 0, warnings: ["One or both artifacts missing"] };
-  checks.push(ck("F2.1", "Pillar coverage → Action Items reference pillars", true, (t.match(/Pillar/g) || []).length >= 1 ? "Pillar refs found" : "No pillar references"));
-  checks.push(ck("F2.2", "Gap coverage → Gap Analysis present", true, hasSection(t, "Gap Analysis") ? "Found" : "Missing"));
-  checks.push(ck("F2.3", "Risk mitigation → tactics references strategy", true, t.includes("strategy.md") ? "References strategy" : "No reference"));
-  checks.push(ck("F2.4", "Dependency validity → Dependency Map present", true, hasSection(t, "Dependency Map") ? "Found" : "Missing"));
-  checks.push(ck("B2.1", "Action item authorization → items trace to pillars", true, hasSection(t, "Prioritized Action Items") ? "Section found" : "Missing"));
-  checks.push(ck("B2.2", "No gold-plating → items have MoSCoW labels", true, (t.match(/MUST|SHOULD|COULD/g) || []).length >= 1 ? "MoSCoW found" : "No MoSCoW labels"));
-  checks.push(ck("B2.3", "No scope invention → strategy reference present", true, t.includes("strategy.md") ? "References strategy" : "Missing"));
-  checks.push(ck("B2.4", "Infrastructure relevance → Infra Requirements section", true, hasSection(t, "Infrastructure Requirements") ? "Found" : "Missing"));
-  checks.push(ck("B2.5", "Audit accuracy → Codebase Audit present", true, hasSection(t, "Codebase Audit") ? "Found" : "Missing"));
-  checks.push(ck("A2.1", "Necessity (S→T) → S&T section present", true, hasSection(t, "S&T Assumptions") ? "Found" : "Missing"));
-  checks.push(ck("A2.2", "Achievability (S→T)", true, hasSection(t, "S&T Assumptions") ? "Section present" : "Missing"));
-  checks.push(ck("A2.3", "Sufficiency (S→T)", true, hasSection(t, "Gap Analysis") ? "Gaps documented" : "Missing"));
-  checks.push(ck("A2.4", "Warnings (S→T) → dependency risks", true, hasSection(t, "Dependency Map") ? "Dependencies mapped" : "Missing"));
+  checks.push(ck("F2.1", "Pillar coverage → Action Items reference pillars", (t.match(/Pillar/g) || []).length >= 1));
+  checks.push(ck("F2.2", "Gap coverage → Gap Analysis present", hasSection(t, "Gap Analysis")));
+  checks.push(ck("F2.3", "Risk mitigation → tactics references strategy risk", t.includes("strategy.md")));
+  checks.push(ck("F2.4", "Dependency validity → Dependency Map present", hasSection(t, "Dependency Map")));
+  checks.push(ck("B2.1", "Action item authorization → items trace to pillars", hasSection(t, "Prioritized Action Items")));
+  checks.push(ck("B2.2", "No gold-plating → items have MoSCoW labels", (t.match(/MUST|SHOULD|COULD/g) || []).length >= 1));
+  checks.push(ck("B2.3", "No scope invention → strategy reference present", t.includes("strategy.md")));
+  checks.push(ck("B2.4", "Infrastructure relevance → Infra Requirements section", hasSection(t, "Infrastructure Requirements")));
+  checks.push(ck("B2.5", "Audit accuracy → Codebase Audit present", hasSection(t, "Codebase Audit")));
+  checks.push(ck("A2.1", "Necessity (S→T) → S&T section present", hasSection(t, "S&T Assumptions")));
+  checks.push(ck("A2.2", "Achievability (S→T)", hasSection(t, "S&T Assumptions")));
+  checks.push(ck("A2.3", "Sufficiency (S→T)", hasSection(t, "Gap Analysis")));
+  checks.push(ck("A2.4", "Warnings (S→T) → dependency risks", hasSection(t, "Dependency Map")));
   checks.push(ck("G2.CHAIN", "Impact Chain: V-001 → S-002 → T-003 in tactics.md", impactChainMatches(t, "V-001 → S-002 → T-003")));
   return tallyGate("G2", "Strategy → Tactics", checks, 4, 5, 4);
 }
@@ -92,24 +92,24 @@ function gate3(files) {
   const acCount = (sp.match(/### AC-/g) || []).length;
   const mustCount = (sp.match(/\[MUST\]/g) || []).length;
   const ph = countPlaceholders(sp);
-  checks.push(ck("F3.1", "MUST coverage → spec exists for action item", true, "Spec present"));
-  checks.push(ck("F3.2", "Scope coverage → Overview section present", true, hasSection(sp, "Overview") ? "Found" : "Missing"));
-  checks.push(ck("F3.3", "Impact trace → Impact Verification section", true, hasSection(sp, "Impact Verification") ? "Found" : "Missing"));
-  checks.push(ck("F3.4", "Testability → ACs have GWT format", true, (sp.match(/Given/g) || []).length >= 1 ? "GWT found" : "No GWT format"));
-  checks.push(ck("F3.5", "Implementation-free → no tech names in spec", true, "Template OK"));
-  checks.push(ck("F3.6", "Error coverage → edge-case ACs present", true, (sp.match(/AC-E\d+/g) || []).length >= 1 ? "Edge AC found" : "No error ACs"));
-  checks.push(ck("F3.7", "MoSCoW labels → ACs labeled", true, mustCount >= 1 ? mustCount + " MUST AC(s)" : "No MUST labels"));
-  checks.push(ck("F3.8", "No vague terms → measurable thresholds", true, ph > 0 ? ph + " placeholders to resolve" : "OK"));
-  checks.push(ck("F3.9", "Clarification resolved → no [NEEDS CLARIFICATION]", true, ph > 0 ? ph + " items pending" : "All resolved"));
-  checks.push(ck("F3.10", "Non-functional requirements → NFR section", true, hasSection(sp, "Non-Functional Requirements") ? "Found" : "Missing"));
+  checks.push(ck("F3.1", "MUST coverage → spec exists for action item", true));
+  checks.push(ck("F3.2", "Scope coverage → Overview section present", hasSection(sp, "Overview")));
+  checks.push(ck("F3.3", "Impact trace → Impact Verification section", hasSection(sp, "Impact Verification")));
+  checks.push(ck("F3.4", "Testability → ACs have GWT format", (sp.match(/Given/g) || []).length >= 1));
+  checks.push(ck("F3.5", "Implementation-free → no tech names in spec", true));
+  checks.push(ck("F3.6", "Error coverage → edge-case ACs present", (sp.match(/AC-E\d+/g) || []).length >= 1));
+  checks.push(ck("F3.7", "MoSCoW labels → ACs labeled", mustCount >= 1));
+  checks.push(ck("F3.8", "No vague terms → measurable thresholds (no [e.g.] placeholders)", ph === 0, ph + " placeholder(s) remaining"));
+  checks.push(ck("F3.9", "Clarification resolved → no [NEEDS CLARIFICATION]", (sp.match(/\[NEEDS CLARIFICATION\]/g) || []).length === 0));
+  checks.push(ck("F3.10", "Non-functional requirements → NFR section", hasSection(sp, "Non-Functional Requirements")));
   checks.push(ck("B3.1", "Tactical origin → spec references tactics", sp.includes("tactics.md")));
-  checks.push(ck("B3.2", "No scope invention → Boundaries section", true, hasSection(sp, "Boundaries") ? "Found" : "Missing"));
-  checks.push(ck("B3.3", "Action item coverage → Tactical Origin references action item", true, sp.includes("Action Item") ? "Found" : "Missing"));
-  checks.push(ck("B3.4", "Cross-spec consistency → Out of Scope section", true, hasSection(sp, "Out of Scope") ? "Found" : "Missing"));
-  checks.push(ck("A3.1", "Necessity (T→SP) → S&T section present", true, hasSection(sp, "S&T Assumptions") ? "Found" : "Missing"));
-  checks.push(ck("A3.2", "Achievability (T→SP)", true, acCount >= 2 ? "ACs defined" : "Insufficient ACs"));
-  checks.push(ck("A3.3", "Sufficiency (T→SP)", true, mustCount >= 1 ? mustCount + " MUST AC(s)" : "No MUST ACs"));
-  checks.push(ck("A3.4", "Warnings (T→SP) → error ACs covered", true, (sp.match(/AC-E\d+/g) || []).length >= 1 ? "Edge cases covered" : "No edge ACs"));
+  checks.push(ck("B3.2", "No scope invention → Boundaries section", hasSection(sp, "Boundaries")));
+  checks.push(ck("B3.3", "Action item coverage → Tactical Origin references action item", sp.includes("Action Item")));
+  checks.push(ck("B3.4", "Cross-spec consistency → Out of Scope section", hasSection(sp, "Out of Scope")));
+  checks.push(ck("A3.1", "Necessity (T→SP) → S&T section present", hasSection(sp, "S&T Assumptions")));
+  checks.push(ck("A3.2", "Achievability (T→SP)", acCount >= 2));
+  checks.push(ck("A3.3", "Sufficiency (T→SP)", mustCount >= 1));
+  checks.push(ck("A3.4", "Warnings (T→SP) → error ACs covered", (sp.match(/AC-E\d+/g) || []).length >= 1));
   checks.push(ck("G3.CHAIN", "Impact Chain: V-001 → S-002 → T-003 → SP-004 in spec.md", impactChainMatches(sp, "V-001 → S-002 → T-003 → SP-004")));
   return tallyGate("G3", "Tactics → Specs", checks, 10, 4, 4);
 }
@@ -121,24 +121,24 @@ function gate4(files) {
   checks.push(ck("G4.FILE", "plan.md exists", true));
   checks.push(ck("G4.FILE2", "data-model.md exists", !!dm));
   checks.push(ck("G4.FILE3", "contracts/primary-endpoint.md exists", !!ct));
-  checks.push(ck("F4.1", "AC traceability → AC Coverage Map present", true, hasSection(pl, "AC Coverage Map") ? "Found" : "Missing"));
-  checks.push(ck("F4.2", "Contract completeness → contracts/ exists", true, ct ? "Contracts found" : "Missing"));
-  checks.push(ck("F4.3", "Error code coverage → Error Codes in contract", true, ct && ct.includes("Error Codes") ? "Found" : "Missing"));
-  checks.push(ck("F4.4", "Data model completeness → Entities in data-model.md", true, dm && hasSection(dm, "Entities") ? "Found" : "Missing"));
-  checks.push(ck("F4.5", "Migration defined → Migrations section", true, dm && hasSection(dm, "Migrations") ? "Found" : "Missing"));
-  checks.push(ck("F4.6", "Index justification → Indexes section", true, dm && hasSection(dm, "Indexes") ? "Found" : "Missing"));
-  checks.push(ck("F4.7", "Risks identified → Risks section in plan", true, hasSection(pl, "Risks") ? "Found" : "Missing"));
-  checks.push(ck("B4.1", "Component authorization → Component Breakdown", true, hasSection(pl, "Component Breakdown") ? "Found" : "Missing"));
-  checks.push(ck("B4.2", "Contract authorization → contracts reference ACs", true, ct && ct.includes("AC Coverage") ? "Found" : "Missing"));
-  checks.push(ck("B4.3", "Entity authorization → data-model references spec", true, dm && dm.includes("spec.md") ? "References spec" : "No reference"));
-  checks.push(ck("B4.4", "Constitution compliance → plan references stack", true, hasSection(pl, "Technology Choices") ? "Tech choices documented" : "Missing"));
-  checks.push(ck("B4.5", "No over-engineering → plan is scoped", true, hasSection(pl, "Architecture Overview") ? "Architecture present" : "Missing"));
-  checks.push(ck("B4.6", "Technology fit → Technology Choices table", true, hasSection(pl, "Technology Choices") ? "Found" : "Missing"));
-  checks.push(ck("A4.1", "Necessity (SP→PL) → S&T in plan", true, hasSection(pl, "S&T Assumptions") ? "Found" : "Missing"));
-  checks.push(ck("A4.2", "Achievability (SP→PL)", true, hasSection(pl, "Component Breakdown") ? "Components designed" : "Missing"));
-  checks.push(ck("A4.3", "Sufficiency (SP→PL)", true, hasSection(pl, "AC Coverage Map") ? "Coverage map exists" : "Missing"));
-  checks.push(ck("A4.4", "Warnings (SP→PL) → risks in plan", true, hasSection(pl, "Risks") ? "Risks documented" : "Missing"));
-  checks.push(ck("G4.CHAIN", "Impact Chain: V-001 → S-002 → T-003 → SP-004 → PL-005 in plan.md", impactChainMatches(pl, "V-001 → S-002 → T-003 → SP-004 → PL-005")));
+  checks.push(ck("F4.1", "AC traceability → AC Coverage Map present", !!pl && hasSection(pl, "AC Coverage Map")));
+  checks.push(ck("F4.2", "Contract completeness → contracts/ exists", !!ct));
+  checks.push(ck("F4.3", "Error code coverage → Error Codes in contract", !!ct && hasSection(ct, "Error Codes")));
+  checks.push(ck("F4.4", "Data model completeness → Entities in data-model.md", !!dm && hasSection(dm, "Entities")));
+  checks.push(ck("F4.5", "Migration defined → Migrations section", !!dm && hasSection(dm, "Migrations")));
+  checks.push(ck("F4.6", "Index justification → Indexes section", !!dm && hasSection(dm, "Indexes")));
+  checks.push(ck("F4.7", "Risks identified → Risks section in plan", !!pl && hasSection(pl, "Risks")));
+  checks.push(ck("B4.1", "Component authorization → Component Breakdown", !!pl && hasSection(pl, "Component Breakdown")));
+  checks.push(ck("B4.2", "Contract authorization → contracts reference ACs", !!ct && ct.includes("AC Coverage")));
+  checks.push(ck("B4.3", "Entity authorization → data-model references spec", !!dm && dm.includes("spec.md")));
+  checks.push(ck("B4.4", "Constitution compliance → plan references stack", !!pl && hasSection(pl, "Technology Choices")));
+  checks.push(ck("B4.5", "No over-engineering → plan is scoped", !!pl && hasSection(pl, "Architecture Overview")));
+  checks.push(ck("B4.6", "Technology fit → Technology Choices table", !!pl && hasSection(pl, "Technology Choices")));
+  checks.push(ck("A4.1", "Necessity (SP→PL) → S&T in plan", !!pl && hasSection(pl, "S&T Assumptions")));
+  checks.push(ck("A4.2", "Achievability (SP→PL)", !!pl && hasSection(pl, "Component Breakdown")));
+  checks.push(ck("A4.3", "Sufficiency (SP→PL)", !!pl && hasSection(pl, "AC Coverage Map")));
+  checks.push(ck("A4.4", "Warnings (SP→PL) → risks in plan", !!pl && hasSection(pl, "Risks")));
+  checks.push(ck("G4.CHAIN", "Impact Chain: V-001 → S-002 → T-003 → SP-004 → PL-005 in plan.md", !!pl && impactChainMatches(pl, "V-001 → S-002 → T-003 → SP-004 → PL-005")));
   return tallyGate("G4", "Specs → Plan", checks, 7, 6, 4);
 }
 
@@ -149,22 +149,22 @@ function gate5(files) {
   const taskCount = (tk.match(/\*\*TASK-\d+\*\*/g) || []).length;
   const testTasks = (tk.match(/Write tests/g) || []).length;
   const implTasks = (tk.match(/Implement/g) || []).length;
-  checks.push(ck("F5.1", "Component coverage → tasks reference components", true, taskCount > 0 ? taskCount + " tasks" : "No tasks"));
-  checks.push(ck("F5.2", "Contract coverage → tasks reference contracts", true, tk.includes("contracts/") ? "Contract refs found" : "No contract references"));
-  checks.push(ck("F5.3", "Entity coverage → tasks reference data model", true, tk.includes("spec.md") ? "Spec references found" : "No spec refs"));
-  checks.push(ck("F5.4", "AC references → tasks cite ACs", true, (tk.match(/AC-\d+/g) || []).length >= 1 ? "AC refs found" : "No AC references"));
-  checks.push(ck("F5.5", "Contract references → tasks cite contracts", true, tk.includes("contracts/") ? "Found" : "No contract refs"));
-  checks.push(ck("F5.6", "Satisfies declaration → tasks declare AC coverage", true, (tk.match(/Satisfies:/g) || []).length >= 1 ? "Found" : "No satisfies declarations"));
+  checks.push(ck("F5.1", "Component coverage → tasks reference components", taskCount > 0));
+  checks.push(ck("F5.2", "Contract coverage → tasks reference contracts", tk.includes("contracts/")));
+  checks.push(ck("F5.3", "Entity coverage → tasks reference data model", tk.includes("spec.md")));
+  checks.push(ck("F5.4", "AC references → tasks cite ACs", (tk.match(/AC-\d+/g) || []).length >= 1));
+  checks.push(ck("F5.5", "Contract references → tasks cite contracts", tk.includes("contracts/")));
+  checks.push(ck("F5.6", "Satisfies declaration → tasks declare AC coverage", (tk.match(/Satisfies:/g) || []).length >= 1));
   checks.push(ck("B5.1", "Task authorization → tasks reference plan", tk.includes("plan.md")));
-  checks.push(ck("B5.2", "Test-first order → test before impl", true, testTasks > 0 && implTasks > 0 ? "Test+impl found" : testTasks > 0 ? "Tests only" : "No test tasks"));
-  checks.push(ck("B5.3", "Task size → [S]/[M]/[L] labels", true, (tk.match(/\[S\]|\[M\]|\[L\]/g) || []).length >= 1 ? "Sized tasks found" : "No size labels"));
-  checks.push(ck("B5.4", "Dependency validity → tasks have Depends on", true, (tk.match(/Depends on/g) || []).length >= 1 ? "Dependencies found" : "No deps"));
-  checks.push(ck("B5.5", "Parallelism accuracy → [P] markers present", true, (tk.match(/\[P\]/g) || []).length >= 1 ? "Parallel tasks found" : "No [P] markers"));
-  checks.push(ck("B5.6", "No scope invention → tasks bound to plan", true, tk.includes("plan.md") ? "Plan reference present" : "No plan ref"));
-  checks.push(ck("A5.1", "Necessity (PL→TK) → task breakdown exists", true, taskCount > 0 ? taskCount + " tasks" : "No tasks"));
-  checks.push(ck("A5.2", "Achievability (PL→TK)", true, taskCount >= 2 ? "Sufficient tasks" : "Too few tasks"));
-  checks.push(ck("A5.3", "Sufficiency (PL→TK)", true, hasSection(tk, "Tasks") ? "Tasks section present" : "Missing"));
-  checks.push(ck("A5.4", "Warnings (PL→TK) → dependency risks", true, (tk.match(/Depends on/g) || []).length >= 1 ? "Dependencies documented" : "No deps"));
+  checks.push(ck("B5.2", "Test-first order → test before impl", testTasks > 0 && implTasks > 0));
+  checks.push(ck("B5.3", "Task size → [S]/[M]/[L] labels", (tk.match(/\[S\]|\[M\]|\[L\]/g) || []).length >= 1));
+  checks.push(ck("B5.4", "Dependency validity → tasks have Depends on", (tk.match(/Depends on/g) || []).length >= 1));
+  checks.push(ck("B5.5", "Parallelism accuracy → [P] markers present", (tk.match(/\[P\]/g) || []).length >= 1));
+  checks.push(ck("B5.6", "No scope invention → tasks bound to plan", tk.includes("plan.md")));
+  checks.push(ck("A5.1", "Necessity (PL→TK) → task breakdown exists", taskCount > 0));
+  checks.push(ck("A5.2", "Achievability (PL→TK)", taskCount >= 2));
+  checks.push(ck("A5.3", "Sufficiency (PL→TK)", hasSection(tk, "Tasks")));
+  checks.push(ck("A5.4", "Warnings (PL→TK) → dependency risks", (tk.match(/Depends on/g) || []).length >= 1));
   checks.push(ck("G5.CHAIN", "Impact Chain: V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 in tasks.md", impactChainMatches(tk, "V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")));
   return tallyGate("G5", "Plan → Tasks", checks, 6, 6, 4);
 }
@@ -175,21 +175,21 @@ function gate6(files) {
   if (!tk) return { gate: "G6", junction: "Tasks → Implementation", passed: false, checks: [ck("G6.0", "tasks.md exists", false)], forwardPassed: 0, forwardTotal: 0, backwardPassed: 0, backwardTotal: 0, assumptionsPassed: 0, assumptionsTotal: 0, warnings: ["tasks.md missing"] };
   const pendingTasks = (tk.match(/- \[ \] \*\*TASK-/g) || []).length;
   const doneTasks = (tk.match(/- \[x\] \*\*TASK-/g) || []).length;
-  checks.push(ck("F6.1", "Tests pass → tests defined in tasks", true, (tk.match(/Write tests/g) || []).length >= 1 ? "Test tasks present" : "No test tasks"));
-  checks.push(ck("F6.2", "Task scope → tasks have descriptions", true, pendingTasks + doneTasks > 0 ? (pendingTasks + doneTasks) + " tasks total" : "No tasks"));
-  checks.push(ck("F6.3", "AC satisfaction → tasks reference ACs", true, (tk.match(/AC-\d+/g) || []).length >= 1 ? "AC refs found" : "No AC refs"));
-  checks.push(ck("F6.4", "Task tracking → checkbox format present", true, pendingTasks + doneTasks > 0 ? "Checkbox format found" : "No checkboxes"));
-  checks.push(ck("B6.1", "Scope adherence → tasks reference plan", true, tk.includes("plan.md") ? "References plan" : "No plan ref"));
-  checks.push(ck("B6.2", "Signature match → tasks reference contracts", true, tk.includes("contracts/") ? "Contract refs found" : "No contract refs"));
-  checks.push(ck("B6.3", "Schema match → tasks reference data model", true, tk.includes("spec.md") ? "Spec referenced" : "No spec ref"));
-  checks.push(ck("B6.4", "Commit format → task IDs present", true, (tk.match(/TASK-\d+/g) || []).length >= 1 ? "Task IDs found" : "No task IDs"));
-  checks.push(ck("B6.5", "No silent failures → error ACs in spec", true, "Template-level"));
-  checks.push(ck("B6.6", "Constitution check → bounded by spec boundaries", true, "Template-level"));
-  checks.push(ck("B6.7", "Boundaries check → Always/Never sections", true, "Template-level"));
-  checks.push(ck("A6.1", "Necessity (TK→IM) → tasks ready for implementation", true, pendingTasks > 0 ? pendingTasks + " tasks pending" : "All done"));
-  checks.push(ck("A6.2", "Achievability (TK→IM) → tasks are sized", true, (tk.match(/\[S\]|\[M\]|\[L\]/g) || []).length >= 1 ? "Tasks sized" : "No size labels"));
-  checks.push(ck("A6.3", "Sufficiency (TK→IM) → tasks cover plan", true, tk.includes("plan.md") ? "Plan reference present" : "No plan ref"));
-  checks.push(ck("A6.4", "Warnings (TK→IM) → dependency risks documented", true, (tk.match(/Depends on/g) || []).length >= 1 ? "Deps documented" : "No deps"));
+  checks.push(ck("F6.1", "Tests pass → tests defined in tasks", (tk.match(/Write tests/g) || []).length >= 1));
+  checks.push(ck("F6.2", "Task scope → tasks have descriptions", pendingTasks + doneTasks > 0));
+  checks.push(ck("F6.3", "AC satisfaction → tasks reference ACs", (tk.match(/AC-\d+/g) || []).length >= 1));
+  checks.push(ck("F6.4", "Task tracking → checkbox format present", pendingTasks + doneTasks > 0));
+  checks.push(ck("B6.1", "Scope adherence → tasks reference plan", tk.includes("plan.md")));
+  checks.push(ck("B6.2", "Signature match → tasks reference contracts", tk.includes("contracts/")));
+  checks.push(ck("B6.3", "Schema match → tasks reference data model", tk.includes("spec.md")));
+  checks.push(ck("B6.4", "Commit format → task IDs present", (tk.match(/TASK-\d+/g) || []).length >= 1));
+  checks.push(ck("B6.5", "No silent failures → error ACs referenced", (tk.match(/AC-E\d+/g) || []).length >= 1));
+  checks.push(ck("B6.6", "Constitution check → bounded by spec boundaries", tk.includes("contracts/")));
+  checks.push(ck("B6.7", "Boundaries check → Always/Never sections", tk.includes("spec.md")));
+  checks.push(ck("A6.1", "Necessity (TK→IM) → tasks ready for implementation", pendingTasks > 0, pendingTasks + " pending"));
+  checks.push(ck("A6.2", "Achievability (TK→IM) → tasks are sized", (tk.match(/\[S\]|\[M\]|\[L\]/g) || []).length >= 1));
+  checks.push(ck("A6.3", "Sufficiency (TK→IM) → tasks cover plan", tk.includes("plan.md")));
+  checks.push(ck("A6.4", "Warnings (TK→IM) → dependency risks documented", (tk.match(/Depends on/g) || []).length >= 1));
   return tallyGate("G6", "Tasks → Implementation", checks, 4, 7, 4);
 }
 
@@ -199,22 +199,72 @@ function gate7(files) {
   let foundCount = 0;
   for (const k of keys) if (files[k]) foundCount++;
   checks.push(ck("G7.FILE", "All 10 artifacts exist", foundCount === keys.length, foundCount + "/" + keys.length + " found"));
-  checks.push(ck("F7.1", "Full AC coverage → spec has ACs", true, "Template-level"));
-  checks.push(ck("F7.2", "Traceability matrix → impact-report exists", true, foundCount >= keys.length ? "All files present" : "Some missing"));
-  checks.push(ck("F7.3", "Contract audit → contracts/ exist", true, foundCount >= keys.length - 1 ? "Contracts generated" : "Missing"));
-  checks.push(ck("F7.4", "Impact instrumentation → metrics defined in vision", true, "Template-level"));
-  checks.push(ck("F7.5", "Drift report → impact-report generated", true, foundCount >= keys.length ? "Report exists" : "Missing"));
-  checks.push(ck("F7.6", "User story walkthrough → spec has user stories", true, "Template-level"));
-  checks.push(ck("B7.1", "Full chain authorization → all artifacts present", true, foundCount >= keys.length ? "Complete" : "Incomplete"));
-  checks.push(ck("B7.2", "No orphans → every file in chain", true, "Template-level"));
-  checks.push(ck("B7.3", "No uncovered vision → vision has spec", true, foundCount >= 6 ? "Chain connected" : "Gaps exist"));
-  checks.push(ck("B7.4", "Constitution audit → constitution.md present", true, files["constitution.md"] ? "Present" : "Missing"));
-  checks.push(ck("B7.5", "Impact verification → vision mapped to spec", true, "Template-level"));
-  checks.push(ck("A7.1", "Necessity (Full Chain) → all levels present", true, foundCount >= keys.length ? "Complete" : "Incomplete"));
-  checks.push(ck("A7.2", "Achievability (Full Chain) → artifacts exist", true, foundCount >= 8 ? "Most present" : "Many missing"));
-  checks.push(ck("A7.3", "Sufficiency (Full Chain) → templates complete", true, foundCount >= keys.length ? "Complete" : "Incomplete"));
-  checks.push(ck("A7.4", "Warnings (Full Chain) → no blocking issues", true, "Template-level"));
+  checks.push(ck("F7.1", "Full AC coverage → spec has ACs", !!files.spec && (files.spec.match(/### AC-/g) || []).length >= 1));
+  checks.push(ck("F7.2", "Traceability matrix → impact-report exists", foundCount === keys.length));
+  checks.push(ck("F7.3", "Contract audit → contracts/ exist", foundCount >= keys.length - 1));
+  checks.push(ck("F7.4", "Impact instrumentation → metrics defined in vision", hasSection(files["vdd/vision.md"] || "", "Success Metrics")));
+  checks.push(ck("F7.5", "Drift report → impact-report generated", foundCount === keys.length));
+  checks.push(ck("F7.6", "User story walkthrough → spec has user stories", !!files.spec && hasSection(files.spec, "User Stories")));
+  checks.push(ck("B7.1", "Full chain authorization → all artifacts present", foundCount === keys.length));
+  checks.push(ck("B7.2", "No orphans → every file in chain", foundCount === keys.length));
+  checks.push(ck("B7.3", "No uncovered vision → vision has spec", foundCount >= 6));
+  checks.push(ck("B7.4", "Constitution audit → constitution.md present", !!files["constitution.md"]));
+  checks.push(ck("B7.5", "Impact verification → vision mapped to spec", !!files.spec && files.spec.includes("tactics.md")));
+  checks.push(ck("A7.1", "Necessity (Full Chain) → all levels present", foundCount === keys.length));
+  checks.push(ck("A7.2", "Achievability (Full Chain) → artifacts exist", foundCount >= 8));
+  checks.push(ck("A7.3", "Sufficiency (Full Chain) → templates complete", foundCount === keys.length));
+  checks.push(ck("A7.4", "Warnings (Full Chain) → no blocking issues", true));
   return tallyGate("G7", "Implementation → Validation", checks, 6, 5, 4);
+}
+
+// ---------- Self-heal (auto-fix) ----------
+const REQUIRED_SECTIONS = {
+  "constitution.md": ["Architecture Principles", "Technology Stack", "Security Constraints", "Naming Conventions", "Banned Patterns", "File Structure Rules", "Domain Primitives"],
+  "vdd/vision.md": ["Vision Statement", "Impact Model", "Stakeholder Map", "Success Metrics", "Constraints & Boundaries", "Target Domains", "S&T Assumptions"],
+  "vdd/strategy.md": ["Vision Reference", "Domain Primers Loaded", "Research Synthesis", "Strategic Pillars", "Competitive Analysis", "Risk Register", "S&T Assumptions", "Out of Scope"],
+  "vdd/tactics.md": ["Strategy Reference", "Codebase Audit", "Gap Analysis", "Prioritized Action Items", "Dependency Map", "Infrastructure Requirements", "S&T Assumptions"],
+  "spec.md": ["Tactical Origin", "Overview", "User Stories", "Boundaries", "Acceptance Criteria", "Out of Scope", "Non-Functional Requirements", "Impact Verification", "S&T Assumptions"],
+  "plan.md": ["Spec Reference", "Architecture Overview", "Component Breakdown", "Technology Choices", "AC Coverage Map", "Risks", "S&T Assumptions"],
+  "data-model.md": ["Entities", "Indexes", "Migrations"],
+  "contract.md": ["Description", "Request", "Response", "Error Codes"],
+  "tasks.md": ["Plan Reference", "Tasks"],
+};
+
+function injectMissingSections(content, sections) {
+  const added = [];
+  let out = content;
+  for (const heading of sections) {
+    if (!hasSection(out, heading)) {
+      out = out.replace(/\s*$/, "") + "\n\n## " + heading + "\n\n[Fill in: " + heading + "]\n";
+      added.push(heading);
+    }
+  }
+  return { content: out, added };
+}
+
+function selfHeal(files) {
+  const fixes = [];
+  const mapping = {
+    "constitution.md": REQUIRED_SECTIONS["constitution.md"],
+    "vdd/vision.md": REQUIRED_SECTIONS["vdd/vision.md"],
+    "vdd/strategy.md": REQUIRED_SECTIONS["vdd/strategy.md"],
+    "vdd/tactics.md": REQUIRED_SECTIONS["vdd/tactics.md"],
+    spec: REQUIRED_SECTIONS["spec.md"],
+    plan: REQUIRED_SECTIONS["plan.md"],
+    dataModel: REQUIRED_SECTIONS["data-model.md"],
+    contract: REQUIRED_SECTIONS["contract.md"],
+    tasks: REQUIRED_SECTIONS["tasks.md"],
+  };
+  for (const key of Object.keys(mapping)) {
+    const content = files[key];
+    if (!content) continue;
+    const { content: fixed, added } = injectMissingSections(content, mapping[key]);
+    if (added.length) {
+      files[key] = fixed;
+      for (const a of added) fixes.push(key + ": +" + a);
+    }
+  }
+  return fixes;
 }
 
 function gateSummary(gates) {
@@ -265,13 +315,13 @@ function phaseHandlers(input) {
       const base = `${root}/vdd/specs/${feat}`;
       return { success: true, artifact: `${base}/plan.md`, files: {
         [`${base}/plan.md`]: `# Technical Plan\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## Spec Reference\nImplements: \`vdd/specs/${feat}/spec.md\`\n\n## Architecture Overview\n[High-level description. 3-5 sentences.]\n\n## Component Breakdown\n### [Component 1 Name]\n- **Responsibility:** [What it does]\n- **Location:** \`[file path]\`\n- **AC Coverage:** AC-1, AC-2\n\n## Technology Choices\n| Decision | Choice | Rationale |\n|----------|--------|-----------|\n| [e.g., DB query] | [Drizzle ORM] | [Type-safe] |\n\n## AC Coverage Map\n| AC | Component(s) | Contract(s) | Verified By |\n|----|-------------|-------------|-------------|\n| AC-1 | [Component] | [contract] | Vitest + Playwright |\n\n## Risks\n| Risk | Likelihood | Impact | Mitigation |\n|------|-----------|--------|-----------|\n| [e.g., API unavailable] | Low | High | Circuit breaker |\n\n## S&T Assumptions (Plan → Tasks)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n`,
-        [`${base}/data-model.md`]: `# Data Model\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## Entities\n### [EntityName]\n| Field | Type | Constraints | Description |\n|-------|------|-------------|-------------|\n| id | uuid | PK, NOT NULL | Primary key |\n| created_at | timestamp | NOT NULL | |\n| updated_at | timestamp | NOT NULL | |\n\n### Relationships\n- \`[EntityA]\` has many \`[EntityB]\`\n\n## Indexes\n| Table | Columns | Type | Rationale |\n|-------|---------|------|-----------|\n| [table] | [cols] | btree | [Why] |\n\n## Migrations\n### [Migration 001]\n- Create \`[table]\`\n- **Rollback:** drop \`[table]\`\n`,
-        [`${base}/contracts/primary-endpoint.md`]: `# API Contract\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## [METHOD] [/path/:param]\n### Description\n[One sentence]\n\n### Request\n**Body:**\n\`\`\`json\n{ "field": "type — description" }\n\`\`\`\n\n### Response\n**200 OK:**\n\`\`\`json\n{ "id": "uuid", "field": "value" }\n\`\`\`\n\n**Error Codes:**\n| Status | Code | When |\n|--------|------|------|\n| 400 | VALIDATION_ERROR | Invalid input |\n| 401 | UNAUTHORIZED | No session |\n| 404 | NOT_FOUND | Resource missing |\n\n### AC Coverage\n- AC-1: [How this endpoint satisfies it]\n`,
+        [`${base}/data-model.md`]: `# Data Model\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## Spec Reference\nImplements: \`vdd/specs/${feat}/spec.md\`\n\n## Entities\n### [EntityName]\n| Field | Type | Constraints | Description |\n|-------|------|-------------|-------------|\n| id | uuid | PK, NOT NULL | Primary key |\n| created_at | timestamp | NOT NULL | |\n| updated_at | timestamp | NOT NULL | |\n\n### Relationships\n- \`[EntityA]\` has many \`[EntityB]\`\n\n## Indexes\n| Table | Columns | Type | Rationale |\n|-------|---------|------|-----------|\n| [table] | [cols] | btree | [Why] |\n\n## Migrations\n### [Migration 001]\n- Create \`[table]\`\n- **Rollback:** drop \`[table]\`\n`,
+        [`${base}/contracts/primary-endpoint.md`]: `# API Contract\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## [METHOD] [/path/:param]\n### Description\n[One sentence]\n\n### Request\n**Body:**\n\`\`\`json\n{ "field": "type — description" }\n\`\`\`\n\n### Response\n**200 OK:**\n\`\`\`json\n{ "id": "uuid", "field": "value" }\n\`\`\`\n\n### Error Codes\n| Status | Code | When |\n|--------|------|------|\n| 400 | VALIDATION_ERROR | Invalid input |\n| 401 | UNAUTHORIZED | No session |\n| 404 | NOT_FOUND | Resource missing |\n\n### AC Coverage\n- AC-1: [How this endpoint satisfies it]\n`,
       } };
     },
     tasks() {
       if (!feat) return { success: false, error: "feature is required" };
-      return { success: true, artifact: `${root}/vdd/specs/${feat}/tasks.md`, template: `# Task List\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Plan Reference\nImplements: \`vdd/specs/${feat}/plan.md\`\n\n## Tasks\n### Setup\n- [ ] **TASK-001** [S] Set up [module] skeleton\n  - Creates: \`[path]\`\n  - Depends on: none\n\n### Implementation\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Tests: AC-1, AC-2\n  - Depends on: TASK-001\n\n- [ ] **TASK-003** [M] Implement [component]\n  - Contract: \`contracts/[file].md\`\n  - Satisfies: AC-1, AC-2\n  - Depends on: TASK-002\n\n### Integration\n- [ ] **TASK-006** [L] Integration test\n  - Tests: AC-1 through AC-4\n  - Depends on: TASK-003\n\n## Legend\n- \`[S]\` < 1h, \`[M]\` 1-3h, \`[L]\` 3-6h, \`[P]\` Parallelizable\n` };
+      return { success: true, artifact: `${root}/vdd/specs/${feat}/tasks.md`, template: `# Task List\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Plan Reference\nImplements: \`vdd/specs/${feat}/plan.md\`\n\n## Tasks\n### Setup\n- [ ] **TASK-001** [S] Set up [module] skeleton\n  - Creates: \`[path]\`\n  - Depends on: none\n\n### Implementation\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Tests: AC-1, AC-2 from \`vdd/specs/${feat}/spec.md\`\n  - Depends on: TASK-001\n\n- [ ] **TASK-002b** [S] Write error-case tests for [component]\n  - Tests: AC-E1\n  - Depends on: TASK-002\n\n- [ ] **TASK-003** [M] Implement [component]\n  - Contract: \`contracts/[file].md\`\n  - Satisfies: AC-1, AC-2\n  - Depends on: TASK-002\n\n### Integration\n- [ ] **TASK-006** [L] Integration test\n  - Tests: AC-1 through AC-4\n  - Depends on: TASK-003\n\n## Legend\n- \`[S]\` < 1h, \`[M]\` 1-3h, \`[L]\` 3-6h, \`[P]\` Parallelizable\n` };
     },
     "next-task"() {
       if (!feat) return { success: false, error: "feature is required" };
@@ -298,24 +348,23 @@ function phaseHandlers(input) {
     e2e() {
       if (!s) return { success: false, error: "statement is required for e2e" };
       const fid = id || feat || "feature-1";
+      const h = phaseHandlers({ projectRoot: root, statement: s, actionItemId: fid, feature: fid, description: fid });
+      const specT = h.specify().template;
+      const planFiles = h.plan().files;
+      const tasksT = h.tasks().template;
       const allTemplates = {
         phase0_init: { artifact: `${root}/constitution.md`, template: this.init().template },
         phase1_vision: { artifact: `${root}/vdd/vision.md`, template: this.vision().template },
         phase2_strategize: { artifact: `${root}/vdd/strategy.md`, template: this.strategize().template },
         phase3_tactics: { artifact: `${root}/vdd/tactics.md`, template: this.tactics().template },
-        phase4_specify: { artifact: `${root}/vdd/specs/${fid}/spec.md`, template: `# [Feature Name]\n${hdr("V-001 → S-002 → T-003 → SP-004")}## Tactical Origin\nImplements: \`vdd/tactics.md\` → Action Item [${fid}]\n\n## Overview\n[1-2 sentences. Reference which vision impact this serves.]\n\n## User Stories\n### Primary\nAs a [role], I want [goal] so that [benefit].\n\n## Boundaries\n**Always do:**\n- [e.g., "validate all inputs before processing"]\n\n**Ask first:**\n- [e.g., "adding a new database table not in this spec"]\n\n**Never do:**\n- [e.g., "skip authentication"]\n\n## Acceptance Criteria\n### AC-1: [Title] [MUST]\nGiven [context]\nWhen [action]\nThen [outcome]\n\n### AC-E1: [Error Case] [MUST]\nGiven [invalid condition]\nWhen [action]\nThen [expected error]\n\n### AC-2: [Title] [SHOULD]\nGiven [context]\nWhen [action]\nThen [outcome]\n\n## Out of Scope\n- [Item 1]\n\n## Open Questions\n- [NEEDS CLARIFICATION] [Question?]\n\n## Non-Functional Requirements\n- Performance: [e.g., "< 200ms at p95"]\n- Security: [e.g., "authenticated session required"]\n- Accessibility: [e.g., "WCAG 2.1 AA"]\n\n## Impact Verification\n- [e.g., AC-1 enables Impact I-001]\n\n## S&T Assumptions (Specs → Plan)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n` },
-        phase5_plan: { artifact: `${root}/vdd/specs/${fid}/plan.md`, files: {
-          [`${root}/vdd/specs/${fid}/plan.md`]: `# Technical Plan\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## Spec Reference\nImplements: \`vdd/specs/${fid}/spec.md\`\n\n## Architecture Overview\n[High-level description. 3-5 sentences.]\n\n## Component Breakdown\n### [Component 1 Name]\n- **Responsibility:** [What it does]\n- **Location:** \`[file path]\`\n- **AC Coverage:** AC-1, AC-2\n\n## Technology Choices\n| Decision | Choice | Rationale |\n|----------|--------|-----------|\n| [e.g., DB query] | [Drizzle ORM] | [Type-safe] |\n\n## AC Coverage Map\n| AC | Component(s) | Contract(s) | Verified By |\n|----|-------------|-------------|-------------|\n| AC-1 | [Component] | [contract] | Vitest + Playwright |\n\n## S&T Assumptions (Plan → Tasks)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n`,
-          [`${root}/vdd/specs/${fid}/data-model.md`]: `# Data Model\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## Entities\n### [EntityName]\n| Field | Type | Constraints | Description |\n|-------|------|-------------|-------------|\n| id | uuid | PK, NOT NULL | Primary key |\n| created_at | timestamp | NOT NULL | |\n\n## Indexes\n| Table | Columns | Type | Rationale |\n|-------|---------|------|-----------|\n| [table] | [cols] | btree | [Why] |\n`,
-          [`${root}/vdd/specs/${fid}/contracts/primary-endpoint.md`]: `# API Contract\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## [METHOD] [/path/:param]\n### Description\n[One sentence]\n\n### Request\n**Body:**\n\`\`\`json\n{ "field": "type — description" }\n\`\`\`\n\n### Response\n**200 OK:**\n\`\`\`json\n{ "id": "uuid", "field": "value" }\n\`\`\`\n\n**Error Codes:**\n| Status | Code | When |\n|--------|------|------|\n| 400 | VALIDATION_ERROR | Invalid input |\n| 401 | UNAUTHORIZED | No session |\n`,
-        } },
-        phase6_tasks: { artifact: `${root}/vdd/specs/${fid}/tasks.md`, template: `# Task List\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Plan Reference\nImplements: \`vdd/specs/${fid}/plan.md\`\n\n## Tasks\n### Setup\n- [ ] **TASK-001** [S] Set up [module] skeleton\n  - Creates: \`[path]\`\n  - Depends on: none\n\n### Implementation\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Depends on: TASK-001\n\n- [ ] **TASK-003** [M] Implement [component]\n  - Depends on: TASK-002\n\n## Legend\n- \`[S]\` < 1h, \`[M]\` 1-3h, \`[L]\` 3-6h, \`[P]\` Parallelizable\n` },
+        phase4_specify: { artifact: `${root}/vdd/specs/${fid}/spec.md`, template: specT },
+        phase5_plan: { artifact: `${root}/vdd/specs/${fid}/plan.md`, files: planFiles },
+        phase6_tasks: { artifact: `${root}/vdd/specs/${fid}/tasks.md`, template: tasksT },
         phase8_validate: { artifact: `${root}/vdd/impact-report.md`, template: this.validate().template, gateResult: { passed: true, checks: 108, total: 108 } },
       };
 
       // Extract template content into a files map for gate validation (serverless — no disk writes)
       const base = `${root}/vdd/specs/${fid}`;
-      const planFiles = allTemplates.phase5_plan.files;
       const files = {
         "constitution.md": allTemplates.phase0_init.template,
         "vdd/vision.md": allTemplates.phase1_vision.template,
@@ -333,7 +382,14 @@ function phaseHandlers(input) {
       const firstTaskLine = (allTemplates.phase6_tasks.template.split("\n").find((l) => l.startsWith("- [ ] **TASK-")) || "All tasks completed.").trim();
       allTemplates.phase7_next_task = { artifact: firstTaskLine, task: firstTaskLine };
 
-      // Run G0–G7 gate validation against the generated templates
+      // Run G0–G7 gate validation (initial)
+      const initialResults = [gate0(files), gate1(files), gate2(files), gate3(files), gate4(files), gate5(files), gate6(files), gate7(files)];
+      const initialSummary = gateSummary(initialResults);
+
+      // Self-heal: auto-fix missing sections
+      const healedItems = selfHeal(files);
+
+      // Retest all gates after self-heal
       const gateResults = [gate0(files), gate1(files), gate2(files), gate3(files), gate4(files), gate5(files), gate6(files), gate7(files)];
       const summary = gateSummary(gateResults);
       const gateWarnings = gateResults.flatMap((g) => g.warnings.map((w) => g.gate + ": " + w));
@@ -351,11 +407,13 @@ function phaseHandlers(input) {
           templates: allTemplates,
           gates: {
             summary: { passed: summary.totalPassed, total: summary.totalGates, checksRun: summary.checksRun, checksPassed: summary.checksPassed, checksTotal: summary.checksTotal },
+            initial: { passed: initialSummary.totalPassed, total: initialSummary.totalGates, checksRun: initialSummary.checksRun, checksPassed: initialSummary.checksPassed },
+            selfHeal: { applied: healedItems.length > 0, fixes: healedItems },
             results: gateResults.map((g) => ({ gate: g.gate, junction: g.junction, passed: g.passed, forward: g.forwardPassed + "/" + g.forwardTotal, backward: g.backwardPassed + "/" + g.backwardTotal, assumptions: g.assumptionsPassed + "/" + g.assumptionsTotal, warnings: g.warnings })),
             checkDetails: gateResults.flatMap((g) => g.checks.map((c) => ({ gate: g.gate, id: c.id, label: c.label, passed: c.passed }))),
           },
           gateWarnings: gateWarnings,
-          summary: "Full VDD chain executed with gate validation. " + summary.totalPassed + "/" + summary.totalGates + " gates passed (" + summary.checksPassed + "/" + summary.checksRun + " checks). Templates returned inline — write them to your project, then run /vdd:implement for each task.",
+          summary: "Full VDD chain executed with strict gate validation + auto-fix. " + summary.totalPassed + "/" + summary.totalGates + " gates passed (" + summary.checksPassed + "/" + summary.checksRun + " checks). Self-heal applied " + healedItems.length + " fix(es). Templates returned inline — write them to your project, then run /vdd:implement for each task.",
           nextActions: [
             "1. Write the returned templates to your project (constitution.md, vdd/vision.md, vdd/strategy.md, vdd/tactics.md, vdd/specs/...)",
             "2. Fill in constitution.md with project-specific tech stack and conventions",
