@@ -196,79 +196,162 @@ const HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VDD MCP Server — Vision Driven Design API</title>
-<meta name="description" content="Public MCP server for Vision Driven Design — 15 tools with full template generation, bi-directional traceability for AI-assisted development. 8 phases, 7 gates, 108 checks.">
+<meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 15 tools for template generation and bi-directional traceability in AI-assisted development.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
-  :root { --teal: #0d7377; --teal-dark: #095a5e; --ink: #1a1a1a; --muted: #5a5a5a; --line: #e0e0e0; --bg: #f8faf9; --card: #fff; }
+  :root {
+    --brand: #0a5c60;        /* 7.7:1 on white (AAA) */
+    --brand-dark: #074347;   /* 11:1 on white (AAA) */
+    --ink: #111111;          /* ~18:1 on white */
+    --muted: #4a4a4a;        /* 9:1 on white (AAA) */
+    --line: #c9c9c9;
+    --bg: #f5f7f6;
+    --card: #ffffff;
+    --focus: #1a56a8;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system,sans-serif; background: #f5f7f6; color: var(--ink); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
-  header { background: linear-gradient(135deg,var(--teal),var(--teal-dark)); color: #fff; padding: 3rem 1.5rem 2.5rem; text-align:center; }
-  header h1 { font-size:2rem; font-weight:700; }
-  header p { font-size:1.1rem; opacity:0.9; margin-top:0.5rem; max-width:600px; margin-left:auto;margin-right:auto; }
-  .badge { display:inline-block; padding:0.3rem 0.75rem; border-radius:20px; font-size:0.8rem; font-weight:600; margin:0.75rem 0.3rem 0; background:rgba(255,255,255,0.15); }
-  main { max-width:800px; margin:0 auto; padding:2rem 1.25rem; width:100%; flex:1; }
-  h2 { font-size:1.25rem; color:var(--teal); margin-bottom:1rem; padding-bottom:0.4rem; border-bottom:2px solid var(--teal); }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.5rem; }
-  .tool { display:flex; align-items:center; gap:0.5rem; padding:0.6rem 0.8rem; background:var(--card); border:1px solid var(--line); border-radius:6px; font-family:monospace; font-size:0.85rem; text-decoration:none; color:var(--ink); }
-  .tool:hover { border-color:var(--teal); }
-  .dot { width:7px; height:7px; border-radius:50%; background:#4CAF50; flex-shrink:0; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1.25rem; }
-  .row { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--line); }
-  .row:last-child { border-bottom:none; }
-  .row .label { font-weight:600; color:var(--muted); }
-  .row .value { font-family:monospace; font-size:0.95rem; }
-  pre { background:#f5f5f5; padding:1rem; border-radius:6px; font-size:0.82rem; overflow-x:auto; white-space:pre-wrap; }
-  .cta { display:inline-flex; align-items:center; gap:0.4rem; padding:0.7rem 1.3rem; background:var(--teal); color:#fff; text-decoration:none; border-radius:6px; font-weight:600; }
-  .cta:hover { background:var(--teal-dark); }
-  .cta.secondary { background:#fff; color:var(--teal); border:1px solid var(--teal); }
-  .cta.secondary:hover { background:var(--bg); }
-  footer { text-align:center; padding:1.5rem; color:#999; font-size:0.85rem; border-top:1px solid var(--line); }
-  footer a { color:var(--teal); text-decoration:none; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.6;            /* 1.4.8 AAA: >= 1.5 */
+    letter-spacing: 0.01em;      /* 1.4.12 */
+    word-spacing: 0.05em;        /* 1.4.12 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* 1.4.8 AAA: limit measure of blocks of text */
+  main { max-width: 70ch; margin: 0 auto; padding: 2rem 1.5rem; width: 100%; flex: 1; }
+  p { margin-bottom: 1rem; }     /* 1.4.8: paragraph spacing */
+  a { color: var(--brand); text-decoration: underline; text-underline-offset: 0.15em; }
+  a:hover, a:focus-visible { color: var(--brand-dark); }
+
+  /* 2.4.1 Bypass Blocks */
+  .skip-link {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--ink); color: #fff; padding: 0.75rem 1.25rem;
+    z-index: 100; font-weight: 600; text-decoration: none; border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { left: 0; top: 0; }
+
+  header {
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    color: #fff;
+    padding: 3rem 1.5rem 2.5rem;
+  }
+  header .wrap { max-width: 70ch; margin: 0 auto; }
+  header h1 { font-size: 2rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.5rem; }
+  header p { font-size: 1.1rem; color: #fff; max-width: 60ch; }
+
+  .badge {
+    display: inline-block; padding: 0.35rem 0.85rem; border-radius: 999px;
+    font-size: 0.9rem; font-weight: 600; margin: 0.75rem 0.4rem 0 0;
+    border: 1px solid rgba(255,255,255,0.7); color: #fff;
+  }
+
+  h2 { font-size: 1.5rem; color: var(--brand-dark); margin: 2rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--brand-dark); line-height: 1.3; }
+  h3 { font-size: 1.15rem; color: var(--brand-dark); margin: 1.5rem 0 0.75rem; line-height: 1.3; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; list-style: none; }
+  .tool {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 0.9rem; background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9rem; color: var(--ink); min-height: 44px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #1e7d32; flex-shrink: 0; } /* decorative, aria-hidden */
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 1.5rem; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: none; }
+  .row .label { font-weight: 600; color: var(--muted); }
+  .row .value { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95rem; word-break: break-word; }
+
+  pre { background: #f0f0f0; padding: 1.25rem; border-radius: 8px; font-size: 0.9rem; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; border: 1px solid var(--line); }
+
+  .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .cta {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.8rem 1.5rem; background: var(--brand); color: #fff;
+    text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1rem;
+    min-height: 44px; min-width: 44px;   /* 2.5.5 AAA / 2.5.8 AA target size */
+  }
+  .cta:hover, .cta:focus-visible { background: var(--brand-dark); color: #fff; }
+  .cta.secondary { background: #fff; color: var(--brand); border: 2px solid var(--brand); }
+  .cta.secondary:hover, .cta.secondary:focus-visible { background: var(--bg); color: var(--brand-dark); border-color: var(--brand-dark); }
+
+  footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--line); }
+  footer a { color: var(--brand-dark); }
+
+  /* 2.4.7 Focus Visible (3:1) */
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+  /* 2.3.3 reduced motion + 1.4.11 contrast preferences */
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+  @media (prefers-contrast: more) { :root { --line: #767676; --muted: #222222; } }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <header>
-  <h1>VDD MCP Server</h1>
-  <p>Public API for Vision Driven Design — bi-directional traceability with full template generation</p>
-  <span class="badge">15 tools</span><span class="badge">108 checks</span><span class="badge">7 gates</span><span class="badge">e2e chain</span><span class="badge">template gen</span><span class="badge">no API key</span>
+  <div class="wrap">
+    <h1><abbr title="Vision Driven Design">VDD</abbr> <abbr title="Model Context Protocol">MCP</abbr> Server</h1>
+    <p>Public <abbr title="Application Programming Interface">API</abbr> for <abbr title="Vision Driven Design">VDD</abbr> — bi-directional traceability with full template generation.</p>
+    <p>
+      <span class="badge">15 tools</span>
+      <span class="badge">108 checks</span>
+      <span class="badge">7 gates</span>
+      <span class="badge">e2e chain</span>
+      <span class="badge">template generation</span>
+      <span class="badge">no API key</span>
+    </p>
+  </div>
 </header>
-<main>
-  <section>
-    <h2>Tools</h2>
-    <div class="grid">${PHASE_NAMES.map((p) => '<a class="tool" href="#"><span class="dot"></span>vdd_' + p.replace(/-/g, "_") + "</a>").join("")}</div>
+<main id="main">
+  <section aria-labelledby="tools-heading">
+    <h2 id="tools-heading">Tools</h2>
+    <ul class="grid">
+      ${PHASE_NAMES.map((p) => '<li class="tool"><span class="dot" aria-hidden="true"></span><span>vdd_' + p.replace(/-/g, "_") + "</span></li>").join("")}
+    </ul>
   </section>
-  <section>
-    <h2>Quick Start</h2>
-    <p style="margin-bottom:1rem;">Add to MCP agent config:</p>
+  <section aria-labelledby="quickstart-heading">
+    <h2 id="quickstart-heading">Quick Start</h2>
+    <p>Add to <abbr title="Model Context Protocol">MCP</abbr> agent configuration:</p>
     <pre>{
   "mcpServers": {
     "vdd": { "type": "sse", "url": "https://vdd.simonmak.com/api/sse" }
   }
 }</pre>
-    <p style="margin-bottom:1rem;"><strong>OpenCode</strong> — <code>opencode.json</code>:</p>
+    <p><strong>OpenCode</strong> — <code>opencode.json</code>:</p>
     <pre>"vdd": { "type": "remote", "url": "https://vdd.simonmak.com/api/sse", "timeout": 120000 }</pre>
-    <p style="margin-bottom:1rem;"><strong>Claude Desktop</strong> — <code>claude_desktop_config.json</code>:</p>
+    <p><strong>Claude Desktop</strong> — <code>claude_desktop_config.json</code>:</p>
     <pre>"vdd": { "command": "npx", "args": ["-y", "@vdd/mcp"], "type": "stdio" }</pre>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;">
-      <a class="cta" href="https://github.com/simonplmak-cloud/vision-driven-design">GitHub Repo</a>
-      <a class="cta secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/SKILL.md#command-reference">Command Reference</a>
+    <div class="cta-group">
+      <a class="cta" href="https://github.com/simonplmak-cloud/vision-driven-design">GitHub repository</a>
+      <a class="cta secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/SKILL.md#command-reference">Command reference</a>
     </div>
   </section>
-  <section>
-    <h2>Usage</h2>
+  <section aria-labelledby="usage-heading">
+    <h2 id="usage-heading">Usage</h2>
     <div class="card">
-      <div class="row"><span class="label">Transport</span><span class="value">SSE + JSON-RPC 2.0</span></div>
+      <div class="row"><span class="label">Transport</span><span class="value"><abbr title="Server-Sent Events">SSE</abbr> + <abbr title="JavaScript Object Notation Remote Procedure Call">JSON-RPC</abbr> 2.0</span></div>
       <div class="row"><span class="label">Endpoint</span><span class="value">https://vdd.simonmak.com/api/sse</span></div>
       <div class="row"><span class="label">Auth</span><span class="value">None — public, no API key</span></div>
     </div>
-    <h3 style="margin-top:1.25rem;">Example: vdd_e2e (end-to-end)</h3>
+    <h3>Example: vdd_e2e (end-to-end)</h3>
     <pre>curl -X POST https://vdd.simonmak.com/api/sse \\
   -H "Content-Type: application/json" \\
   -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_e2e","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
-    <p style="margin-top:0.5rem;">Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate. Returns all templates.</p>
+    <p>Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate. Returns all templates.</p>
   </section>
 </main>
-<footer><a href="https://github.com/simonplmak-cloud/vision-driven-design">Vision Driven Design</a> · MIT · Goldratt S&T · Impact Mapping · NASA SE · CMMI</footer>
+<footer>
+  <p><a href="https://github.com/simonplmak-cloud/vision-driven-design">Vision Driven Design</a> is licensed under the <abbr title="Massachusetts Institute of Technology">MIT</abbr> license.</p>
+  <p>Methodology: Goldratt Strategy &amp; Tactics · Impact Mapping · NASA Systems Engineering · <abbr title="Capability Maturity Model Integration">CMMI</abbr></p>
+</footer>
 </body>
 </html>`;
 
