@@ -60,6 +60,10 @@ const PHASE_META: Record<string, { description: string; instructions: string }> 
     description: 'VDD Cross-phase: Cascade a requirement change through the full chain. Identify the highest affected level and update downward through V→S→T→SP→PL→TK. Re-run all affected gates.',
     instructions: 'Pass "description" of what changed. AI agent identifies the highest affected level, updates all downstream artifacts, re-runs affected gates (G1–G7), and commits each updated artifact with [AMEND] marker.',
   },
+  e2e: {
+    description: 'VDD End-to-End: Execute the full VDD chain from vision to validation in one call. Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → validate sequentially. Writes all 10+ template files with proper impact-chain headers. Accepts a freeform vision statement.',
+    instructions: 'Pass "statement" with your vision. The tool runs all 8 phases end-to-end, creating every artifact: constitution.md, vision.md, strategy.md, tactics.md, spec.md, plan.md, data-model.md, contracts/, tasks.md, and impact-report.md. Use optional "actionItemId" (default "feature-1") to customize the spec feature name. The AI agent then fills in each template with domain-specific content.',
+  },
 };
 
 export function createVddMcpServer(): McpServer {

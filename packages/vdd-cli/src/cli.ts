@@ -20,6 +20,7 @@ const PHASE_DESC: Record<string, { desc: string; args: string[] }> = {
   trace:       { desc: 'Bidirectional traceability matrix', args: [] },
   analyze:     { desc: 'Cross-artifact analysis', args: ['feature'] },
   amend:       { desc: 'Cascade change through chain', args: ['description'] },
+  e2e:         { desc: 'End-to-end: vision → validate in one command', args: ['statement'] },
 };
 
 let jsonMode = false;
