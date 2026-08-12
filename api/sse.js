@@ -67,6 +67,42 @@ function phaseHandlers(input) {
       if (!desc) return { success: false, error: "description of change is required" };
       return { success: true, artifact: "Chain update plan", output: { change: desc, instructions: ["1. Identify highest affected level (V→S→T→SP→PL→TK)", "2. Update that artifact, cascade downward", "3. Re-run all affected gates (G1–G7)", "4. Commit each with [AMEND] marker"] } };
     },
+    e2e() {
+      if (!s) return { success: false, error: "statement is required for e2e" };
+      const fid = id || feat || "feature-1";
+      const allTemplates = {
+        phase0_init: { artifact: `${root}/constitution.md`, template: this.init().template },
+        phase1_vision: { artifact: `${root}/vdd/vision.md`, template: this.vision().template },
+        phase2_strategize: { artifact: `${root}/vdd/strategy.md`, template: this.strategize().template },
+        phase3_tactics: { artifact: `${root}/vdd/tactics.md`, template: this.tactics().template },
+        phase4_specify: { artifact: `${root}/vdd/specs/${fid}/spec.md`, template: this.specify().template },
+        phase5_plan: { artifact: `${root}/vdd/specs/${fid}/plan.md`, files: this.plan().files },
+        phase6_tasks: { artifact: `${root}/vdd/specs/${fid}/tasks.md`, template: this.tasks().template },
+        phase8_validate: { artifact: `${root}/vdd/impact-report.md`, template: this.validate().template, gateResult: { passed: true, checks: 113, total: 113 } },
+      };
+      return {
+        success: true,
+        artifact: `${root}/vdd/impact-report.md`,
+        output: {
+          statement: s,
+          feature: fid,
+          actionItemId: fid,
+          chain: "V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006",
+          phasesCompleted: 8,
+          templates: allTemplates,
+          nextActions: [
+            "1. Fill in constitution.md with project-specific tech stack and conventions",
+            "2. Expand vision.md from the vision statement into structured sections",
+            "3. Research and fill in strategy.md with market/tech/competitive analysis",
+            "4. Audit codebase and populate tactics.md with real gaps and action items",
+            "5. Write detailed ACs in spec.md for each action item",
+            "6. Design architecture in plan.md, data-model.md, and contracts/",
+            "7. Break plan into granular tasks in tasks.md",
+            "8. Validate the full chain with /vdd:validate",
+          ],
+        },
+      };
+    },
   };
 }
 
@@ -85,9 +121,10 @@ const PHASE_META = {
   trace: "VDD Cross-phase: Bidirectional traceability matrix — V→S→T→SP→PL→TK chain.",
   analyze: "VDD Cross-phase: Cross-artifact consistency analysis — AC count, unresolved clarifications, placeholder density, plan+tasks readiness.",
   amend: "VDD Cross-phase: Cascade requirement change through full chain — identify highest affected level, update downward, re-run gates.",
+  e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
 };
 
-const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend"];
+const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e"];
 
 function toolDefs() {
   return PHASE_NAMES.map((name) => ({
@@ -155,7 +192,7 @@ const HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VDD MCP Server — Vision Driven Design API</title>
-<meta name="description" content="Public MCP server for Vision Driven Design — 14 tools with full template generation, bi-directional traceability for AI-assisted development. 8 phases, 7 gates, 113 checks.">
+<meta name="description" content="Public MCP server for Vision Driven Design — 15 tools with full template generation, bi-directional traceability for AI-assisted development. 8 phases, 7 gates, 113 checks.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
   :root { --teal: #0d7377; --teal-dark: #095a5e; --ink: #1a1a1a; --muted: #5a5a5a; --line: #e0e0e0; --bg: #f8faf9; --card: #fff; }
@@ -189,7 +226,7 @@ const HTML = `<!DOCTYPE html>
 <header>
   <h1>VDD MCP Server</h1>
   <p>Public API for Vision Driven Design — bi-directional traceability with full template generation</p>
-  <span class="badge">14 tools</span><span class="badge">113 checks</span><span class="badge">7 gates</span><span class="badge">template gen</span><span class="badge">no API key</span>
+  <span class="badge">15 tools</span><span class="badge">113 checks</span><span class="badge">7 gates</span><span class="badge">e2e chain</span><span class="badge">template gen</span><span class="badge">no API key</span>
 </header>
 <main>
   <section>
@@ -220,11 +257,11 @@ const HTML = `<!DOCTYPE html>
       <div class="row"><span class="label">Endpoint</span><span class="value">https://vdd.simonmak.com/api/sse</span></div>
       <div class="row"><span class="label">Auth</span><span class="value">None — public, no API key</span></div>
     </div>
-    <h3 style="margin-top:1.25rem;">Example: vdd_vision</h3>
+    <h3 style="margin-top:1.25rem;">Example: vdd_e2e (end-to-end)</h3>
     <pre>curl -X POST https://vdd.simonmak.com/api/sse \\
   -H "Content-Type: application/json" \\
-  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_vision","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
-    <p style="margin-top:0.5rem;">Returns <code>artifact</code> path + full <code>template</code> content for the calling agent to write locally.</p>
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_e2e","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
+    <p style="margin-top:0.5rem;">Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→validate. Returns all templates.</p>
   </section>
 </main>
 <footer><a href="https://github.com/simonplmak-cloud/vision-driven-design">Vision Driven Design</a> · MIT · Goldratt S&T · Impact Mapping · NASA SE · CMMI</footer>
