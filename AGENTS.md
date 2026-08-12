@@ -27,7 +27,7 @@ references/               ← 10 authoritative reference docs.
   workflow-phases.md      ← Phase order (authoritative).
   artifact-templates.md   ← 11 artifact templates (authoritative).
   prompt-patterns.md      ← AI prompts (authoritative).
-  quality-gates.md        ← 7 gates + 113 checks (authoritative).
+  quality-gates.md        ← 7 gates + 108 checks (authoritative).
   ai-agent-patterns.md    ← Agent orchestration (authoritative).
   anti-patterns.md        ← 24 failure modes (authoritative).
   traceability-matrix.md  ← RTM format + CI/CD.
@@ -56,7 +56,7 @@ Every artifact template includes: `> Impact Chain: V-001 → S-002 → T-003 →
 Prefixes: `V-` (Vision), `S-` (Strategy), `T-` (Tactics), `A-` (Action Item), `SP-` (Spec), `PL-` (Plan), `TK-` (Tasks), `I-` (Impact), `R-` (Risk), `AC-` (Acceptance Criterion).
 
 ### Bi-Directional Gates
-Each gate has forward checks (parent→children), backward checks (children→parent), and 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). Total check count (113) must stay consistent across SKILL.md, README.md, quick-reference.md, and quality-gates.md.
+Each gate has forward checks (parent→children), backward checks (children→parent), and 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). Total check count (108) must stay consistent across SKILL.md, README.md, quick-reference.md, and quality-gates.md.
 
 ### Anti-Patterns
 Numbered sequentially from AP1 upward. Append new ones at the end — do not renumber existing. Update INDEX.md's troubleshooting section.
@@ -66,7 +66,7 @@ Numbered sequentially from AP1 upward. Append new ones at the end — do not ren
 - **SKILL.md's YAML frontmatter** uses the OpenCode skill format. Do not change the format without checking the OpenCode skill spec.
 - **Command tables** appear in 3 files (SKILL.md, README.md, quick-reference.md). Add new commands to all three.
 - **Phase numbering** (0–8) is stable. Phase 0 is Constitution. Phases 1–3 are VDD additions. Phases 4–8 are the SDD chain. Never renumber.
-- **Gate check counts** in `quality-gates.md` Gate Summary Table must match actual checklist items. Total (113) = sum of F/B/A columns across G1–G7.
+- **Gate check counts** in `quality-gates.md` Gate Summary Table must match actual checklist items. Total (108) = sum of F/B/A columns across G1–G7.
 - **Domain primers** — the original 4 (webapp, data-storage, etl, infrastructure) are loaded per-domain based on vision targets. `human-factors.md` and `verification-toolchain.md` are loaded unconditionally. `safety-critical.md` is loaded when the vision involves regulated domains.
 - **API and packages** — `api/` contains the Vercel MCP endpoint. `packages/` contains the TypeScript monorepo. Build configuration is scoped to these directories; core documentation (SKILL.md, references/, domain-primers/) remains build-free.
 

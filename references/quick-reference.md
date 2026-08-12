@@ -42,7 +42,7 @@ One-page cheat sheet. For full details, see referenced files.
 G1: V↔S  ───  G2: S↔T  ───  G3: T↔SP  ───  G4: SP↔PL  ───  G5: PL↔TK  ───  G6: TK↔IM  ───  G7: IM↔VS
 ```
 
-Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). **Total: 113 checks across 7 gates.**
+Each gate: Forward check (parent→children coverage) + Backward check (children→parent authorization) + 4 S&T assumptions (Necessity, Achievability, Sufficiency, Warnings). **Total: 108 checks across 7 gates.**
 
 ## Impact Chain Format
 
@@ -90,7 +90,7 @@ Each gate: Forward check (parent→children coverage) + Backward check (children
 
 **Endpoint**: `https://vdd.simonmak.com/api/sse`
 - GET: 15 tools + service info
-- POST: Phase result (validate: 113/113 checks passed)
+- POST: Phase result (validate: 108/108 checks passed)
 - Packages: `packages/vdd-engine` · `packages/vdd-mcp` · `packages/vdd-cli`
 - New: `vdd_e2e` — end-to-end full-chain execution in one call
 

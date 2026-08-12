@@ -70,7 +70,7 @@ Navigation map for all VDD reference files.
 | workflow-phases.md | Phase order and steps (authoritative) |
 | artifact-templates.md | 11 artifact templates (authoritative) |
 | prompt-patterns.md | AI prompts (authoritative) |
-| quality-gates.md | 7 gates with 113 checks (authoritative) |
+| quality-gates.md | 7 gates with 108 checks (authoritative) |
 | ai-agent-patterns.md | Agent orchestration (authoritative) |
 | anti-patterns.md | 24 failure modes (authoritative) |
 | traceability-matrix.md | RTM format + CI/CD |

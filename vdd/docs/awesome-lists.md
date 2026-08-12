@@ -29,7 +29,7 @@ VDD should be submitted to the following awesome-list repositories:
 AI-native development methodology — 8-phase bidirectional chain from vision to verified code.
 OpenCode skill. Covers webapp, data storage, ETL, and infrastructure.
 
-- 7 bidirectional gates with 113 verification checks
+- 7 bidirectional gates with 108 verification checks
 - 5 parallel AI research subagents during Strategy phase
 - Full-auto mode: human provides vision, AI handles the rest
 - Absorbs and extends Spec-Driven Development (SDD)

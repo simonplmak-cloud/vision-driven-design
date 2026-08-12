@@ -54,7 +54,7 @@ function phaseHandlers(input) {
       return { success: true, artifact: `Ready: Task ${tid}`, output: { taskId: tid, instruction: "Load constitution.md + task description + spec/plan/contracts. Implement. Commit with traceable message." } };
     },
     validate() {
-      return { success: true, artifact: `${root}/vdd/impact-report.md`, gateResult: { passed: true, checks: 113, total: 113 }, template: `# Impact Verification Report\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]")}Date: ${today}\n\n## Traceability Summary\n| Level | Artifact | Status |\n|-------|----------|--------|\n| Vision | V-001 | Approved |\n| Strategy | S-002 | Approved |\n| Tactics | T-003 | Approved |\n| Spec | SP-004 | All MUST ACs pass |\n| Plan | PL-005 | All components implemented |\n| Tasks | TK-006 | All tasks complete |\n| Code | [N commits] | All tests pass |\n\n## Forward Coverage\n| Parent | Children | Covered? |\n|--------|----------|----------|\n| V-001 | S-002 | Yes |\n| S-002 | T-003 | Yes |\n| T-003 | SP-004 | Yes |\n| SP-004 | PL-005 | Yes |\n| PL-005 | TK-006 | Yes |\n| TK-006 | [commits] | Yes |\n\n## Backward Authorization\n| Child | Authorized Parent | Valid? |\n|-------|------------------|--------|\n| Every task | PL-005 | Yes |\n| Every component | SP-004 | Yes |\n| Every AC | T-003 | Yes |\n| Every artifact | [Spec AC] | Yes |\n\n## Orphan / Uncovered Detection\n| Artifact | Status | Action |\n|----------|--------|--------|\n| (none found) | — | — |\n\n## Impact Metrics vs Targets\n| Metric | Target | Actual | Status |\n|--------|--------|--------|--------|\n| [Leading indicator] | [target] | [actual] | ON TRACK / AT RISK |\n| [Lagging indicator] | [target] | [TBD — post-launch] | PENDING |\n\n## S&T Assumption Validation (7 gates × 4 = 28 assumptions)\n| Assumption | Held? | Evidence |\n|-----------|-------|----------|\n| Necessity (V→S) | Yes | Strategy research required |\n| Achievability (V→S) | Yes | Pillars have paths |\n| Sufficiency (V→S) | Yes | Covers all goals |\n| Warnings (V→S) | Yes | No violations |\n\n## Drift Report\n| Drift Type | Artifact | Severity | Status |\n|-----------|----------|----------|--------|\n| (none found) | — | — | — |\n\n## Decision\n**Release Readiness:** [GO / NO-GO / GO WITH CONDITIONS]\n\n**Conditions:**\n- [Condition if any]\n` };
+      return { success: true, artifact: `${root}/vdd/impact-report.md`, gateResult: { passed: true, checks: 108, total: 108 }, template: `# Impact Verification Report\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]")}Date: ${today}\n\n## Traceability Summary\n| Level | Artifact | Status |\n|-------|----------|--------|\n| Vision | V-001 | Approved |\n| Strategy | S-002 | Approved |\n| Tactics | T-003 | Approved |\n| Spec | SP-004 | All MUST ACs pass |\n| Plan | PL-005 | All components implemented |\n| Tasks | TK-006 | All tasks complete |\n| Code | [N commits] | All tests pass |\n\n## Forward Coverage\n| Parent | Children | Covered? |\n|--------|----------|----------|\n| V-001 | S-002 | Yes |\n| S-002 | T-003 | Yes |\n| T-003 | SP-004 | Yes |\n| SP-004 | PL-005 | Yes |\n| PL-005 | TK-006 | Yes |\n| TK-006 | [commits] | Yes |\n\n## Backward Authorization\n| Child | Authorized Parent | Valid? |\n|-------|------------------|--------|\n| Every task | PL-005 | Yes |\n| Every component | SP-004 | Yes |\n| Every AC | T-003 | Yes |\n| Every artifact | [Spec AC] | Yes |\n\n## Orphan / Uncovered Detection\n| Artifact | Status | Action |\n|----------|--------|--------|\n| (none found) | — | — |\n\n## Impact Metrics vs Targets\n| Metric | Target | Actual | Status |\n|--------|--------|--------|--------|\n| [Leading indicator] | [target] | [actual] | ON TRACK / AT RISK |\n| [Lagging indicator] | [target] | [TBD — post-launch] | PENDING |\n\n## S&T Assumption Validation (7 gates × 4 = 28 assumptions)\n| Assumption | Held? | Evidence |\n|-----------|-------|----------|\n| Necessity (V→S) | Yes | Strategy research required |\n| Achievability (V→S) | Yes | Pillars have paths |\n| Sufficiency (V→S) | Yes | Covers all goals |\n| Warnings (V→S) | Yes | No violations |\n\n## Drift Report\n| Drift Type | Artifact | Severity | Status |\n|-----------|----------|----------|--------|\n| (none found) | — | — | — |\n\n## Decision\n**Release Readiness:** [GO / NO-GO / GO WITH CONDITIONS]\n\n**Conditions:**\n- [Condition if any]\n` };
     },
     trace() {
       return { success: true, artifact: "Traceability matrix", chain: "V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006", files: [`${root}/vdd/vision.md`, `${root}/vdd/strategy.md`, `${root}/vdd/tactics.md`] };
@@ -82,7 +82,7 @@ function phaseHandlers(input) {
           [`${root}/vdd/specs/${fid}/contracts/primary-endpoint.md`]: `# API Contract\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005")}## [METHOD] [/path/:param]\n### Description\n[One sentence]\n\n### Request\n**Body:**\n\`\`\`json\n{ "field": "type — description" }\n\`\`\`\n\n### Response\n**200 OK:**\n\`\`\`json\n{ "id": "uuid", "field": "value" }\n\`\`\`\n\n**Error Codes:**\n| Status | Code | When |\n|--------|------|------|\n| 400 | VALIDATION_ERROR | Invalid input |\n| 401 | UNAUTHORIZED | No session |\n`,
         } },
         phase6_tasks: { artifact: `${root}/vdd/specs/${fid}/tasks.md`, template: `# Task List\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Plan Reference\nImplements: \`vdd/specs/${fid}/plan.md\`\n\n## Tasks\n### Setup\n- [ ] **TASK-001** [S] Set up [module] skeleton\n  - Creates: \`[path]\`\n  - Depends on: none\n\n### Implementation\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Depends on: TASK-001\n\n- [ ] **TASK-003** [M] Implement [component]\n  - Depends on: TASK-002\n\n## Legend\n- \`[S]\` < 1h, \`[M]\` 1-3h, \`[L]\` 3-6h, \`[P]\` Parallelizable\n` },
-        phase8_validate: { artifact: `${root}/vdd/impact-report.md`, template: this.validate().template, gateResult: { passed: true, checks: 113, total: 113 } },
+        phase8_validate: { artifact: `${root}/vdd/impact-report.md`, template: this.validate().template, gateResult: { passed: true, checks: 108, total: 108 } },
       };
       return {
         success: true,
@@ -125,7 +125,7 @@ const PHASE_META = {
   trace: "VDD Cross-phase: Bidirectional traceability matrix — V→S→T→SP→PL→TK chain.",
   analyze: "VDD Cross-phase: Cross-artifact consistency analysis — AC count, unresolved clarifications, placeholder density, plan+tasks readiness.",
   amend: "VDD Cross-phase: Cascade requirement change through full chain — identify highest affected level, update downward, re-run gates.",
-  e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
+  e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
 };
 
 const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e"];
@@ -152,7 +152,7 @@ function handleJsonRpc(body) {
   const { method, params, id } = body || {};
 
   if (method === "initialize") {
-    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "0.2.0" }, capabilities: { tools: {} } } };
+    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "1.5.5" }, capabilities: { tools: {} } } };
   }
 
   if (method === "tools/list") {
@@ -196,7 +196,7 @@ const HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VDD MCP Server — Vision Driven Design API</title>
-<meta name="description" content="Public MCP server for Vision Driven Design — 15 tools with full template generation, bi-directional traceability for AI-assisted development. 8 phases, 7 gates, 113 checks.">
+<meta name="description" content="Public MCP server for Vision Driven Design — 15 tools with full template generation, bi-directional traceability for AI-assisted development. 8 phases, 7 gates, 108 checks.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
   :root { --teal: #0d7377; --teal-dark: #095a5e; --ink: #1a1a1a; --muted: #5a5a5a; --line: #e0e0e0; --bg: #f8faf9; --card: #fff; }
@@ -230,7 +230,7 @@ const HTML = `<!DOCTYPE html>
 <header>
   <h1>VDD MCP Server</h1>
   <p>Public API for Vision Driven Design — bi-directional traceability with full template generation</p>
-  <span class="badge">15 tools</span><span class="badge">113 checks</span><span class="badge">7 gates</span><span class="badge">e2e chain</span><span class="badge">template gen</span><span class="badge">no API key</span>
+  <span class="badge">15 tools</span><span class="badge">108 checks</span><span class="badge">7 gates</span><span class="badge">e2e chain</span><span class="badge">template gen</span><span class="badge">no API key</span>
 </header>
 <main>
   <section>
@@ -265,7 +265,7 @@ const HTML = `<!DOCTYPE html>
     <pre>curl -X POST https://vdd.simonmak.com/api/sse \\
   -H "Content-Type: application/json" \\
   -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_e2e","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
-    <p style="margin-top:0.5rem;">Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→validate. Returns all templates.</p>
+    <p style="margin-top:0.5rem;">Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate. Returns all templates.</p>
   </section>
 </main>
 <footer><a href="https://github.com/simonplmak-cloud/vision-driven-design">Vision Driven Design</a> · MIT · Goldratt S&T · Impact Mapping · NASA SE · CMMI</footer>

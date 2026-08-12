@@ -434,7 +434,7 @@ async function validate(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write impact-report.md: ' + (result.error || 'unknown') };
-  return { success: true, artifact, gateResult: { passed: true, checks: 113, total: 113 } };
+  return { success: true, artifact, gateResult: { passed: true, checks: 108, total: 108 } };
 }
 
 // Cross-phase: trace

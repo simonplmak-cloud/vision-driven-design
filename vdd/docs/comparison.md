@@ -14,7 +14,7 @@ This page compares Vision Driven Design against the three most commonly discusse
 | **Research** | None | None | Optional (manual) | **5 parallel AI research subagents** |
 | **Codebase awareness** | None | Tests only | Manual | **Full automated repo audit** |
 | **Traceability** | Prompt → Code (buried in history) | Test → Code | Spec → Code | **Vision → Strategy → Tactics → Spec → Plan → Code → Impact** |
-| **Verification** | "Looks right" | Tests pass | Forward: spec→code | **Bi-directional (113 checks): forward + backward at 7 gates** |
+| **Verification** | "Looks right" | Tests pass | Forward: spec→code | **Bi-directional (108 checks): forward + backward at 7 gates** |
 | **Impact measurement** | None | None | None | **Leading + lagging metrics traced to vision** |
 | **Autonomy** | Full (low control) | Developer-lead (high control) | Human gates at each phase | **Full-auto mode (human provides vision, AI does the rest)** |
 | **Best for** | Prototypes, exploration | Safety-critical, well-understood domains | Complex features with clear requirements | **New products, multi-domain projects, impact-driven work** |
@@ -87,7 +87,7 @@ VDD preserves the speed of natural language input (the vision is freeform, just 
 
 - **Structure without friction**: The AI handles all process — you still just describe what you want
 - **Traceability**: Every line of code answers "why do I exist?"
-- **Verification**: 113 bidirectional checks catch drift before it compounds
+- **Verification**: 108 bidirectional checks catch drift before it compounds
 - **Impact**: You know whether what you built actually worked
 
 > **"Vibe speed with spec assurance"** — write your vision like a vibe prompt, get auditable, impact-traced software.

@@ -6,7 +6,7 @@
 
 2. **Identify the authoritative source** for the concept you're changing (see [AGENTS.md](AGENTS.md#file-roles--authoritative-sources)). Make changes to the canonical file first, then propagate to derived files.
 
-3. **Keep counts consistent**: 113 gate checks, 24 anti-patterns, 7 domain primers must match across all files.
+3. **Keep counts consistent**: 108 gate checks, 24 anti-patterns, 7 domain primers must match across all files.
 
 4. **Keep command tables consistent** across SKILL.md, README.md, and quick-reference.md.
 

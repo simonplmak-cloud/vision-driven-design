@@ -326,7 +326,7 @@ Every gate includes a substance check. Cosmetic-only contributions fail the gate
 | G6 | Tasks → Implement | 4 | 7 | 4 |
 | G7 | Implement → Validate | 6 | 5 | 4 |
 
-**Total checks across all gates: 113** (47 forward + 38 backward + 28 S&T assumptions)
+**Total checks across all gates: 108** (42 forward + 38 backward + 28 S&T assumptions)
 
 ---
 

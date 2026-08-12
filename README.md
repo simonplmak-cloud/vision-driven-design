@@ -4,7 +4,7 @@
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.5-blue" alt="Version 1.5.5"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-113-green" alt="113 Verification Checks"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-108-green" alt="108 Verification Checks"></a>
 <a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-0d7377" alt="MCP API"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/built%20with-VDD-0d7377" alt="Built with VDD"></a>
 
@@ -93,7 +93,7 @@ VDD follows Goldratt's **recursive Strategy-Tactic decomposition**: every phase 
 | **7. Implement** | L6 Tactic → L7 Strategy | Code — Per-task commits with full traceability |
 | **8. Validate** | L7 Tactic — Did it work? | `impact-report.md` — Drift + impact verification |
 
-**7 bi-directional gates** verify both directions at every junction (113 total checks). Each gate validates 4 S&T assumptions: Necessity, Achievability, Sufficiency, Warnings.
+**7 bi-directional gates** verify both directions at every junction (108 total checks). Each gate validates 4 S&T assumptions: Necessity, Achievability, Sufficiency, Warnings.
 
 Every code commit traces back to the original vision statement:
 ```
@@ -232,7 +232,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 | [`vdd/docs/best-practice-benchmark.md`](vdd/docs/best-practice-benchmark.md) | Standards alignment matrix |
 | [`references/workflow-phases.md`](references/workflow-phases.md) | Step-by-step phase instructions (authoritative) |
 | [`references/artifact-templates.md`](references/artifact-templates.md) | Copy-paste templates for all 11 artifacts |
-| [`references/quality-gates.md`](references/quality-gates.md) | 7 gates with 113 checks + CI/CD |
+| [`references/quality-gates.md`](references/quality-gates.md) | 7 gates with 108 checks + CI/CD |
 | [`references/anti-patterns.md`](references/anti-patterns.md) | 24 failure modes and fixes |
 | [`references/compliance-evidence.md`](references/compliance-evidence.md) | DO-178C/IEC 62304/CMMI/ISO 29148 evidence maps |
 | [`references/quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
@@ -267,7 +267,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   ├── workflow-phases.md           # Phase order (authoritative)
 │   ├── artifact-templates.md        # 11 artifact templates (authoritative)
 │   ├── prompt-patterns.md           # AI prompts (authoritative)
-│   ├── quality-gates.md             # 7 gates + 113 checks (authoritative)
+│   ├── quality-gates.md             # 7 gates + 108 checks (authoritative)
 │   ├── ai-agent-patterns.md         # Agent orchestration (authoritative)
 │   ├── anti-patterns.md             # 24 failure modes (authoritative)
 │   ├── traceability-matrix.md       # RTM format + CI/CD

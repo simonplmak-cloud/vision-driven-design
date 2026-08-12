@@ -62,7 +62,7 @@ Without forward verification: vision goals ship with no implementation.
 
    **Or run end-to-end**:
    `/vdd:e2e "your vision"` → executes the full 8-phase chain (init→vision→strategize→
-   tactics→specify→clarify→plan→tasks→validate) in a single command, writing all 10+
+   tactics→specify→clarify→plan→tasks→next-task→validate) in a single command, writing all 10+
    template files to your project.
 
 3. **Review at the end**:
@@ -156,7 +156,7 @@ Each gate verifies both directions and validates 4 S&T assumptions:
 | **G6 (TK→IM)** | Every task produces passing code | Every commit traces to a task |
 | **G7 (IM→VS)** | Every MUST AC has passing tests | Every code artifact traces to vision. User story walkthrough complete. |
 
-**113 total checks** (47 forward + 38 backward + 28 S&T assumptions).
+**108 total checks** (42 forward + 38 backward + 28 S&T assumptions).
 
 ---
 
@@ -178,7 +178,7 @@ Each gate verifies both directions and validates 4 S&T assumptions:
 | `/vdd:trace` | any | Generate bidirectional traceability matrix |
 | `/vdd:analyze <feature>` | any | Cross-artifact consistency and conflict analysis |
 | `/vdd:amend "what changed"` | any | Cascade a requirement change through the full chain |
-| `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: execute full chain init→vision→strategize→tactics→specify→clarify→plan→tasks→validate in one call. Writes all 10+ template files. Accept optional `--actionItemId` / `--feature` to customize feature name (default: "feature-1"). |
+| `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: execute full chain init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate in one call. Writes all 10+ template files. Accept optional `--actionItemId` / `--feature` to customize feature name (default: "feature-1"). |
 
 ---
 
@@ -226,7 +226,7 @@ vdd/
 | Templates for all 11 artifact types | `references/artifact-templates.md` |
 | Prompts for every phase + bidirectional gates | `references/prompt-patterns.md` |
 | Step-by-step phase instructions | `references/workflow-phases.md` |
-| 7 bidirectional gates with 113 total checks | `references/quality-gates.md` |
+| 7 bidirectional gates with 108 total checks | `references/quality-gates.md` |
 | Multi-agent patterns and auto-mode execution | `references/ai-agent-patterns.md` |
 | 24 common failure modes and fixes | `references/anti-patterns.md` |
 | RTM format, generation, and CI/CD integration | `references/traceability-matrix.md` |

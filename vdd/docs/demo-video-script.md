@@ -31,7 +31,7 @@
 
 **Visual**: Gate validation output — "Gate G4 (SP→PL): PASS. Forward: 7/7. Backward: 6/6. S&T: 4/4."
 
-**Narration**: "At every junction, VDD runs bidirectional verification. Forward: does every parent goal have children that collectively cover it? Backward: does every child artifact trace back to an authorized parent? 113 checks across 7 gates. Nothing is missed. Nothing is invented."
+**Narration**: "At every junction, VDD runs bidirectional verification. Forward: does every parent goal have children that collectively cover it? Backward: does every child artifact trace back to an authorized parent? 108 checks across 7 gates. Nothing is missed. Nothing is invented."
 
 ## Scene 5: The Payoff (45 seconds)
 

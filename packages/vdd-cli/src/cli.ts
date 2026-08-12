@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { PHASES, type VddContext, type VddPhaseInput } from '@vdd/engine';
 
 const program = new Command();
-program.name('vdd').description('Vision Driven Design CLI').version('0.1.0');
+program.name('vdd').description('Vision Driven Design CLI').version('1.5.5');
 
 const PHASE_DESC: Record<string, { desc: string; args: string[] }> = {
   init:        { desc: 'Generate constitution.md', args: [] },

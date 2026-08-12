@@ -61,13 +61,13 @@ const PHASE_META: Record<string, { description: string; instructions: string }> 
     instructions: 'Pass "description" of what changed. AI agent identifies the highest affected level, updates all downstream artifacts, re-runs affected gates (G1–G7), and commits each updated artifact with [AMEND] marker.',
   },
   e2e: {
-    description: 'VDD End-to-End: Execute the full 10-phase VDD chain from constitution to validation in one call. Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate sequentially. Writes all 10+ template files with proper impact-chain headers. Accepts a freeform vision statement.',
+    description: 'VDD End-to-End: Execute the full 8-phase VDD chain from constitution to validation in one call. Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate sequentially. Writes all 10+ template files with proper impact-chain headers. Accepts a freeform vision statement.',
     instructions: 'Pass "statement" with your vision. The tool runs all phases end-to-end, creating every artifact: constitution.md, vision.md, strategy.md, tactics.md, spec.md, plan.md, data-model.md, contracts/, tasks.md, and impact-report.md. Use optional "feature" (default "feature-1") to customize the spec directory name. The AI agent then fills in each template with domain-specific content.',
   },
 };
 
 export function createVddMcpServer(): McpServer {
-  const server = new McpServer({ name: 'vdd', version: '0.1.0' });
+  const server = new McpServer({ name: 'vdd', version: '1.5.5' });
 
   for (const name of Object.keys(PHASES)) {
     const toolName = `vdd_${name.replace(/-/g, '_')}`;

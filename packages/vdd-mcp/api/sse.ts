@@ -4,7 +4,7 @@ import { z } from 'zod';
 const PHASES = ['init','vision','strategize','tactics','specify','clarify','plan','tasks','next-task','implement','validate','trace','analyze','amend'] as const;
 
 function createServer(): McpServer {
-  const server = new McpServer({ name: 'vdd', version: '0.1.0' });
+  const server = new McpServer({ name: 'vdd', version: '1.5.5' });
   for (const name of PHASES) {
     server.registerTool(
       `vdd_${name.replace(/-/g, '_')}`,
@@ -28,7 +28,7 @@ export default async function handler(req: Request) {
   if (req.method === 'GET') {
     return new Response(JSON.stringify({
       service: 'VDD MCP Server',
-      version: '0.1.0',
+      version: '1.5.5',
       phases: PHASES.length,
       tools: PHASES.map(p => `vdd_${p.replace(/-/g, '_')}`),
       endpoint: 'https://vdd.simonmak.com/api/sse'

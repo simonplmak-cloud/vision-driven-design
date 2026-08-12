@@ -17,7 +17,7 @@ verification gates validate both forward coverage (parent goals → child implem
 and backward authorization (child artifacts → parent intent). The methodology is
 implemented as an installable OpenCode skill and has been applied to webapp, data storage,
 ETL, and infrastructure projects. This paper describes the VDD architecture, its 7
-bi-directional gates with 113 total verification checks, its domain-primer system for
+bi-directional gates with 108 total verification checks, its domain-primer system for
 automated domain-specific research, and its full-auto execution mode that enables
 fully autonomous AI-driven development from a single human vision statement.
 
@@ -70,7 +70,7 @@ Each arrow is a bi-directional gate with forward and backward verification.
 
 ### 3.2 The 7 Bi-Directional Gates
 
-[Table of all 7 gates with 113 checks]
+[Table of all 7 gates with 108 checks]
 
 ### 3.3 Domain Primers
 
