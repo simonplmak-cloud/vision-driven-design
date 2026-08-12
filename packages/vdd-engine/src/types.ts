@@ -22,6 +22,7 @@ export const VddOutput = z.object({
   success: z.boolean(),
   artifact: z.string().optional(),
   gateResult: z.object({ passed: z.boolean(), checks: z.number(), total: z.number() }).optional(),
+  output: z.record(z.string(), z.unknown()).optional(),
   error: z.string().optional(),
 });
 export type VddOutput = z.infer<typeof VddOutput>;
