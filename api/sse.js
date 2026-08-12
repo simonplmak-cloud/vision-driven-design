@@ -464,15 +464,37 @@ const HTML = `<!DOCTYPE html>
 <meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 15 tools for template generation and bi-directional traceability in AI-assisted development.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
+  /* Dark theme (default) — all contrast >= 7:1 (WCAG 2.2 AAA) */
   :root {
-    --brand: #0a5c60;        /* 7.7:1 on white (AAA) */
-    --brand-dark: #074347;   /* 11:1 on white (AAA) */
-    --ink: #111111;          /* ~18:1 on white */
-    --muted: #4a4a4a;        /* 9:1 on white (AAA) */
-    --line: #c9c9c9;
+    --bg: #0f1115;
+    --card: #171a20;
+    --ink: #e8eaed;
+    --muted: #a6adb4;
+    --line: #2b3138;
+    --brand: #63c8c4;
+    --brand-dark: #7fdbd6;
+    --pre-bg: #171a20;
+    --focus: #63c8c4;
+    --on-brand: #0f1115;
+    --header-a: #0a5c60;
+    --header-b: #074347;
+    --header-ink: #ffffff;
+  }
+  /* Light theme (opt-in via toggle) */
+  [data-theme="light"] {
     --bg: #f5f7f6;
     --card: #ffffff;
+    --ink: #111111;
+    --muted: #4a4a4a;
+    --line: #c9c9c9;
+    --brand: #0a5c60;
+    --brand-dark: #074347;
+    --pre-bg: #f0f0f0;
     --focus: #1a56a8;
+    --on-brand: #ffffff;
+    --header-a: #0a5c60;
+    --header-b: #074347;
+    --header-ink: #ffffff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -497,14 +519,15 @@ const HTML = `<!DOCTYPE html>
   /* 2.4.1 Bypass Blocks */
   .skip-link {
     position: absolute; left: -9999px; top: 0;
-    background: var(--ink); color: #fff; padding: 0.75rem 1.25rem;
+    background: #000; color: #fff; padding: 0.75rem 1.25rem;
     z-index: 100; font-weight: 600; text-decoration: none; border-radius: 0 0 8px 0;
   }
   .skip-link:focus { left: 0; top: 0; }
 
   header {
-    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
-    color: #fff;
+    position: relative;
+    background: linear-gradient(135deg, var(--header-a), var(--header-b));
+    color: var(--header-ink);
     padding: 3rem 1.5rem 2.5rem;
   }
   header .wrap { max-width: 70ch; margin: 0 auto; }
@@ -535,18 +558,28 @@ const HTML = `<!DOCTYPE html>
   .row .label { font-weight: 600; color: var(--muted); }
   .row .value { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95rem; word-break: break-word; }
 
-  pre { background: #f0f0f0; padding: 1.25rem; border-radius: 8px; font-size: 0.9rem; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; border: 1px solid var(--line); }
+  pre { background: var(--pre-bg); color: var(--ink); padding: 1.25rem; border-radius: 8px; font-size: 0.9rem; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; border: 1px solid var(--line); }
 
   .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; }
   .cta {
     display: inline-flex; align-items: center; justify-content: center;
-    padding: 0.8rem 1.5rem; background: var(--brand); color: #fff;
+    padding: 0.8rem 1.5rem; background: var(--brand); color: var(--on-brand);
     text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1rem;
     min-height: 44px; min-width: 44px;   /* 2.5.5 AAA / 2.5.8 AA target size */
   }
-  .cta:hover, .cta:focus-visible { background: var(--brand-dark); color: #fff; }
-  .cta.secondary { background: #fff; color: var(--brand); border: 2px solid var(--brand); }
+  .cta:hover, .cta:focus-visible { background: var(--brand-dark); color: var(--on-brand); }
+  .cta.secondary { background: var(--card); color: var(--brand); border: 2px solid var(--brand); }
   .cta.secondary:hover, .cta.secondary:focus-visible { background: var(--bg); color: var(--brand-dark); border-color: var(--brand-dark); }
+
+  .theme-toggle {
+    position: absolute; top: 1rem; right: 1rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.12); color: var(--header-ink);
+    border: 1px solid rgba(255,255,255,0.55); border-radius: 999px;
+    padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    min-height: 44px; min-width: 44px;
+  }
+  .theme-toggle:hover, .theme-toggle:focus-visible { background: rgba(255,255,255,0.22); }
 
   footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--line); }
   footer a { color: var(--brand-dark); }
@@ -556,12 +589,14 @@ const HTML = `<!DOCTYPE html>
 
   /* 2.3.3 reduced motion + 1.4.11 contrast preferences */
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
-  @media (prefers-contrast: more) { :root { --line: #767676; --muted: #222222; } }
+  @media (prefers-contrast: more) { :root { --line: #6b7280; } [data-theme="light"] { --muted: #222222; } }
 </style>
+<script>(function(){try{if(localStorage.getItem("vdd-theme")==="light"){document.documentElement.setAttribute("data-theme","light");}}catch(e){}})();</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode">Light mode</button>
   <div class="wrap">
     <h1><abbr title="Vision Driven Design">VDD</abbr> <abbr title="Model Context Protocol">MCP</abbr> Server</h1>
     <p>Public <abbr title="Application Programming Interface">API</abbr> for <abbr title="Vision Driven Design">VDD</abbr> — bi-directional traceability with full template generation.</p>
@@ -617,6 +652,7 @@ const HTML = `<!DOCTYPE html>
   <p><a href="https://github.com/simonplmak-cloud/vision-driven-design">Vision Driven Design</a> is licensed under the <abbr title="Massachusetts Institute of Technology">MIT</abbr> license.</p>
   <p>Methodology: Goldratt Strategy &amp; Tactics · Impact Mapping · NASA Systems Engineering · <abbr title="Capability Maturity Model Integration">CMMI</abbr></p>
 </footer>
+<script>(function(){var b=document.getElementById("theme-toggle");if(!b)return;function s(){var l=document.documentElement.getAttribute("data-theme")==="light";b.textContent=l?"Dark mode":"Light mode";b.setAttribute("aria-label",l?"Switch to dark mode":"Switch to light mode");}b.addEventListener("click",function(){var l=document.documentElement.getAttribute("data-theme")==="light";if(l){document.documentElement.removeAttribute("data-theme");}else{document.documentElement.setAttribute("data-theme","light");}try{localStorage.setItem("vdd-theme",l?"dark":"light");}catch(e){}s();});s();})();</script>
 </body>
 </html>`;
 

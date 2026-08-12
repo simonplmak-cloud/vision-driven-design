@@ -24,7 +24,27 @@
       content="https://raw.githubusercontent.com/simonplmak-cloud/vision-driven-design/main/docs/social-preview.svg"
     />
     <style>
+      /* Dark theme (default) */
       :root {
+        --teal: #63c8c4;
+        --teal-dark: #7fdbd6;
+        --ink: #e8eaed;
+        --muted: #a6adb4;
+        --line: #2b3138;
+        --bg: #0f1115;
+        --card: #171a20;
+        --pre-bg: #171a20;
+        --on-brand: #0f1115;
+        --header-a: #0a5c60;
+        --header-b: #074347;
+        --header-ink: #ffffff;
+        --green: #2e7d32;
+        --blue: #1565c0;
+        --orange: #c66900;
+        --purple: #7b1fa2;
+      }
+      /* Light theme (opt-in via toggle) */
+      [data-theme="light"] {
         --teal: #0d7377;
         --teal-dark: #095a5e;
         --ink: #1a1a1a;
@@ -32,7 +52,13 @@
         --line: #e0e0e0;
         --bg: #f8faf9;
         --card: #fff;
+        --pre-bg: #f5f5f5;
+        --on-brand: #ffffff;
+        --header-a: #0d7377;
+        --header-b: #095a5e;
+        --header-ink: #ffffff;
         --green: #4caf50;
+        --blue: #2196f3;
         --orange: #ff9800;
         --purple: #9c27b0;
       }
@@ -44,7 +70,7 @@
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
-        background: #f5f7f6;
+        background: var(--bg);
         color: var(--ink);
         line-height: 1.6;
         min-height: 100vh;
@@ -52,8 +78,9 @@
         flex-direction: column;
       }
       header {
-        background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-        color: #fff;
+        position: relative;
+        background: linear-gradient(135deg, var(--header-a) 0%, var(--header-b) 100%);
+        color: var(--header-ink);
         padding: 3rem 1.5rem 2.5rem;
         text-align: center;
       }
@@ -148,7 +175,8 @@
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       }
       pre {
-        background: #f5f5f5;
+        background: var(--pre-bg);
+        color: var(--ink);
         padding: 1rem;
         border-radius: 6px;
         font-size: 0.82rem;
@@ -162,7 +190,7 @@
         gap: 0.4rem;
         padding: 0.7rem 1.3rem;
         background: var(--teal);
-        color: #fff;
+        color: var(--on-brand);
         text-decoration: none;
         border-radius: 6px;
         font-weight: 600;
@@ -172,17 +200,26 @@
         background: var(--teal-dark);
       }
       .cta.secondary {
-        background: #fff;
+        background: var(--card);
         color: var(--teal);
         border: 1px solid var(--teal);
       }
       .cta.secondary:hover {
         background: var(--bg);
       }
+      .theme-toggle {
+        position: absolute; top: 1rem; right: 1rem;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.12); color: var(--header-ink);
+        border: 1px solid rgba(255,255,255,0.55); border-radius: 999px;
+        padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+        min-height: 44px; min-width: 44px;
+      }
+      .theme-toggle:hover, .theme-toggle:focus-visible { background: rgba(255,255,255,0.22); }
       footer {
         text-align: center;
         padding: 1.5rem;
-        color: #999;
+        color: var(--muted);
         font-size: 0.85rem;
         border-top: 1px solid var(--line);
       }
@@ -199,9 +236,19 @@
         }
       }
     </style>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("vdd-theme") === "light") {
+            document.documentElement.setAttribute("data-theme", "light");
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <header>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode">Light mode</button>
       <h1>Vision Driven Design</h1>
       <p>
         From vision to verified impact — bi-directional traceability for
@@ -218,29 +265,21 @@
       <section>
         <h2>The Chain</h2>
         <div class="diagram">
-          <div class="diagram-box" sty
-          le="background: var(--green)">Vision</div>
+          <div class="diagram-box" style="background: var(--green)">Vision</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: #2196f3">Strategy</div>
+          <div class="diagram-box" style="background: var(--blue)">Strategy</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--orange)">Tactics</div>
+          <div class="diagram-box" style="background: var(--orange)">Tactics</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--purple)">Specs</div>
+          <div class="diagram-box" style="background: var(--purple)">Specs</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--muted)">Plan</div>
+          <div class="diagram-box" style="background: var(--muted)">Plan</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--muted)">Tasks</div>
+          <div class="diagram-box" style="background: var(--muted)">Tasks</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--muted)">Implement</div>
+          <div class="diagram-box" style="background: var(--muted)">Implement</div>
           <div class="diagram-arrow">→</div>
-          <div class="diagram-box" sty
-          le="background: var(--green)">Validate</div>
+          <div class="diagram-box" style="background: var(--green)">Validate</div>
         </div>
       </section>
 
@@ -339,5 +378,24 @@
         Goldratt S&T · Impact Mapping · NASA SE · CMMI
       </p>
     </footer>
+    <script>
+      (function () {
+        var b = document.getElementById("theme-toggle");
+        if (!b) return;
+        function sync() {
+          var l = document.documentElement.getAttribute("data-theme") === "light";
+          b.textContent = l ? "Dark mode" : "Light mode";
+          b.setAttribute("aria-label", l ? "Switch to dark mode" : "Switch to light mode");
+        }
+        b.addEventListener("click", function () {
+          var l = document.documentElement.getAttribute("data-theme") === "light";
+          if (l) { document.documentElement.removeAttribute("data-theme"); }
+          else { document.documentElement.setAttribute("data-theme", "light"); }
+          try { localStorage.setItem("vdd-theme", l ? "dark" : "light"); } catch (e) {}
+          sync();
+        });
+        sync();
+      })();
+    </script>
   </body>
 </html>
