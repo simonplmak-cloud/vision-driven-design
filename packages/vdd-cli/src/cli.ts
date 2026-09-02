@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { PHASES, type VddContext, type VddPhaseInput } from '@vdd/engine';
 
 const program = new Command();
-program.name('vdd').description('Vision Driven Design CLI').version('1.5.5');
+program.name('vdd').description('Vision Driven Design CLI').version('1.5.6');
 
 const PHASE_DESC: Record<string, { desc: string; args: string[] }> = {
   init:        { desc: 'Generate constitution.md', args: [] },
@@ -21,17 +21,23 @@ const PHASE_DESC: Record<string, { desc: string; args: string[] }> = {
   analyze:     { desc: 'Cross-artifact analysis', args: ['feature'] },
   amend:       { desc: 'Cascade change through chain', args: ['description'] },
   e2e:         { desc: 'End-to-end: vision → validate in one command', args: ['statement'] },
+  'detect-environment': { desc: 'Report per-phase tool/MCP requirements', args: [] },
 };
 
 let jsonMode = false;
 program.option('--json', 'JSON output').hook('preAction', (cmd) => { jsonMode = cmd.opts().json; });
 
+function collect(v: string, prev: string[]): string[] { return prev.concat([v]); }
+program.option('--tool <name>', 'Available MCP/tool name (repeatable)', collect, [] as string[]);
+
 for (const [name, { desc, args }] of Object.entries(PHASE_DESC)) {
   const cmd = program.command(name).description(desc);
   for (const arg of args) cmd.argument(`<${arg}>`, `${arg} for ${name}`);
   cmd.action(async (...argValues: string[]) => {
+    const opts = program.opts<{ tool?: string[] }>();
+    const availableTools = opts.tool ?? [];
     const ctx: VddContext = { projectRoot: process.cwd(), mode: 'auto' };
-    const input: VddPhaseInput = { json: jsonMode };
+    const input: VddPhaseInput = { json: jsonMode, availableTools, capabilities: availableTools };
     if (args[0] === 'statement') input.statement = argValues[0];
     else if (args[0] === 'idOrDesc') { input.description = argValues[0]; input.actionItemId = argValues[0]; }
     else if (args[0] === 'feature') input.feature = argValues[0];

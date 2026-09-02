@@ -34,6 +34,10 @@ export const VddPhaseInput = z.object({
   taskId: z.string().optional(),
   description: z.string().optional(),
   json: z.boolean().default(false),
+  availableTools: z.array(z.string()).optional(),
+  capabilities: z.array(z.string()).optional(),
+  researchFindings: z.string().optional(),
+  artifactFiles: z.record(z.string(), z.string()).optional(),
 });
 export type VddPhaseInput = z.infer<typeof VddPhaseInput>;
 

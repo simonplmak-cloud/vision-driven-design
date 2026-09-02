@@ -10,14 +10,14 @@ README.md                ← GitHub landing page.
 constitution.md          ← Project constitution (dogfooded).
 index.html               ← GitHub Pages landing page at simonplmak-cloud.github.io/vision-driven-design.
 api/                     ← Vercel MCP endpoint (deployed at vdd.simonmak.com).
-  sse.js                 ← MCP SSE transport — GET returns SSE stream (or HTML for browsers), POST handles JSON-RPC 2.0 (initialize, tools/list, tools/call). 15 tools.
+  sse.js                 ← MCP SSE transport — GET returns SSE stream (or HTML for browsers), POST handles JSON-RPC 2.0 (initialize, tools/list, tools/call). 16 tools.
 vercel.json              ← Vercel deploy config (Framework: Other).
 package.json             ← Root workspace + Vercel runtime config.
 pnpm-workspace.yaml      ← Monorepo workspace config.
 packages/                ← TypeScript monorepo.
-  vdd-engine/            ← Shared core: 15 phase functions + Zod types.
-  vdd-mcp/               ← MCP server: 15 tools, stdio + SSE transports.
-  vdd-cli/               ← CLI binary: 15 subcommands, --json mode.
+  vdd-engine/            ← Shared core: 16 phase functions + Zod types.
+  vdd-mcp/               ← MCP server: 16 tools, stdio + SSE transports.
+  vdd-cli/               ← CLI binary: 16 subcommands, --json mode.
 domain-primers/           ← 7 domain research patterns (loaded during Phase 2).
   webapp.md, data-storage.md, etl.md, infrastructure.md  ← Conditional (per vision targets).
   human-factors.md, verification-toolchain.md             ← Unconditional (always loaded).

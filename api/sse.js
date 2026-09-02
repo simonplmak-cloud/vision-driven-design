@@ -92,11 +92,11 @@ function gate3(files) {
   const acCount = (sp.match(/### AC-/g) || []).length;
   const mustCount = (sp.match(/\[MUST\]/g) || []).length;
   const ph = countPlaceholders(sp);
-  checks.push(ck("F3.1", "MUST coverage → spec exists for action item", true));
+  checks.push(ck("F3.1", "MUST coverage → spec declares tactical action item", sp.includes("Action Item")));
   checks.push(ck("F3.2", "Scope coverage → Overview section present", hasSection(sp, "Overview")));
   checks.push(ck("F3.3", "Impact trace → Impact Verification section", hasSection(sp, "Impact Verification")));
   checks.push(ck("F3.4", "Testability → ACs have GWT format", (sp.match(/Given/g) || []).length >= 1));
-  checks.push(ck("F3.5", "Implementation-free → no tech names in spec", true));
+  checks.push(ck("F3.5", "Implementation-free → no tech names in spec", !hasTechNames(sp)));
   checks.push(ck("F3.6", "Error coverage → edge-case ACs present", (sp.match(/AC-E\d+/g) || []).length >= 1));
   checks.push(ck("F3.7", "MoSCoW labels → ACs labeled", mustCount >= 1));
   checks.push(ck("F3.8", "No vague terms → measurable thresholds (no [e.g.] placeholders)", ph === 0, ph + " placeholder(s) remaining"));
@@ -213,7 +213,9 @@ function gate7(files) {
   checks.push(ck("A7.1", "Necessity (Full Chain) → all levels present", foundCount === keys.length));
   checks.push(ck("A7.2", "Achievability (Full Chain) → artifacts exist", foundCount >= 8));
   checks.push(ck("A7.3", "Sufficiency (Full Chain) → templates complete", foundCount === keys.length));
-  checks.push(ck("A7.4", "Warnings (Full Chain) → no blocking issues", true));
+  let placeholders = 0;
+  for (const v of Object.values(files)) if (typeof v === "string") placeholders += countSubstancePlaceholders(v);
+  checks.push(ck("A7.4", "Warnings (Full Chain) → no blocking placeholders", placeholders === 0, placeholders + " placeholder(s) remaining"));
   return tallyGate("G7", "Implementation → Validation", checks, 6, 5, 4);
 }
 
@@ -279,6 +281,86 @@ function gateSummary(gates) {
   return { totalPassed, totalGates, allPassed: totalPassed === totalGates, checksRun, checksPassed, checksTotal };
 }
 
+// ---------- Environment / tool capability metadata (mirrors packages/vdd-engine/src/meta.ts) ----------
+const TOOL_REQUIREMENTS = {
+  init: { required: [], optional: [] },
+  vision: { required: [], optional: [] },
+  strategize: { required: ["brave-search", "perplexity"], optional: ["context7", "gh_grep", "playwright", "browserless"] },
+  tactics: { required: ["filesystem"], optional: ["shell"] },
+  specify: { required: [], optional: [] },
+  clarify: { required: ["filesystem"], optional: [] },
+  plan: { required: ["filesystem"], optional: ["context7"] },
+  tasks: { required: [], optional: [] },
+  "next-task": { required: ["filesystem"], optional: [] },
+  implement: { required: ["filesystem"], optional: ["shell"] },
+  validate: { required: ["filesystem"], optional: ["shell"] },
+  trace: { required: ["filesystem"], optional: [] },
+  analyze: { required: ["filesystem"], optional: [] },
+  amend: { required: ["filesystem"], optional: [] },
+  e2e: { required: ["filesystem"], optional: ["brave-search", "perplexity", "context7", "gh_grep", "playwright", "browserless", "shell"] },
+  "detect-environment": { required: [], optional: [] },
+};
+
+const RESEARCH_SUBAGENTS = [
+  { id: "market", name: "Market Research", role: "Market size, growth, target-user demographics, trends, regulatory factors", tools: ["brave-search", "perplexity"], input: "vision.md (goal, actors, impacts, target domains)", output: "300-500 word summary with citations", timeoutSeconds: 120, requiresCitations: true },
+  { id: "competitive", name: "Competitive Analysis", role: "Top competitors, features, pricing, user sentiment, weaknesses", tools: ["brave-search", "playwright"], input: "vision.md + domain-primers (market section)", output: "300-500 word competitive matrix with citations", timeoutSeconds: 120, requiresCitations: true },
+  { id: "technology", name: "Technology Assessment", role: "Viable technologies, trade-offs, technology risks, proven infra patterns", tools: ["context7", "gh_grep"], input: "vision.md + constitution.md (tech stack) + domain-primers", output: "300-500 word technology fit assessment", timeoutSeconds: 120, requiresCitations: true },
+  { id: "impact", name: "Impact Feasibility", role: "Similar impact attempts, what worked/failed, measurement, timelines", tools: ["perplexity"], input: "vision.md (impact model + success metrics)", output: "300-500 word feasibility analysis with case studies", timeoutSeconds: 120, requiresCitations: true },
+  { id: "domain", name: "Domain Deep-Dive", role: "Domain-specific constraints, anti-patterns, impact measurement", tools: ["domain-primers"], input: "vision.md + domain-primers", output: "300-500 word domain-specific constraints and patterns", timeoutSeconds: 120, requiresCitations: false },
+];
+
+const DOMAIN_PRIMERS = [
+  { file: "human-factors.md", label: "Human Factors", condition: "unconditional", summary: "Behavioral economics, cognitive load, habit formation" },
+  { file: "verification-toolchain.md", label: "Verification Toolchain", condition: "unconditional", summary: "Playwright, Browserless, Sentry, CI/CD quality pipeline" },
+  { file: "webapp.md", label: "WebApp", condition: "webapp", summary: "UX, accessibility, performance, framework evaluation" },
+  { file: "data-storage.md", label: "Data Storage", condition: "data-storage", summary: "Schema design, indexing, data governance" },
+  { file: "etl.md", label: "ETL", condition: "etl", summary: "Pipeline architecture, data quality, streaming vs batch" },
+  { file: "infrastructure.md", label: "Infrastructure", condition: "infrastructure", summary: "CI/CD, observability, security, scaling, disaster recovery" },
+  { file: "safety-critical.md", label: "Safety-Critical", condition: "safety-critical", summary: "FMEA/FTA, safety integrity levels (DO-178C/IEC 62304)" },
+];
+
+function normalizeToolKey(tool) {
+  const t = String(tool || "").trim().toLowerCase();
+  if (t === "context-7" || t === "context_7") return "context7";
+  if (t === "gh-grep" || t === "ghgrep") return "gh_grep";
+  if (t === "brave_search" || t === "brave") return "brave-search";
+  if (t === "fs" || t === "glob" || t === "grep" || t === "read") return "filesystem";
+  if (t === "bash" || t === "terminal") return "shell";
+  return t;
+}
+
+function detectEnvironment(availableTools) {
+  const available = new Set((availableTools || []).map(normalizeToolKey));
+  const phases = {};
+  for (const name of Object.keys(TOOL_REQUIREMENTS)) {
+    const req = TOOL_REQUIREMENTS[name];
+    phases[name] = { required: req.required.slice(), optional: req.optional.slice(), requiredAvailable: req.required.every((t) => available.has(t)) };
+  }
+  const missingRequired = [];
+  const missingOptional = [];
+  for (const t of TOOL_REQUIREMENTS.strategize.required) if (!available.has(t)) missingRequired.push(t);
+  for (const t of TOOL_REQUIREMENTS.strategize.optional) if (!available.has(t)) missingOptional.push(t);
+  const researchLimitations = [];
+  if (!available.has("brave-search") && !available.has("perplexity")) researchLimitations.push("No web-search or research tool available — Market/Competitive/Impact subagents cannot run.");
+  else if (!available.has("perplexity")) researchLimitations.push("Perplexity unavailable — Impact Feasibility subagent cannot run.");
+  else if (!available.has("brave-search")) researchLimitations.push("Brave Search unavailable — Market/Competitive subagents degraded.");
+  if (!available.has("context7") && !available.has("gh_grep")) researchLimitations.push("Context7 and gh_grep unavailable — Technology Assessment subagent cannot run.");
+  if (!available.has("filesystem")) researchLimitations.push("Filesystem unavailable — Tactics audit and drift detection cannot run.");
+  return { available: [...available], phases, missingRequired, missingOptional, researchLimitations };
+}
+
+function domainPrimersForTargets(targetDomains) {
+  const normalized = new Set((targetDomains || []).map((d) => String(d).trim().toLowerCase()));
+  return DOMAIN_PRIMERS.filter((p) => p.condition === "unconditional" || normalized.has(p.condition));
+}
+
+const TECH_NAME_RE = /\b(React|Next\.js|PostgreSQL|Postgres|Drizzle|Prisma|Node\.js|Zod|Express|GraphQL|MongoDB|Redis|Kubernetes|Docker|Vercel|AWS|NestJS|Vue|Angular|Svelte)\b/;
+function hasTechNames(content) { return TECH_NAME_RE.test(content || ""); }
+function countSubstancePlaceholders(content) {
+  const c = content || "";
+  return (c.match(/\[e\.g\./g) || []).length + (c.match(/\[NEEDS CLARIFICATION\]/g) || []).length + (c.match(/\[Fill in:/g) || []).length + (c.match(/\[PENDING\]/g) || []).length;
+}
+
 function phaseHandlers(input) {
   const root = input.projectRoot || ".";
   const s = input.statement || "";
@@ -286,6 +368,9 @@ function phaseHandlers(input) {
   const feat = input.feature || "";
   const tid = input.taskId || "";
   const desc = input.description || "";
+  const availableTools = input.availableTools || input.capabilities || [];
+  const researchFindings = (input.researchFindings || "").trim();
+  const artifactFiles = input.artifactFiles || {};
 
   return {
     init() {
@@ -297,7 +382,24 @@ function phaseHandlers(input) {
       return { success: true, artifact: `${root}/vdd/vision.md`, template: `# Vision\n${hdr("V-001")}## Vision Statement\n> ${esc}\n\n[AI assistant: expand the above freeform statement into a structured vision.]\n\n## Impact Model\n### Goal\n[1 sentence — the measurable outcome this product aims to create]\n\n### Actors\n| Actor | Current State | Desired State | Benefit |\n|-------|--------------|---------------|---------|\n| [Primary user] | [Today] | [Future] | [Why better] |\n\n### Impacts\n| Impact ID | Description | Actor | Measurement |\n|-----------|-------------|-------|-------------|\n| I-001 | [Change] | [Actor] | [How to measure] |\n\n## Stakeholder Map\n| Role | Interest | Influence | Engagement Strategy |\n|------|----------|-----------|-------------------|\n| [User] | [What they care about] | High | [How to involve] |\n\n## Success Metrics\n### Lagging Indicators\n| Metric | Target | Measurement Method |\n|--------|--------|-------------------|\n| [e.g., Retention day 30] | [> 40%] | [Analytics + cohort] |\n\n### Leading Indicators\n| Metric | Target | Measurement Method |\n|--------|--------|-------------------|\n| [e.g., Activation rate] | [> 60%] | [Key journey completion] |\n\n## Constraints & Boundaries\n### Constraints\n- [Non-negotiable requirement]\n### Boundaries\n- [Explicitly out of scope]\n\n## Target Domains\n- [ ] WebApp\n- [ ] Data Storage\n- [ ] ETL\n- [ ] Infrastructure\n\n## S&T Assumptions (Vision → Strategy)\n**Necessity:** Why is Strategy-level research necessary?\n**Achievability:** Why is this Vision achievable?\n**Sufficiency:** Why is the Strategy approach sufficient?\n**Warnings:** What must go right / be avoided?\n` };
     },
     strategize() {
-      return { success: true, artifact: `${root}/vdd/strategy.md`, template: `# Strategy\n${hdr("V-001 → S-002")}## Vision Reference\nDerived from: \`vdd/vision.md\`\n\n## Domain Primers Loaded\n- [domain-primer from vision target domains]\n\n## Research Synthesis\n### Market & Domain Landscape\n[Market conditions, trends, competitor positioning]\n\n### Technology Landscape\n[Viable technologies, trade-offs, constitution constraints]\n\n### Feasibility Assessment\n[Is this achievable with current resources?]\n\n## Strategic Pillars\n### Pillar 1: [Name]\n**Rationale:** [Why this pillar exists]\n**Vision Trace:** [Which vision goal?]\n**Key Research Finding:** [Evidence]\n**Expected Impact:** [Contribution to metrics]\n\n### Pillar 2: [Name]\n**Rationale:** ...\n**Vision Trace:** ...\n**Key Research Finding:** ...\n**Expected Impact:** ...\n\n## Competitive Analysis\n| Competitor | Strengths | Weaknesses | Our Differentiator |\n|------------|-----------|-----------|-------------------|\n| [Name] | [What they do well] | [What they lack] | [How we differ] |\n\n## Risk Register\n| Risk ID | Description | Likelihood | Impact | Mitigation |\n|---------|-------------|-----------|--------|-----------|\n| R-001 | [e.g., Low adoption] | Medium | High | [Early adopter program] |\n\n## S&T Assumptions (Strategy → Tactics)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n\n## Out of Scope (Strategic)\n- [Direction NOT pursued]\n` };
+      const env = detectEnvironment(availableTools);
+      const primerLines = DOMAIN_PRIMERS.map((p) => `- ${p.file} (${p.label} — ${p.summary}) [${p.condition}]`).join("\n");
+      const synthesis = researchFindings
+        ? `## Research Synthesis\n\n### Consolidated Research Findings\n${researchFindings}\n\n[AI assistant: extract Strategic Pillars, Competitive Analysis, and Risk Register from the findings above.]\n`
+        : `## Research Synthesis\n### Market & Domain Landscape\n[Market conditions, trends, competitor positioning]\n\n### Technology Landscape\n[Viable technologies, trade-offs, constitution constraints]\n\n### Feasibility Assessment\n[Is this achievable with current resources?]\n`;
+      return {
+        success: true,
+        artifact: `${root}/vdd/strategy.md`,
+        template: `# Strategy\n${hdr("V-001 → S-002")}## Vision Reference\nDerived from: \`vdd/vision.md\`\n\n## Domain Primers Loaded\n${primerLines}\n\n${synthesis}## Strategic Pillars\n### Pillar 1: [Name]\n**Rationale:** [Why this pillar exists]\n**Vision Trace:** [Which vision goal?]\n**Key Research Finding:** [Evidence]\n**Expected Impact:** [Contribution to metrics]\n\n### Pillar 2: [Name]\n**Rationale:** ...\n**Vision Trace:** ...\n**Key Research Finding:** ...\n**Expected Impact:** ...\n\n## Competitive Analysis\n| Competitor | Strengths | Weaknesses | Our Differentiator |\n|------------|-----------|-----------|-------------------|\n| [Name] | [What they do well] | [What they lack] | [How we differ] |\n\n## Risk Register\n| Risk ID | Description | Likelihood | Impact | Mitigation |\n|---------|-------------|-----------|--------|-----------|\n| R-001 | [e.g., Low adoption] | Medium | High | [Early adopter program] |\n\n## S&T Assumptions (Strategy → Tactics)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n\n## Out of Scope (Strategic)\n- [Direction NOT pursued]\n`,
+        output: {
+          domainPrimers: DOMAIN_PRIMERS.map((p) => ({ file: p.file, label: p.label, condition: p.condition, summary: p.summary })),
+          researchSubagents: RESEARCH_SUBAGENTS,
+          environment: { available: env.available, missingRequired: env.missingRequired, missingOptional: env.missingOptional },
+          researchLimitations: env.researchLimitations.length > 0 ? env.researchLimitations : ["None — all required research tools present"],
+          researchStatus: researchFindings ? "synthesized" : "pending — dispatch the research subagents below, then re-call with researchFindings",
+          instructions: "Dispatch the 5 research subagents using your environment MCP tools (Brave Search, Perplexity, Context7, gh_grep, Playwright). Collect their summaries, then re-call vdd_strategize with researchFindings to synthesize vdd/strategy.md.",
+        },
+      };
     },
     tactics() {
       return { success: true, artifact: `${root}/vdd/tactics.md`, template: `# Tactics\n${hdr("V-001 → S-002 → T-003")}## Strategy Reference\nDerived from: \`vdd/strategy.md\`\n\n## Codebase Audit\n### What Exists\n| Asset | Location | Purpose | Pillar Trace | Quality |\n|-------|----------|---------|-------------|---------|\n| [Module] | \`src/\` | [Purpose] | [Pillar] | Good/Refactor/Replace |\n\n### Technical Debt\n| Debt Item | Location | Severity | Strategy Impact |\n|-----------|----------|----------|----------------|\n| [e.g., No validation] | \`src/api/\` | High | Blocks security pillar |\n\n### Reusable Assets\n| Asset | Strategy Support | Reuse Effort |\n|-------|-----------------|-------------|\n| [e.g., Component lib] | Accelerates UI | Low |\n\n## Gap Analysis\n| Gap | Pillar Affected | Impact if Unaddressed |\n|-----|----------------|----------------------|\n| [e.g., No mobile layout] | Pillar 1 | Target inaccessible |\n\n## Prioritized Action Items\n| ID | Action Item | Priority | Pillar | Size | Deps |\n|----|------------|----------|--------|------|------|\n| A-001 | [Concrete action] | MUST | Pillar 1 | M | None |\n| A-002 | [Concrete action] | SHOULD | Pillar 2 | S | A-001 |\n\n## Dependency Map\n\`\`\`\nA-001 → A-002\n\`\`\`\n\n## Infrastructure Requirements\n| Requirement | Domain | Priority | Notes |\n|-------------|--------|----------|-------|\n| [e.g., CI/CD] | Infra | MUST | GitHub Actions |\n\n## S&T Assumptions (Tactics → Specs)\n**Necessity:** ...\n**Achievability:** ...\n**Sufficiency:** ...\n**Warnings:** ...\n` };
@@ -332,7 +434,60 @@ function phaseHandlers(input) {
       return { success: true, artifact: `Ready: Task ${tid}`, output: { taskId: tid, instruction: "Load constitution.md + task description + spec/plan/contracts. Implement. Commit with traceable message." } };
     },
     validate() {
-      return { success: true, artifact: `${root}/vdd/impact-report.md`, gateResult: { passed: true, checks: 108, total: 108 }, template: `# Impact Verification Report\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]")}Date: ${today}\n\n## Traceability Summary\n| Level | Artifact | Status |\n|-------|----------|--------|\n| Vision | V-001 | Approved |\n| Strategy | S-002 | Approved |\n| Tactics | T-003 | Approved |\n| Spec | SP-004 | All MUST ACs pass |\n| Plan | PL-005 | All components implemented |\n| Tasks | TK-006 | All tasks complete |\n| Code | [N commits] | All tests pass |\n\n## Forward Coverage\n| Parent | Children | Covered? |\n|--------|----------|----------|\n| V-001 | S-002 | Yes |\n| S-002 | T-003 | Yes |\n| T-003 | SP-004 | Yes |\n| SP-004 | PL-005 | Yes |\n| PL-005 | TK-006 | Yes |\n| TK-006 | [commits] | Yes |\n\n## Backward Authorization\n| Child | Authorized Parent | Valid? |\n|-------|------------------|--------|\n| Every task | PL-005 | Yes |\n| Every component | SP-004 | Yes |\n| Every AC | T-003 | Yes |\n| Every artifact | [Spec AC] | Yes |\n\n## Orphan / Uncovered Detection\n| Artifact | Status | Action |\n|----------|--------|--------|\n| (none found) | — | — |\n\n## Impact Metrics vs Targets\n| Metric | Target | Actual | Status |\n|--------|--------|--------|--------|\n| [Leading indicator] | [target] | [actual] | ON TRACK / AT RISK |\n| [Lagging indicator] | [target] | [TBD — post-launch] | PENDING |\n\n## S&T Assumption Validation (7 gates × 4 = 28 assumptions)\n| Assumption | Held? | Evidence |\n|-----------|-------|----------|\n| Necessity (V→S) | Yes | Strategy research required |\n| Achievability (V→S) | Yes | Pillars have paths |\n| Sufficiency (V→S) | Yes | Covers all goals |\n| Warnings (V→S) | Yes | No violations |\n\n## Drift Report\n| Drift Type | Artifact | Severity | Status |\n|-----------|----------|----------|--------|\n| (none found) | — | — | — |\n\n## Decision\n**Release Readiness:** [GO / NO-GO / GO WITH CONDITIONS]\n\n**Conditions:**\n- [Condition if any]\n` };
+      const featureDir = feat || "feature-1";
+      const canonical = [
+        { key: "constitution.md", path: "constitution.md", expected: "Phase 0 — Constitution (immutable)" },
+        { key: "vision.md", path: "vdd/vision.md", expected: "V-001" },
+        { key: "strategy.md", path: "vdd/strategy.md", expected: "V-001 → S-002" },
+        { key: "tactics.md", path: "vdd/tactics.md", expected: "V-001 → S-002 → T-003" },
+        { key: "spec.md", path: `vdd/specs/${featureDir}/spec.md`, expected: "V-001 → S-002 → T-003 → SP-004" },
+        { key: "plan.md", path: `vdd/specs/${featureDir}/plan.md`, expected: "V-001 → S-002 → T-003 → SP-004 → PL-005" },
+        { key: "data-model.md", path: `vdd/specs/${featureDir}/data-model.md`, expected: "V-001 → S-002 → T-003 → SP-004 → PL-005" },
+        { key: "contract.md", path: `vdd/specs/${featureDir}/contracts/primary-endpoint.md`, expected: "V-001 → S-002 → T-003 → SP-004 → PL-005" },
+        { key: "tasks.md", path: `vdd/specs/${featureDir}/tasks.md`, expected: "V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006" },
+      ];
+      const drift = [];
+      const uncovered = [];
+      let placeholders = 0;
+      let present = 0;
+      for (const c of canonical) {
+        const content = artifactFiles[c.path];
+        if (content == null) { uncovered.push(c.key); continue; }
+        present++;
+        placeholders += countSubstancePlaceholders(content);
+        const m = String(content).match(/> Impact Chain:\s*(.+)/);
+        const actual = m ? m[1].trim() : null;
+        if (actual == null) drift.push({ artifact: c.key, type: "Header", detail: "Missing Impact Chain header" });
+        else if (actual !== c.expected) drift.push({ artifact: c.key, type: "Chain", detail: `Expected "${c.expected}", found "${actual}"` });
+      }
+      const total = canonical.length;
+      const hasAny = Object.keys(artifactFiles).length > 0;
+      const substancePassed = placeholders === 0 && uncovered.length === 0 && drift.length === 0 && present === total;
+      const driftRows = drift.length ? drift.map((d) => `| ${d.artifact} | ${d.type} | ${d.detail} |`).join("\n") : "| (none found) | — | — |";
+      const uncoveredRows = uncovered.length ? uncovered.map((k) => `| ${k} | missing artifact |`).join("\n") : "| (none found) | — |";
+      const template = `# Impact Verification Report\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]")}Date: ${today}\n\n## Traceability Summary\n\n| Artifact | Present? |\n|----------|----------|\n${canonical.map((c) => `| ${c.key} | ${uncovered.includes(c.key) ? "Missing" : "Present"} |`).join("\n")}\n\n## Orphan / Uncovered Detection\n\n| Artifact | Status |\n|----------|--------|\n${uncoveredRows}\n\n## Drift Report\n\n| Artifact | Type | Detail |\n|----------|------|--------|\n${driftRows}\n\n## Substance Check\n\n- Artifacts provided: ${present}/${total}\n- Placeholders remaining: ${placeholders}\n- Impact-chain drift: ${drift.length}\n- Uncovered artifacts: ${uncovered.length}\n\n## Decision\n\n**Release Readiness:** ${substancePassed ? "GO" : hasAny ? "NO-GO — resolve uncovered artifacts, placeholders, and drift above" : "UNKNOWN — provide artifactFiles to run drift/orphan detection"}\n`;
+      return {
+        success: true,
+        artifact: `${root}/vdd/impact-report.md`,
+        gateResult: { passed: hasAny ? substancePassed : false, checks: present, total },
+        template,
+        output: { feature: featureDir, present, total, placeholders, uncovered, drift },
+      };
+    },
+    "detect-environment"() {
+      const env = detectEnvironment(availableTools);
+      return {
+        success: true,
+        artifact: "Environment capability report",
+        output: {
+          providedTools: env.available,
+          perPhase: env.phases,
+          missingRequired: env.missingRequired,
+          missingOptional: env.missingOptional,
+          researchLimitations: env.researchLimitations.length > 0 ? env.researchLimitations : ["None — all required tools present"],
+          instructions: "Use the per-phase map to plan research subagent dispatch in Phase 2 (strategize) and filesystem work in Phases 3/7/8. Missing required tools are reported so the host agent can degrade gracefully or request the missing MCP servers.",
+        },
+      };
     },
     trace() {
       return { success: true, artifact: "Traceability matrix", chain: "V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006", files: [`${root}/vdd/vision.md`, `${root}/vdd/strategy.md`, `${root}/vdd/tactics.md`] };
@@ -393,7 +548,14 @@ function phaseHandlers(input) {
       const gateResults = [gate0(files), gate1(files), gate2(files), gate3(files), gate4(files), gate5(files), gate6(files), gate7(files)];
       const summary = gateSummary(gateResults);
       const gateWarnings = gateResults.flatMap((g) => g.warnings.map((w) => g.gate + ": " + w));
-      allTemplates.phase8_validate.gateResult = { passed: summary.allPassed, checks: summary.checksPassed, total: summary.checksTotal };
+
+      // Substance check: count placeholders remaining across all templates.
+      let substancePlaceholders = 0;
+      for (const v of Object.values(files)) if (typeof v === "string") substancePlaceholders += countSubstancePlaceholders(v);
+      const substancePassed = substancePlaceholders === 0;
+
+      allTemplates.phase8_validate.gateResult = { passed: summary.allPassed && substancePassed, checks: summary.checksPassed, total: summary.checksTotal };
+      allTemplates.phase8_validate.substance = { placeholders: substancePlaceholders, passed: substancePassed };
 
       return {
         success: true,
@@ -413,7 +575,8 @@ function phaseHandlers(input) {
             checkDetails: gateResults.flatMap((g) => g.checks.map((c) => ({ gate: g.gate, id: c.id, label: c.label, passed: c.passed }))),
           },
           gateWarnings: gateWarnings,
-          summary: "Full VDD chain executed with strict gate validation + auto-fix. " + summary.totalPassed + "/" + summary.totalGates + " gates passed (" + summary.checksPassed + "/" + summary.checksRun + " checks). Self-heal applied " + healedItems.length + " fix(es). Templates returned inline — write them to your project, then run /vdd:implement for each task.",
+          substance: { placeholders: substancePlaceholders, passed: substancePassed },
+          summary: "Full VDD chain scaffolded with strict gate validation. " + summary.totalPassed + "/" + summary.totalGates + " structural gates passed (" + summary.checksPassed + "/" + summary.checksRun + " checks). Substance: " + substancePlaceholders + " placeholder(s) remain — templates are NOT ready for release until filled. Self-heal applied " + healedItems.length + " fix(es). Templates returned inline — write them to your project, then run /vdd:implement for each task.",
           nextActions: [
             "1. Write the returned templates to your project (constitution.md, vdd/vision.md, vdd/strategy.md, vdd/tactics.md, vdd/specs/...)",
             "2. Fill in constitution.md with project-specific tech stack and conventions",
@@ -427,7 +590,7 @@ function phaseHandlers(input) {
             "10. Validate the full chain with /vdd:validate",
           ],
         },
-        gateResult: { passed: summary.allPassed, checks: summary.checksPassed, total: summary.checksTotal },
+        gateResult: { passed: summary.allPassed && substancePassed, checks: summary.checksPassed, total: summary.checksRun },
       };
     },
   };
@@ -449,9 +612,10 @@ const PHASE_META = {
   analyze: "VDD Cross-phase: Cross-artifact consistency analysis — AC count, unresolved clarifications, placeholder density, plan+tasks readiness.",
   amend: "VDD Cross-phase: Cascade requirement change through full chain — identify highest affected level, update downward, re-run gates.",
   e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
+  "detect-environment": "VDD Environment Detection: Reports per-phase tool/MCP requirements and — given the host's availableTools — which capabilities are present vs. missing plus research limitations. Use before Phase 2 (strategize) to plan research subagent dispatch.",
 };
 
-const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e"];
+const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e","detect-environment"];
 
 function toolDefs() {
   return PHASE_NAMES.map((name) => ({
@@ -466,6 +630,10 @@ function toolDefs() {
         feature: { type: "string", description: "Feature name / spec directory name" },
         taskId: { type: "string", description: "Task ID to implement (e.g., 'TASK-003')" },
         description: { type: "string", description: "Freeform description input" },
+        availableTools: { type: "array", items: { type: "string" }, description: "MCP/tool names available to the host agent (e.g., ['brave-search','perplexity','context7','gh_grep','playwright','filesystem'])" },
+        capabilities: { type: "array", items: { type: "string" }, description: "Alias for availableTools" },
+        researchFindings: { type: "string", description: "Consolidated research subagent findings to synthesize into strategy.md" },
+        artifactFiles: { type: "object", additionalProperties: { type: "string" }, description: "Map of artifact path → content for serverless validate/drift detection" },
       },
     },
   }));
@@ -475,7 +643,7 @@ function handleJsonRpc(body) {
   const { method, params, id } = body || {};
 
   if (method === "initialize") {
-    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "1.5.5" }, capabilities: { tools: {} } } };
+    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "1.5.6" }, capabilities: { tools: {} } } };
   }
 
   if (method === "tools/list") {
@@ -493,6 +661,10 @@ function handleJsonRpc(body) {
       feature: args.feature,
       taskId: args.taskId,
       description: args.description,
+      availableTools: args.availableTools,
+      capabilities: args.capabilities,
+      researchFindings: args.researchFindings,
+      artifactFiles: args.artifactFiles,
     };
     const handlers = phaseHandlers(input);
     const handler = handlers[phaseKey];
@@ -519,7 +691,7 @@ const HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VDD MCP Server — Vision Driven Design API</title>
-<meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 15 tools for template generation and bi-directional traceability in AI-assisted development.">
+<meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 16 tools for template generation, environment detection, and bi-directional traceability in AI-assisted development.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
   /* Dark theme (default) — all contrast >= 7:1 (WCAG 2.2 AAA) */
@@ -659,7 +831,7 @@ const HTML = `<!DOCTYPE html>
     <h1><abbr title="Vision Driven Design">VDD</abbr> <abbr title="Model Context Protocol">MCP</abbr> Server</h1>
     <p>Public <abbr title="Application Programming Interface">API</abbr> for <abbr title="Vision Driven Design">VDD</abbr> — bi-directional traceability with full template generation.</p>
     <p>
-      <span class="badge">15 tools</span>
+      <span class="badge">16 tools</span>
       <span class="badge">108 checks</span>
       <span class="badge">7 gates</span>
       <span class="badge">e2e chain</span>

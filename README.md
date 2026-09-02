@@ -2,7 +2,7 @@
 
 <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.5-blue" alt="Version 1.5.5"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.6-blue" alt="Version 1.5.6"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-108-green" alt="108 Verification Checks"></a>
 <a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-0d7377" alt="MCP API"></a>
@@ -120,6 +120,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | `/vdd:trace` | any | Bidirectional traceability matrix |
 | `/vdd:analyze <feature>` | any | Cross-artifact consistency analysis |
 | `/vdd:amend "what changed"` | any | Cascade requirement change through full chain |
+| `/vdd:detect-environment` | any | Report per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: run full 8-phase chain in one call, writes all 10+ template files |
 
 ---
@@ -144,7 +145,7 @@ git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
 
 ## MCP API
 
-VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 15 tools, SSE transport with JSON-RPC 2.0, no API key required.
+VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 16 tools, SSE transport with JSON-RPC 2.0, no API key required.
 
 ### Agent Configuration
 
@@ -170,11 +171,11 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 
 **Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
-### Tools (15)
+### Tools (16)
 
-`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_e2e`.
+`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_detect_environment`, `vdd_e2e`.
 
-All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`.
+All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`, `availableTools`, `capabilities`, `researchFindings`, `artifactFiles`.
 
 ### API Reference
 
@@ -280,9 +281,9 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   ├── docs/                        # 16 guides and references
 │   └── specs/                       # 3 feature specs
 ├── packages/                        # TypeScript monorepo
-│   ├── vdd-engine/                  # Shared core — 15 phase functions
-│   ├── vdd-mcp/                     # MCP server — 15 tools, stdio + SSE
-│   └── vdd-cli/                     # CLI binary — 15 subcommands
+│   ├── vdd-engine/                  # Shared core — 16 phase functions + meta.ts
+│   ├── vdd-mcp/                     # MCP server — 16 tools, stdio + SSE
+│   └── vdd-cli/                     # CLI binary — 16 subcommands
 ├── api/                             # Vercel MCP endpoint
 │   └── sse.js                       # MCP SSE + JSON-RPC 2.0 handler
 ├── scripts/                         # 4 installer/helper scripts

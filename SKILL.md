@@ -178,6 +178,7 @@ Each gate verifies both directions and validates 4 S&T assumptions:
 | `/vdd:trace` | any | Generate bidirectional traceability matrix |
 | `/vdd:analyze <feature>` | any | Cross-artifact consistency and conflict analysis |
 | `/vdd:amend "what changed"` | any | Cascade a requirement change through the full chain |
+| `/vdd:detect-environment` | any | Report per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: execute full chain init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate in one call. Writes all 10+ template files. Accept optional `--actionItemId` / `--feature` to customize feature name (default: "feature-1"). |
 
 ---
@@ -238,7 +239,14 @@ vdd/
 ## MCP & Packages
 
 The public MCP server at `vdd.simonmak.com/api/sse` and the TypeScript packages are in this repo:
-- `api/sse.js` — deployed Vercel handler (15 tools)
-- `packages/vdd-engine/` — shared core (15 phase functions)
-- `packages/vdd-mcp/` — MCP server (15 tools, stdio + SSE)
-- `packages/vdd-cli/` — CLI binary (15 subcommands, `--json`)
+- `api/sse.js` — deployed Vercel handler (16 tools)
+- `packages/vdd-engine/` — shared core (16 phase functions + `meta.ts`: phase metadata, tool requirements, research subagents, domain primers)
+- `packages/vdd-mcp/` — MCP server (16 tools, stdio + SSE)
+- `packages/vdd-cli/` — CLI binary (16 subcommands, `--json`)
+
+**Capability contract:** the MCP is the *structured orchestration + verification* layer — it emits
+research-subagent dispatch specs, per-phase tool requirements (`/vdd:detect-environment`), domain-primer
+lists, and enforces substantive (non-placeholder) gates. The **host agent** executes research, codebase
+audit, and implementation using its own environment MCP tools (Brave Search, Perplexity, Context7,
+gh_grep, Playwright, filesystem). A freshly generated template is marked NOT-ready (gates report
+placeholders) until the host agent fills it in and re-runs `/vdd:validate`.

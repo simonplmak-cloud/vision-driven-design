@@ -68,6 +68,32 @@ echo "## Suggested Domain Primitives"
 [ -f "docker-compose.yml" ] && echo "- infrastructure (Docker detected)"
 echo ""
 
+# Detect agent environment / available MCP tools (feeds vdd_detect_environment)
+echo "## Agent Environment / MCP Tools"
+detected=0
+if [ -f "$HOME/.config/opencode/opencode.json" ]; then
+  echo "- opencode config found: $HOME/.config/opencode/opencode.json"
+  grep -oE '"(brave-search|perplexity|context7|gh_grep|playwright|browserless|github|sentry|n8n|postgres)"' "$HOME/.config/opencode/opencode.json" 2>/dev/null | sort -u | sed 's/^/-   /'
+  detected=1
+fi
+if [ -f "$HOME/.claude.json" ]; then
+  echo "- claude config found: $HOME/.claude.json"
+  detected=1
+fi
+if [ -f "opencode.json" ]; then
+  echo "- project opencode.json found"
+  grep -oE '"(brave-search|perplexity|context7|gh_grep|playwright|browserless|github|sentry|n8n|postgres)"' opencode.json 2>/dev/null | sort -u | sed 's/^/-   /'
+  detected=1
+fi
+if [ -f ".mcp.json" ]; then
+  echo "- project .mcp.json found"
+  grep -oE '"(brave-search|perplexity|context7|gh_grep|playwright|browserless|github|sentry|n8n|postgres)"' .mcp.json 2>/dev/null | sort -u | sed 's/^/-   /'
+  detected=1
+fi
+[ "$detected" -eq 0 ] && echo "- (no agent/MCP config detected — pass availableTools manually to /vdd:detect-environment)"
+echo ""
+
 echo "---"
 echo "Run /vdd:init to generate constitution.md with these auto-detected values."
+echo "Run /vdd:detect-environment to plan Phase 2 research subagent dispatch."
 echo "Or manually edit and customize before running."

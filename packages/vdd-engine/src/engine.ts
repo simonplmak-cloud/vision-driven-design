@@ -1,6 +1,12 @@
 import { promises as fs } from 'fs';
 import { dirname } from 'path';
 import { VddPhaseFn, VddPhaseInput, VddContext, VddOutput } from './types.js';
+import {
+  RESEARCH_SUBAGENTS,
+  detectEnvironment,
+  domainPrimersForTargets,
+  type DomainPrimer,
+} from './meta.js';
 
 function today(): string {
   return new Date().toISOString().split('T')[0];
@@ -126,15 +132,54 @@ async function vision(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput>
   return { success: true, artifact };
 }
 
+// Read vision Target Domains from disk (best-effort).
+async function readTargetDomains(root: string): Promise<string[]> {
+  const domains: string[] = [];
+  try {
+    const v = await fs.readFile(root + '/vdd/vision.md', 'utf-8');
+    const section = v.match(/## Target Domains[\s\S]*?(?=\n## |\n# |\z)/);
+    if (section) {
+      const map: Record<string, string> = {
+        WebApp: 'webapp',
+        'Data Storage': 'data-storage',
+        ETL: 'etl',
+        Infrastructure: 'infrastructure',
+        'Safety-Critical': 'safety-critical',
+      };
+      for (const [label, key] of Object.entries(map)) {
+        if (section[0].includes('[x]') && section[0].includes(label)) domains.push(key);
+      }
+    }
+  } catch {
+    /* vision.md not present yet — primer set falls back to unconditional only */
+  }
+  return domains;
+}
+
 // Phase 2: strategize
-async function strategize(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
+async function strategize(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   const artifact = ctx.projectRoot + '/vdd/strategy.md';
+  const availableTools = input.availableTools ?? input.capabilities ?? [];
+  const env = detectEnvironment(availableTools);
+  const targetDomains = await readTargetDomains(ctx.projectRoot);
+  const primers: DomainPrimer[] = domainPrimersForTargets(targetDomains);
+
+  const primerLines = primers.length > 0
+    ? primers.map((p) => `- ${p.file} (${p.label} — ${p.summary})`).join('\n')
+    : '- (no domain primers resolved — run after vision Target Domains are checked)';
+
+  const findings = input.researchFindings ? input.researchFindings.trim() : '';
+
+  const synthesis = findings
+    ? '## Research Synthesis\n\n### Consolidated Research Findings\n' + findings + '\n\n[AI assistant: extract Strategic Pillars, Competitive Analysis, and Risk Register from the findings above.]\n'
+    : '## Research Synthesis\n\n### Market & Domain Landscape\n[Summary of market conditions, trends, competitor positioning, user needs]\n\n' +
+      '### Technology Landscape\n[Summary of viable technologies, trade-offs, constraints imposed by constitution]\n\n' +
+      '### Feasibility Assessment\n[Is this vision technically and operationally achievable with current resources?]\n';
+
   const content = '# Strategy\n' + templateHeader('V-001 → S-002') +
     '## Vision Reference\nDerived from: `vdd/vision.md`\n\n' +
-    '## Domain Primers Loaded\n<!-- Determined by vision Target Domains -->\n- [domain-primer 1]\n- [domain-primer 2]\n\n' +
-    '## Research Synthesis\n\n### Market & Domain Landscape\n[Summary of market conditions, trends, competitor positioning, user needs]\n\n' +
-    '### Technology Landscape\n[Summary of viable technologies, trade-offs, constraints imposed by constitution]\n\n' +
-    '### Feasibility Assessment\n[Is this vision technically and operationally achievable with current resources?]\n\n' +
+    '## Domain Primers Loaded\n<!-- Determined by vision Target Domains -->\n' + primerLines + '\n\n' +
+    synthesis +
     '## Strategic Pillars\n\n<!-- 3-5 pillars. Each pillar maps to at least one vision goal. -->\n\n' +
     '### Pillar 1: [Name]\n**Rationale:** [Why this pillar exists — what vision goal does it serve?]\n' +
     '**Vision Trace:** [Which vision goal/impact/actor does this address?]\n' +
@@ -158,15 +203,100 @@ async function strategize(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput>
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write strategy.md: ' + (result.error || 'unknown') };
-  return { success: true, artifact };
+
+  return {
+    success: true,
+    artifact,
+    output: {
+      domainPrimersLoaded: primers.map((p) => p.file),
+      targetDomains,
+      researchSubagents: RESEARCH_SUBAGENTS,
+      environment: {
+        available: env.available,
+        missingRequired: env.missingRequired,
+        missingOptional: env.missingOptional,
+      },
+      researchLimitations: env.researchLimitations.length > 0 ? env.researchLimitations : ['None — all required research tools present'],
+      researchStatus: findings ? 'synthesized' : 'pending — dispatch the research subagents below, then re-call with researchFindings',
+      instructions: 'Dispatch the 5 research subagents using your environment MCP tools (Brave Search, Perplexity, Context7, gh_grep, Playwright). Collect their 300-500 word summaries, then re-call vdd_strategize with researchFindings to synthesize vdd/strategy.md.',
+    },
+  };
 }
 
 // Phase 3: tactics
+interface AuditFacts {
+  language: string;
+  framework: string;
+  orm: string;
+  testing: string;
+  database: string;
+  configFiles: string[];
+  topDirs: string[];
+  domains: string[];
+}
+
+async function auditRepo(root: string): Promise<AuditFacts> {
+  const facts: AuditFacts = { language: 'unknown', framework: 'unknown', orm: 'unknown', testing: 'unknown', database: 'unknown', configFiles: [], topDirs: [], domains: [] };
+  try {
+    const pkg = JSON.parse(await fs.readFile(root + '/package.json', 'utf-8'));
+    const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+    const keys = Object.keys(deps);
+    facts.language = keys.includes('typescript') ? 'TypeScript' : 'JavaScript/Node.js';
+    if (keys.includes('next')) facts.framework = 'Next.js';
+    else if (keys.includes('react')) facts.framework = 'React';
+    else if (keys.includes('vue')) facts.framework = 'Vue';
+    facts.orm = keys.includes('drizzle-orm') ? 'Drizzle' : keys.includes('prisma') ? 'Prisma' : 'unknown';
+    facts.testing = keys.includes('vitest') ? 'Vitest' : keys.includes('jest') ? 'Jest' : 'unknown';
+    facts.database = deps['pg'] ? 'PostgreSQL' : deps['mysql2'] ? 'MySQL' : 'unknown';
+  } catch {
+    /* no package.json — leave unknown */
+  }
+
+  const configCandidates = ['tsconfig.json', '.eslintrc.json', '.eslintrc.js', '.prettierrc', 'docker-compose.yml', 'Dockerfile', 'pnpm-workspace.yaml'];
+  for (const c of configCandidates) {
+    try { await fs.access(root + '/' + c); facts.configFiles.push(c); } catch { /* absent */ }
+  }
+
+  try {
+    const entries = await fs.readdir(root, { withFileTypes: true });
+    facts.topDirs = entries
+      .filter((e) => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'node_modules' && e.name !== 'dist')
+      .map((e) => e.name);
+  } catch { /* no dir listing */ }
+
+  if (facts.topDirs.some((d) => d === 'app' || d === 'src')) facts.domains.push('webapp');
+  if (facts.topDirs.some((d) => d === 'db' || d === 'schema')) facts.domains.push('data-storage');
+  if (facts.configFiles.includes('docker-compose.yml') || facts.configFiles.includes('Dockerfile')) facts.domains.push('infrastructure');
+
+  return facts;
+}
+
 async function tactics(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   const artifact = ctx.projectRoot + '/vdd/tactics.md';
+  const audit = await auditRepo(ctx.projectRoot);
+  const detectedStack = [
+    '### Auto-Detected Stack',
+    '',
+    '| Layer | Detected |',
+    '|-------|----------|',
+    `| Language | ${audit.language} |`,
+    `| Framework | ${audit.framework} |`,
+    `| ORM | ${audit.orm} |`,
+    `| Testing | ${audit.testing} |`,
+    `| Database | ${audit.database} |`,
+    '',
+    `**Config files found:** ${audit.configFiles.length > 0 ? audit.configFiles.join(', ') : '(none detected)'}`,
+    '',
+    `**Top-level directories:** ${audit.topDirs.length > 0 ? audit.topDirs.join(', ') : '(none detected)'}`,
+    '',
+    `**Suggested domains:** ${audit.domains.length > 0 ? audit.domains.join(', ') : '(none auto-detected)'}`,
+    '',
+  ].join('\n');
+
   const content = '# Tactics\n' + templateHeader('V-001 → S-002 → T-003') +
     '## Strategy Reference\nDerived from: `vdd/strategy.md`\n\n' +
-    '## Codebase Audit\n\n### What Exists\n\n| Asset | Location | Purpose | Strategic Pillar Trace | Quality |\n' +
+    '## Codebase Audit\n\n' + detectedStack +
+    '### What Exists\n\n| Asset | Location | Purpose | Strategic Pillar Trace | Quality |\n' +
     '|-------|----------|---------|----------------------|---------|\n' +
     '| [e.g., User auth module] | `src/auth/` | [What it does] | [Which pillar] | Good / Needs Refactor / Replace |\n' +
     '| [e.g., Dashboard page] | `src/app/dashboard/` | [What it does] | [Which pillar] | Good / Needs Refactor / Replace |\n\n' +
@@ -203,7 +333,7 @@ async function tactics(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write tactics.md: ' + (result.error || 'unknown') };
-  return { success: true, artifact };
+  return { success: true, artifact, output: { audit, instructions: 'Populate Gap Analysis and Prioritized Action Items by mapping detected assets/directories to strategy pillars.' } };
 }
 
 // Phase 4: specify
@@ -403,49 +533,116 @@ async function implement(input: VddPhaseInput, ctx: VddContext): Promise<VddOutp
 }
 
 // Phase 8: validate
-async function validate(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
-  const artifact = ctx.projectRoot + '/vdd/impact-report.md';
+async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
+  const root = ctx.projectRoot;
+  const featureDir = input.feature || 'feature-1';
+  const artifact = root + '/vdd/impact-report.md';
+
+  const canonical: Array<{ key: string; path: string; expectedChain: string }> = [
+    { key: 'constitution.md', path: 'constitution.md', expectedChain: 'Phase 0 — Constitution (immutable)' },
+    { key: 'vision.md', path: 'vdd/vision.md', expectedChain: 'V-001' },
+    { key: 'strategy.md', path: 'vdd/strategy.md', expectedChain: 'V-001 → S-002' },
+    { key: 'tactics.md', path: 'vdd/tactics.md', expectedChain: 'V-001 → S-002 → T-003' },
+    { key: 'spec.md', path: `vdd/specs/${featureDir}/spec.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004' },
+    { key: 'plan.md', path: `vdd/specs/${featureDir}/plan.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
+    { key: 'data-model.md', path: `vdd/specs/${featureDir}/data-model.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
+    { key: 'contract.md', path: `vdd/specs/${featureDir}/contracts/primary-endpoint.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
+    { key: 'tasks.md', path: `vdd/specs/${featureDir}/tasks.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006' },
+  ];
+
+  const drift: Array<{ artifact: string; type: string; detail: string }> = [];
+  const uncovered: string[] = [];
+  let placeholders = 0;
+  let present = 0;
+  const total = canonical.length;
+
+  for (const c of canonical) {
+    let content: string | null = input.artifactFiles?.[c.path] ?? null;
+    if (content == null) {
+      try { content = await fs.readFile(root + '/' + c.path, 'utf-8'); } catch { content = null; }
+    }
+    if (content == null) { uncovered.push(c.key); continue; }
+    present++;
+    placeholders += countSubstancePlaceholders(content);
+    const m = content.match(/> Impact Chain:\s*(.+)/);
+    const actual = m ? m[1].trim() : null;
+    if (actual == null) drift.push({ artifact: c.key, type: 'Header', detail: 'Missing Impact Chain header' });
+    else if (actual !== c.expectedChain) drift.push({ artifact: c.key, type: 'Chain', detail: `Expected "${c.expectedChain}", found "${actual}"` });
+  }
+
+  const substancePassed = placeholders === 0 && uncovered.length === 0 && drift.length === 0 && present === total;
+
+  const driftRows = drift.length ? drift.map((d) => `| ${d.artifact} | ${d.type} | ${d.detail} |`).join('\n') : '| (none found) | — | — |';
+  const uncoveredRows = uncovered.length ? uncovered.map((k) => `| ${k} | missing artifact |`).join('\n') : '| (none found) | — |';
+
   const content = '# Impact Verification Report\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]') +
     'Date: ' + today() + '\n\n' +
     '## Traceability Summary\n\n| Level | Artifact | Status |\n|-------|----------|--------|\n' +
-    '| Vision | V-001 | Approved |\n| Strategy | S-002 | Approved |\n| Tactics | T-003 | Approved |\n' +
-    '| Spec | SP-004 | All MUST ACs pass |\n| Plan | PL-005 | All components implemented |\n' +
-    '| Tasks | TK-006 | All tasks complete |\n| Code | [N commits] | All tests pass |\n' +
-    '| Impact | [metrics gathered] | [results] |\n\n' +
-    '## Forward Coverage (Parent → Children)\n\n| Parent | Children | All Covered? |\n|--------|----------|-------------|\n' +
-    '| V-001 (Vision) | S-002 (Strategy) | Yes |\n| S-002 (Strategy) | T-003 (Tactics) | Yes |\n' +
-    '| T-003 (Tactics) | SP-004 (Spec) | Yes |\n| SP-004 (Spec) | PL-005 (Plan) | Yes |\n' +
-    '| PL-005 (Plan) | TK-006 (Tasks) | Yes |\n| TK-006 (Tasks) | [N commits] | Yes |\n\n' +
-    '## Backward Authorization (Child → Parent)\n\n| Child | Authorized Parent | Valid? |\n|-------|------------------|--------|\n' +
-    '| [Every task] | PL-005 | Yes |\n| [Every component] | SP-004 | Yes |\n' +
-    '| [Every AC] | T-003 | Yes |\n| [Every code artifact] | [Spec AC] | Yes |\n\n' +
-    '## Orphan Detection\n\n| Artifact | Status | Action |\n|----------|--------|--------|\n| (none found) | — | — |\n\n' +
-    '## Uncovered Detection\n\n| Parent | Status | Action |\n|--------|--------|--------|\n| (none found) | — | — |\n\n' +
-    '## Impact Metrics vs Targets\n\n| Metric | Target | Actual | Status |\n|--------|--------|--------|--------|\n' +
-    '| [Leading indicator 1] | [target] | [actual] | [ON TRACK / AT RISK / BELOW] |\n' +
-    '| [Lagging indicator 1] | [target] | [TBD — post-launch] | [PENDING] |\n\n' +
-    '## S&T Assumption Validation\n\n| Assumption | Held? | Evidence |\n|-----------|-------|----------|\n' +
-    '| Necessity (V→S) | Yes | Strategy research was required to identify viable approaches |\n' +
-    '| Achievability (V→S) | Yes | All strategic pillars have implementation paths |\n' +
-    '| Sufficiency (V→S) | Yes | Strategy covers all vision goals |\n' +
-    '| Warnings (V→S) | Yes | All warnings monitored; no violations detected |\n' +
-    '| ... (repeat for all 7 gates) | ... | ... |\n\n' +
-    '## Drift Report\n\n| Drift Type | Artifact | Severity | Status |\n|-----------|----------|----------|--------|\n| (none found) | — | — | — |\n\n' +
-    '## Decision\n\n**Release Readiness:** [GO / NO-GO / GO WITH CONDITIONS]\n\n**Conditions (if any):**\n- [Condition 1]\n';
+    '| Constitution | constitution.md | ' + (uncovered.includes('constitution.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Vision | V-001 | ' + (uncovered.includes('vision.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Strategy | S-002 | ' + (uncovered.includes('strategy.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Tactics | T-003 | ' + (uncovered.includes('tactics.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Spec | SP-004 | ' + (uncovered.includes('spec.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Plan | PL-005 | ' + (uncovered.includes('plan.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Tasks | TK-006 | ' + (uncovered.includes('tasks.md') ? 'Missing' : 'Present') + ' |\n\n' +
+    '## Forward Coverage (Parent → Children)\n\n| Parent | Children | Covered? |\n|--------|----------|----------|\n' +
+    '| V-001 (Vision) | S-002 (Strategy) | ' + (uncovered.includes('strategy.md') ? 'No' : 'Yes') + ' |\n' +
+    '| S-002 (Strategy) | T-003 (Tactics) | ' + (uncovered.includes('tactics.md') ? 'No' : 'Yes') + ' |\n' +
+    '| T-003 (Tactics) | SP-004 (Spec) | ' + (uncovered.includes('spec.md') ? 'No' : 'Yes') + ' |\n' +
+    '| SP-004 (Spec) | PL-005 (Plan) | ' + (uncovered.includes('plan.md') ? 'No' : 'Yes') + ' |\n' +
+    '| PL-005 (Plan) | TK-006 (Tasks) | ' + (uncovered.includes('tasks.md') ? 'No' : 'Yes') + ' |\n\n' +
+    '## Orphan / Uncovered Detection\n\n| Artifact | Status |\n|----------|--------|\n' + uncoveredRows + '\n\n' +
+    '## Drift Report\n\n| Artifact | Type | Detail |\n|----------|------|--------|\n' + driftRows + '\n\n' +
+    '## Substance Check\n\n- Artifacts present: ' + present + '/' + total + '\n- Placeholders remaining: ' + placeholders + '\n- Impact-chain drift: ' + drift.length + '\n- Uncovered artifacts: ' + uncovered.length + '\n\n' +
+    '## Decision\n\n**Release Readiness:** ' + (substancePassed ? 'GO' : 'NO-GO — resolve uncovered artifacts, placeholders, and drift above') + '\n';
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write impact-report.md: ' + (result.error || 'unknown') };
-  return { success: true, artifact, gateResult: { passed: true, checks: 108, total: 108 } };
+  return {
+    success: true,
+    artifact,
+    output: {
+      feature: featureDir,
+      present,
+      total,
+      placeholders,
+      uncovered,
+      drift,
+    },
+    gateResult: { passed: substancePassed, checks: present, total },
+  };
 }
 
 // Cross-phase: trace
 async function trace(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
+  const root = ctx.projectRoot;
+  const paths: Array<{ level: string; path: string }> = [
+    { level: 'Constitution', path: root + '/constitution.md' },
+    { level: 'Vision', path: root + '/vdd/vision.md' },
+    { level: 'Strategy', path: root + '/vdd/strategy.md' },
+    { level: 'Tactics', path: root + '/vdd/tactics.md' },
+  ];
+  const nodes: Array<{ level: string; path: string; exists: boolean; impactChain: string | null }> = [];
+  for (const p of paths) {
+    let exists = false;
+    let impactChain: string | null = null;
+    try {
+      const c = await fs.readFile(p.path, 'utf-8');
+      exists = true;
+      const m = c.match(/> Impact Chain:\s*(.+)/);
+      impactChain = m ? m[1].trim() : null;
+    } catch { /* missing */ }
+    nodes.push({ level: p.level, path: p.path, exists, impactChain });
+  }
+  let specDirs: string[] = [];
+  try { specDirs = (await fs.readdir(root + '/vdd/specs')).filter((d) => !d.startsWith('.')); } catch { /* none */ }
   return {
     success: true,
     artifact: 'Traceability matrix generated',
     output: {
       chain: 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]',
-      files: [ctx.projectRoot + '/vdd/vision.md', ctx.projectRoot + '/vdd/strategy.md', ctx.projectRoot + '/vdd/tactics.md', ctx.projectRoot + '/vdd/specs/'],
+      nodes,
+      specDirs,
     },
   };
 }
@@ -505,6 +702,24 @@ async function amend(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   };
 }
 
+// Cross-phase: detect-environment
+async function detectEnvironmentPhase(input: VddPhaseInput, _ctx: VddContext): Promise<VddOutput> {
+  const availableTools = input.availableTools ?? input.capabilities ?? [];
+  const report = detectEnvironment(availableTools);
+  return {
+    success: true,
+    artifact: 'Environment capability report',
+    output: {
+      providedTools: report.available,
+      perPhase: report.phases,
+      missingRequired: report.missingRequired,
+      missingOptional: report.missingOptional,
+      researchLimitations: report.researchLimitations.length > 0 ? report.researchLimitations : ['None — all required tools present'],
+      instructions: 'Use the per-phase map to plan research subagent dispatch in Phase 2 (strategize) and filesystem work in Phases 3/7/8. Missing required tools are reported so the host agent can degrade gracefully or request the missing MCP servers.',
+    },
+  };
+}
+
 // ---------- Gate Types & Helpers ----------
 
 interface GateCheck {
@@ -548,6 +763,21 @@ function impactChainMatches(content: string, expected: string): boolean {
 
 function countPlaceholders(content: string): number {
   return (content.match(/\[e\.g\./g) || []).length + (content.match(/\[NEEDS CLARIFICATION\]/g) || []).length;
+}
+
+// Substantive-content detection: distinguish a filled artifact from a template full of placeholders.
+const TECH_NAME_RE = /\b(React|Next\.js|PostgreSQL|Postgres|Drizzle|Prisma|Node\.js|Zod|Express|GraphQL|MongoDB|Redis|Kubernetes|Docker|Vercel|AWS|NestJS|Vue|Angular|Svelte)\b/;
+
+function hasTechNames(content: string): boolean {
+  return TECH_NAME_RE.test(content || '');
+}
+
+function countSubstancePlaceholders(content: string): number {
+  const c = content || '';
+  return (c.match(/\[e\.g\./g) || []).length
+    + (c.match(/\[NEEDS CLARIFICATION\]/g) || []).length
+    + (c.match(/\[Fill in:/g) || []).length
+    + (c.match(/\[PENDING\]/g) || []).length;
 }
 
 async function readIfExists(path: string): Promise<string | null> {
@@ -717,11 +947,11 @@ async function gate3(root: string, featureDir: string): Promise<GateResult> {
   const ph = countPlaceholders(sp);
 
   // Forward (10 checks)
-  checks.push(check({ id: 'F3.1', label: 'MUST coverage → spec exists for action item' }, true));
+  checks.push(check({ id: 'F3.1', label: 'MUST coverage → spec declares tactical action item' }, sp.includes('Action Item')));
   checks.push(check({ id: 'F3.2', label: 'Scope coverage → Overview section present' }, hasSection(sp, 'Overview')));
   checks.push(check({ id: 'F3.3', label: 'Impact trace → Impact Verification section' }, hasSection(sp, 'Impact Verification')));
   checks.push(check({ id: 'F3.4', label: 'Testability → ACs have GWT format' }, (sp.match(/Given/g) || []).length >= 1));
-  checks.push(check({ id: 'F3.5', label: 'Implementation-free → no tech names in spec' }, true));
+  checks.push(check({ id: 'F3.5', label: 'Implementation-free → no tech names in spec' }, !hasTechNames(sp), hasTechNames(sp) ? 'Technology names detected — specs should be implementation-free' : 'OK'));
   checks.push(check({ id: 'F3.6', label: 'Error coverage → edge-case ACs present' }, (sp.match(/AC-E\d+/g) || []).length >= 1));
   checks.push(check({ id: 'F3.7', label: 'MoSCoW labels → ACs labeled' }, mustCount >= 1));
   checks.push(check({ id: 'F3.8', label: 'No vague terms → measurable thresholds (no [e.g.] placeholders)' }, ph === 0, ph + ' placeholder(s) remaining'));
@@ -886,6 +1116,12 @@ async function gate7(root: string, featureDir: string): Promise<GateResult> {
   const sp = await readIfExists(root + '/vdd/specs/' + featureDir + '/spec.md');
   const hasACs = !!sp && (sp.match(/### AC-/g) || []).length >= 1;
 
+  let placeholders = 0;
+  for (const p of allPaths) {
+    const c = await readIfExists(p);
+    if (c) placeholders += countSubstancePlaceholders(c);
+  }
+
   // Forward (6 checks)
   checks.push(check({ id: 'F7.1', label: 'Full AC coverage → spec has ACs' }, hasACs));
   checks.push(check({ id: 'F7.2', label: 'Traceability matrix → impact-report exists' }, foundCount === allPaths.length));
@@ -905,7 +1141,7 @@ async function gate7(root: string, featureDir: string): Promise<GateResult> {
   checks.push(check({ id: 'A7.1', label: 'Necessity (Full Chain) → all levels present' }, foundCount === allPaths.length));
   checks.push(check({ id: 'A7.2', label: 'Achievability (Full Chain) → artifacts exist' }, foundCount >= 8));
   checks.push(check({ id: 'A7.3', label: 'Sufficiency (Full Chain) → templates complete' }, foundCount === allPaths.length));
-  checks.push(check({ id: 'A7.4', label: 'Warnings (Full Chain) → no blocking issues' }, true));
+  checks.push(check({ id: 'A7.4', label: 'Warnings (Full Chain) → no blocking placeholders' }, placeholders === 0, placeholders + ' placeholder(s) remaining'));
 
   return tallyGate('G7', 'Implementation → Validation', checks, 6, 5, 4);
 }
@@ -1073,6 +1309,13 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   const planFiles = (results.plan as Record<string, unknown>)?.files as string[] | undefined;
   if (planFiles) allFiles.push(...planFiles);
 
+  // Substance check: count placeholders remaining across all written templates.
+  let substancePlaceholders = 0;
+  for (const p of allFiles) {
+    try { const c = await fs.readFile(p, 'utf-8'); substancePlaceholders += countSubstancePlaceholders(c); } catch { /* skip */ }
+  }
+  const substancePassed = substancePlaceholders === 0 && errors.length === 0;
+
   return {
     success: errors.length === 0,
     artifact: ctx.projectRoot + '/vdd/impact-report.md',
@@ -1084,6 +1327,7 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
       phasesCompleted: 10, // init, vision, strategize, tactics, specify, clarify, plan, tasks, next-task, validate
       errors: errors.length > 0 ? errors : [],
       files: allFiles,
+      substance: { placeholders: substancePlaceholders, passed: substancePassed },
       gates: {
         summary: { passed: summary.totalPassed, total: summary.totalGates, checksRun: summary.checksRun, checksPassed: summary.checksPassed, checksTotal: summary.checksTotal },
         initial: { passed: initialSummary.totalPassed, total: initialSummary.totalGates, checksRun: initialSummary.checksRun, checksPassed: initialSummary.checksPassed },
@@ -1099,7 +1343,7 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
       },
       gateWarnings: gateWarnings.length > 0 ? gateWarnings : [],
       summary: errors.length === 0
-        ? 'Full VDD chain executed with strict gate validation + auto-fix. ' + summary.totalPassed + '/' + summary.totalGates + ' gates passed (' + summary.checksPassed + '/' + summary.checksRun + ' checks). Self-heal applied ' + healedItems.length + ' fix(es). Templates written. Next: AI agent fills in each template with domain-specific content, then runs /vdd:implement for each task.'
+        ? 'Full VDD chain scaffolded with strict gate validation. ' + summary.totalPassed + '/' + summary.totalGates + ' structural gates passed (' + summary.checksPassed + '/' + summary.checksRun + ' checks). Substance: ' + substancePlaceholders + ' placeholder(s) remain — templates are NOT ready for release until filled (see nextActions). Self-heal applied ' + healedItems.length + ' fix(es).'
         : 'Chain partially completed with ' + errors.length + ' error(s). See errors list.',
       nextActions: [
         '1. Fill in constitution.md with project-specific tech stack and conventions',
@@ -1114,9 +1358,9 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
       ],
     },
     gateResult: {
-      passed: summary.allPassed,
+      passed: summary.allPassed && substancePassed,
       checks: summary.checksPassed,
-      total: summary.checksTotal,
+      total: summary.checksRun,
     },
   };
 }
@@ -1124,4 +1368,5 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
 export const PHASES: Record<string, VddPhaseFn> = {
   init, vision, strategize, tactics, specify, clarify,
   plan, tasks, 'next-task': nextTask, implement, validate, trace, analyze, amend, e2e,
+  'detect-environment': detectEnvironmentPhase,
 };

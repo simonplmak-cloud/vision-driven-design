@@ -2,8 +2,8 @@
 
 > Impact Chain: Phase 0 — Constitution (immutable)
 
-Version: 1.5.5
-Last updated: 2026-08-12
+Version: 1.5.6
+Last updated: 2026-09-03
 
 ## Architecture Principles
 
@@ -21,9 +21,9 @@ Last updated: 2026-08-12
 | Documentation | Markdown | All skill content, references, domain-primers |
 | Web | Static HTML | GitHub Pages landing page (`index.html`) |
 | MCP Server | Vercel Serverless | `api/sse.js` — SSE transport + JSON-RPC 2.0 |
-| Engine | TypeScript | `packages/vdd-engine` — 15 phase functions, Zod types |
-| MCP Package | TypeScript | `packages/vdd-mcp` — 15 tools, stdio + SSE transports |
-| CLI | TypeScript | `packages/vdd-cli` — Commander, 15 subcommands, `--json` mode |
+| Engine | TypeScript | `packages/vdd-engine` — 16 phase functions, Zod types |
+| MCP Package | TypeScript | `packages/vdd-mcp` — 16 tools, stdio + SSE transports |
+| CLI | TypeScript | `packages/vdd-cli` — Commander, 16 subcommands, `--json` mode |
 
 ## Security Constraints
 
