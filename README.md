@@ -141,6 +141,40 @@ git clone https://github.com/simonplmak-cloud/vision-driven-design.git \
   .cursor/skills/vision-driven-design/
 ```
 
+### Local MCP (from source)
+
+To run the MCP server locally (stdio) instead of the public SSE endpoint:
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/simonplmak-cloud/vision-driven-design.git
+
+# 2. Install deps + build the TypeScript packages
+cd vision-driven-design
+pnpm install
+pnpm -r build
+
+# 3. Point your agent at the built stdio entry point
+```
+
+**OpenCode** (`opencode.json`):
+```json
+"vdd": {
+  "type": "local",
+  "command": ["node", "<repo>/packages/vdd-mcp/dist/stdio.js"],
+  "enabled": true
+}
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+```json
+"vdd": {
+  "command": "node",
+  "args": ["<repo>/packages/vdd-mcp/dist/stdio.js"],
+  "type": "stdio"
+}
+```
+
 ---
 
 ## MCP API

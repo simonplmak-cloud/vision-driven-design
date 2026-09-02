@@ -11,7 +11,7 @@
 - **Substantive gates**: removed hardcoded `true` checks (F3.1, F3.5, A7.4); a freshly generated placeholder template no longer passes `vdd:validate`/`vdd:e2e` — gates now report placeholders, drift, orphans, and uncovered artifacts. Self-heal no longer auto-greens.
 - **`validate` computes real drift/orphan/uncovered** from `artifactFiles` (serverless) or the filesystem (stdio/CLI) instead of returning a static all-green report.
 - **`tactics` performs a real repo audit** (package.json stack, config files, top-level dirs, suggested domains) in the stdio/CLI engine.
-- **Reconciled the 4 surfaces**: `packages/vdd-mcp/api/sse.ts` now delegates to the engine (was a stub); `server.ts` imports `PHASE_META`/`PHASE_NAMES` from `@vdd/engine`.
+- **Reconciled the 4 surfaces**: removed the uncompiled `packages/vdd-mcp/api/sse.ts` stub (not in tsconfig `include`); `server.ts` now imports `PHASE_META`/`PHASE_NAMES` from `@vdd/engine`.
 - **16 tools** (was 15): `vdd_detect_environment` added across engine, MCP, SSE, and CLI.
 - **Version**: all surfaces aligned to `1.5.6`.
 

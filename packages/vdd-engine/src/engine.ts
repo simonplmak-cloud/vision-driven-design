@@ -947,7 +947,7 @@ async function gate3(root: string, featureDir: string): Promise<GateResult> {
   const ph = countPlaceholders(sp);
 
   // Forward (10 checks)
-  checks.push(check({ id: 'F3.1', label: 'MUST coverage → spec declares tactical action item' }, sp.includes('Action Item')));
+  checks.push(check({ id: 'F3.1', label: 'MUST coverage → spec references tactical action item ID (A-XXX)' }, (sp.match(/A-\d+/g) || []).length >= 1));
   checks.push(check({ id: 'F3.2', label: 'Scope coverage → Overview section present' }, hasSection(sp, 'Overview')));
   checks.push(check({ id: 'F3.3', label: 'Impact trace → Impact Verification section' }, hasSection(sp, 'Impact Verification')));
   checks.push(check({ id: 'F3.4', label: 'Testability → ACs have GWT format' }, (sp.match(/Given/g) || []).length >= 1));

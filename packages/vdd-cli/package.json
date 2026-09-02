@@ -1,12 +1,15 @@
 {
   "name": "@vdd/cli",
   "version": "1.5.6",
+  "description": "Vision Driven Design CLI — 16 subcommands for the VDD 8-phase chain.",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "bin": { "vdd": "./dist/cli.js" },
+  "files": ["dist"],
   "scripts": { "build": "tsc", "check": "tsc --noEmit" },
   "dependencies": {
-    "@vdd/engine": "workspace:*",
+    "@vdd/engine": "workspace:^",
     "commander": "^12.0.0",
     "zod": "^3.23.0"
   },

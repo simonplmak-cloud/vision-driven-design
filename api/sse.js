@@ -92,7 +92,7 @@ function gate3(files) {
   const acCount = (sp.match(/### AC-/g) || []).length;
   const mustCount = (sp.match(/\[MUST\]/g) || []).length;
   const ph = countPlaceholders(sp);
-  checks.push(ck("F3.1", "MUST coverage → spec declares tactical action item", sp.includes("Action Item")));
+  checks.push(ck("F3.1", "MUST coverage → spec references tactical action item ID (A-XXX)", (sp.match(/A-\d+/g) || []).length >= 1));
   checks.push(ck("F3.2", "Scope coverage → Overview section present", hasSection(sp, "Overview")));
   checks.push(ck("F3.3", "Impact trace → Impact Verification section", hasSection(sp, "Impact Verification")));
   checks.push(ck("F3.4", "Testability → ACs have GWT format", (sp.match(/Given/g) || []).length >= 1));
