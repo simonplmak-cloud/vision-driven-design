@@ -1,17 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { runClone } from '../src/clone-pipeline.js';
 
-describe('runClone (pure, browser disabled)', () => {
-  it('normalizes and produces deterministic empty output without a browser', async () => {
-    const r = await runClone('https://www.example.com', { browser: false });
+describe('runClone (pure, browser + crawl disabled)', () => {
+  it('normalizes and produces deterministic empty output without network', async () => {
+    const r = await runClone('https://www.example.com', { browser: false, crawl: false });
     expect(r.normalized).toEqual({ scheme: 'https', host: 'example.com' });
     expect(r.browserSkipped).toBe(true);
+    expect(r.crawlSkipped).toBe(false);
+    expect(r.dataset).toBeUndefined();
     expect(r.model.entities).toEqual([]);
     expect(r.backend.migrations).toEqual([]);
+    expect(r.site).toBeUndefined();
     expect(r.tools).toHaveLength(5);
   });
 
   it('rejects an invalid domain', async () => {
-    await expect(runClone('not a url', { browser: false })).rejects.toThrow('INVALID_HOST');
+    await expect(runClone('not a url', { browser: false, crawl: false })).rejects.toThrow('INVALID_HOST');
   });
 });

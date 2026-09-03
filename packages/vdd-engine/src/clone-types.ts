@@ -77,3 +77,41 @@ export interface ToolManifest {
   description: string;
   inputSchema: Record<string, unknown>;
 }
+
+export interface GeneratedSiteFile {
+  path: string;
+  content: string;
+}
+
+export interface GeneratedSite {
+  index: string;
+  files: GeneratedSiteFile[];
+}
+
+export interface CrawledPage {
+  url: string;
+  path: string;
+  title: string;
+  description: string;
+  lang: string;
+  headings: string[];
+  paragraphs: string[];
+  images: string[];
+  links: string[];
+}
+
+export interface SiteDataset {
+  root: string;
+  crawledAt: string;
+  maxPages: number;
+  truncated: boolean;
+  pages: CrawledPage[];
+}
+
+export type PageFetcher = (url: string) => Promise<string | null>;
+
+export interface CrawlOptions {
+  maxPages?: number;
+  timeoutMs?: number;
+  fetcher?: PageFetcher;
+}

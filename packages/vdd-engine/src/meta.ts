@@ -95,8 +95,8 @@ export const PHASE_META: Record<PhaseName, PhaseMeta> = {
     instructions: 'Pass availableTools (array of MCP/tool names available to the host agent, e.g. ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"]). Returns a per-phase capability report. Used before Phase 2 (strategize) to plan research subagent dispatch.',
   },
   clone: {
-    description: 'VDD Clone: Normalize a target domain (https/http/www/bare) and scaffold the clone pipeline (capture → evidence → schema → backend → AI tools). Entry point is `vdd e2e -clone <domain>`.',
-    instructions: 'Pass the domain as "description" (or "statement"). The phase normalizes the domain (normalizeDomain) and writes vdd/clone.md marking the pipeline stages. The host agent then executes the capture/inference/backend/tool-emission stages per vdd/specs/clone-*/ tasks.',
+    description: 'VDD Clone: Normalize a target domain (https/http/www/bare) and run the clone pipeline (crawl → capture → evidence → schema → backend → dynamic site → AI tools). Crawls the site (browserless/fetch) into a full dataset and generates a deployable dynamic site at vdd/clone-site/. Entry point is `vdd e2e -clone <domain>`.',
+    instructions: 'Pass the domain as "description" (or "statement"). The phase normalizes the domain, crawls the site (sitemap + same-origin links, browserless-first with plain-fetch fallback) into vdd/clone-dataset.json, and writes vdd/clone.md. It generates a deployable dynamic single-page app at vdd/clone-site/ (index.html + app.js + data/pages.json + style.css + vercel.json) that renders every crawled page. To make the clone live, the host agent deploys vdd/clone-site/ to a static host (Vercel/Netlify/GH Pages) and reports the URL. Browserless config: BROWSERLESS_HOST (default http://localhost:3000) + BROWSERLESS_TOKEN env vars.',
   },
 };
 

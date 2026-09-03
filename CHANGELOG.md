@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **`vdd:clone` website cloning pipeline** (`vdd e2e -clone <domain>`): normalizes a target domain and runs crawl → capture → evidence → schema inference → backend generation → **dynamic site generation** → AI-tool emission.
+  - **`crawl.ts` (A-002)** crawls the whole site (origin root + `sitemap.xml`/`sitemap_index.xml` + same-origin `<a>` link BFS, capped by `maxPages`) into a structured dataset (`vdd/clone-dataset.json`): title, description, lang, headings, paragraphs, images, and links per page. Transport is **browserless-first** (`BROWSERLESS_HOST`/`BROWSERLESS_TOKEN` → `/content`) with a plain-`fetch` fallback, so JS-rendered pages crawl without a build step and server-rendered sites still work when Browserless is down.
+  - **`generate-site.ts` (A-006)** now emits a deployable **dynamic** single-page app — `index.html` + `app.js` (dependency-free hash router) + `data/pages.json` (full dataset) + `style.css` (captured design tokens) + `vercel.json` — that renders every crawled page. Deploy `vdd/clone-site/` to Vercel/Netlify/GH Pages for a live clone.
+
+### Changed
+- **`clone` phase** writes `vdd/clone-site/` + `vdd/clone-dataset.json`, adds a `## Crawled Dataset` section to `clone.md`, and returns `output.pages` / `output.dataset` / `output.truncated` / `output.site` / `output.deploy`.
+- **`runClone`** now accepts `{ maxPages, crawl, browser }` options and returns `dataset` + `crawlSkipped`.
+
 ## [1.5.6] — 2026-09-03
 
 ### Added

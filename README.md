@@ -122,7 +122,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | `/vdd:amend "what changed"` | any | Cascade requirement change through full chain |
 | `/vdd:detect-environment` | any | Report per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: run full 8-phase chain in one call, writes all 10+ template files |
-| `/vdd:e2e -clone <domain>` | 7 | **Clone**: exact UI/UX + rebuilt backend + generated schema + AI tools from a domain (https/http/www/bare) |
+| `/vdd:e2e -clone <domain>` | 7 | **Clone**: crawl site (browserless/fetch) into a full dataset + exact UI/UX + rebuilt backend + generated schema + AI tools + deployable dynamic site (vdd/clone-site/) from a domain (https/http/www/bare) |
 
 ---
 
@@ -271,6 +271,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 | [`references/quality-gates.md`](references/quality-gates.md) | 7 gates with 108 checks + CI/CD |
 | [`references/anti-patterns.md`](references/anti-patterns.md) | 24 failure modes and fixes |
 | [`references/compliance-evidence.md`](references/compliance-evidence.md) | DO-178C/IEC 62304/CMMI/ISO 29148 evidence maps |
+| [`references/clone-workflow.md`](references/clone-workflow.md) | Website cloning — crawl → dataset → deployable dynamic site |
 | [`references/quick-reference.md`](references/quick-reference.md) | One-page cheat sheet |
 
 ---

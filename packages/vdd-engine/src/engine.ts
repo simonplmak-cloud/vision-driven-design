@@ -1383,13 +1383,21 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
     return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 
+  const siteFiles = pipeline.site?.files ?? [];
+  const pageCount = pipeline.dataset?.pages.length ?? 0;
   const stages = [
     `- [x] A-001 domain normalization → ${target}`,
+    pipeline.dataset
+      ? `- [x] A-002 crawl → ${pageCount} pages${pipeline.dataset.truncated ? ' (truncated)' : ''} (browserless/fetch)`
+      : '- [ ] A-002 crawl (skipped — fetch/browserless unavailable)',
     pipeline.browserSkipped
-      ? '- [ ] A-002/A-003 capture + evidence (browser skipped — Playwright unavailable)'
-      : `- [x] A-002/A-003 capture + evidence (${pipeline.evidence?.records.length ?? 0} evidence records)`,
+      ? '- [ ] A-003 capture + evidence (browser skipped — Playwright unavailable)'
+      : `- [x] A-003 capture + evidence (${pipeline.evidence?.records.length ?? 0} evidence records)`,
     `- [x] A-004 schema inference → ${pipeline.model.entities.length} entities`,
     `- [x] A-005 backend → ${pipeline.backend.migrations.length} migrations, ${pipeline.backend.routes.length} routes`,
+    pipeline.site
+      ? `- [x] A-006 dynamic site generation → ${siteFiles.length} files in vdd/clone-site/ (covers ${pageCount} crawled pages)`
+      : '- [ ] A-006 dynamic site generation (skipped — no crawled dataset)',
     `- [x] A-007 AI tools → ${pipeline.tools.length} tools`,
   ].join('\n');
 
@@ -1408,28 +1416,60 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   const toolRows = pipeline.tools.map((t) => `| ${t.name} | ${t.description} |`).join('\n');
 
   const artifact = ctx.projectRoot + '/vdd/clone.md';
+  const siteRoot = '/vdd/clone-site/';
+  const datasetRows = pipeline.dataset
+    ? pipeline.dataset.pages.map((p) => `| \`${p.path}\` | ${p.title || '—'} | ${p.lang || '—'} |`).join('\n')
+    : '';
   const content = '# Clone\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006') +
     '## Target\n' + target + '\n\n' +
     '## Pipeline Stages\n' + stages + '\n\n' +
+    '## Crawled Dataset\n\n| Path | Title | Lang |\n|---|---|---|\n' + (datasetRows || '| (none) | — | — |') + '\n\n' +
     '## Inferred Entities\n\n| Entity | Fields |\n|---|---|\n' + (entityRows || '| (none) | — |') + '\n\n' +
     '## Relationships\n\n| Relationship | Via |\n|---|---|\n' + (relRows || '| (none) | — |') + '\n\n' +
     '## Migrations\n\n| Entity | Up | Down |\n|---|---|---|\n' + (migrationRows || '| (none) | — | — |') + '\n\n' +
     '## Routes\n\n| Method | Path | Summary |\n|---|---|---|\n' + (routeRows || '| (none) | — | — |') + '\n\n' +
+    '## Live Site\n\n' + (pipeline.site
+      ? `Deployable **dynamic** clone generated at \`${siteRoot}\` (${siteFiles.length} files, entry \`${pipeline.site.index}\`) serving the ${pageCount}-page crawled dataset. Deploy the folder to Vercel/Netlify/GH Pages to get a live URL.\n\n`
+      : 'No site generated (no crawled dataset).\n\n') +
     '## AI Tools\n\n| Name | Description |\n|---|---|\n' + (toolRows || '| (none) | — |') + '\n';
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write clone.md: ' + (result.error || 'unknown') };
+
+  const writtenSiteFiles: string[] = [];
+  if (pipeline.site) {
+    for (const f of siteFiles) {
+      const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-site/' + f.path, f.content);
+      if (w.written) writtenSiteFiles.push('/vdd/clone-site/' + f.path);
+    }
+  }
+  let datasetPath: string | undefined;
+  if (pipeline.dataset) {
+    const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-dataset.json', JSON.stringify(pipeline.dataset, null, 2));
+    if (w.written) datasetPath = '/vdd/clone-dataset.json';
+  }
+
   return {
     success: true,
     artifact,
     output: {
       normalized: target,
+      pages: pageCount,
+      dataset: datasetPath,
+      truncated: pipeline.dataset?.truncated ?? false,
       entities: pipeline.model.entities.length,
       relationships: pipeline.model.relationships.length,
       migrations: pipeline.backend.migrations.length,
       routes: pipeline.backend.routes.length,
       tools: pipeline.tools.length,
+      crawlSkipped: pipeline.crawlSkipped,
       browserSkipped: pipeline.browserSkipped,
+      site: pipeline.site
+        ? { root: '/vdd/clone-site', index: pipeline.site.index, files: writtenSiteFiles }
+        : undefined,
+      deploy: pipeline.site
+        ? 'Deploy vdd/clone-site/ to a static host (e.g. `vercel deploy_to_vercel` with target "preview") to get a live URL for the dynamic clone serving the full crawled dataset.'
+        : 'No site to deploy — the crawl produced no dataset.',
     },
   };
 }

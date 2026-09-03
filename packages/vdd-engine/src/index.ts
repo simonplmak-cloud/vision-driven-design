@@ -6,10 +6,13 @@ export { generateBackend } from './generate-backend.js';
 export { emitTools } from './emit-tools.js';
 export { capture } from './capture.js';
 export { recordEvidence } from './evidence.js';
+export { crawlSite } from './crawl.js';
+export { generateSite } from './generate-site.js';
 export { runClone } from './clone-pipeline.js';
 export type {
   EvidenceBundle, EvidenceRecord, InferredModel, InferredEntity, InferredField,
   InferredRelationship, CaptureBundle, GeneratedBackend, Migration, RouteSpec, ToolManifest,
+  GeneratedSite, GeneratedSiteFile, CrawledPage, SiteDataset, PageFetcher, CrawlOptions,
 } from './clone-types.js';
 export { VddContext, VddOutput, VddPhaseInput, VddMode, Constitution } from './types.js';
 export type { VddPhaseFn } from './types.js';
