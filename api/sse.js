@@ -298,6 +298,7 @@ const TOOL_REQUIREMENTS = {
   analyze: { required: ["filesystem"], optional: [] },
   amend: { required: ["filesystem"], optional: [] },
   e2e: { required: ["filesystem"], optional: ["brave-search", "perplexity", "context7", "gh_grep", "playwright", "browserless", "shell"] },
+  clone: { required: ["filesystem"], optional: ["playwright", "browserless", "shell"] },
   "detect-environment": { required: [], optional: [] },
 };
 
@@ -359,6 +360,22 @@ function hasTechNames(content) { return TECH_NAME_RE.test(content || ""); }
 function countSubstancePlaceholders(content) {
   const c = content || "";
   return (c.match(/\[e\.g\./g) || []).length + (c.match(/\[NEEDS CLARIFICATION\]/g) || []).length + (c.match(/\[Fill in:/g) || []).length + (c.match(/\[PENDING\]/g) || []).length;
+}
+
+function normalizeCloneDomain(raw) {
+  const input = String(raw || "").trim();
+  if (!input) return { error: "EMPTY_DOMAIN: Domain is required. Accepted forms: https://…, http://…, www.…, or a bare domain." };
+  let rest = input;
+  let scheme = "https";
+  const m = rest.match(/^(https?):\/\//i);
+  if (m) { scheme = m[1].toLowerCase() === "http" ? "http" : "https"; rest = rest.slice(m[0].length); }
+  let host = rest.split(/[/?#]/)[0] || "";
+  if (host.includes("@")) host = host.split("@").pop() || "";
+  host = host.toLowerCase().replace(/\.$/, "");
+  if (host.startsWith("www.")) host = host.slice(4);
+  const hostOk = host === "localhost" || /^(\d{1,3}\.){3}\d{1,3}$/.test(host) || /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(host);
+  if (!hostOk) return { error: `INVALID_HOST: "${input}" is not a valid domain. Accepted forms: https://…, http://…, www.…, or a bare domain.` };
+  return { scheme, host };
 }
 
 function phaseHandlers(input) {
@@ -593,6 +610,15 @@ function phaseHandlers(input) {
         gateResult: { passed: summary.allPassed && substancePassed, checks: summary.checksPassed, total: summary.checksRun },
       };
     },
+    clone() {
+      const rawDomain = desc || s;
+      if (!rawDomain) return { success: false, error: "domain is required for clone (pass description or use `-clone <domain>`)" };
+      const n = normalizeCloneDomain(rawDomain);
+      if (n.error) return { success: false, error: n.error };
+      const target = n.scheme + "://" + n.host;
+      const template = `# Clone\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Target\n${target}\n\n## Pipeline Stages\n- [x] A-001 domain normalization → ${target}\n- [ ] A-002 UI/UX capture\n- [ ] A-003 network evidence\n- [ ] A-004 schema inference\n- [ ] A-005 backend rebuild\n- [ ] A-007 AI-tool emission\n`;
+      return { success: true, artifact: `${root}/vdd/clone.md`, template, output: { normalized: target } };
+    },
   };
 }
 
@@ -612,10 +638,11 @@ const PHASE_META = {
   analyze: "VDD Cross-phase: Cross-artifact consistency analysis — AC count, unresolved clarifications, placeholder density, plan+tasks readiness.",
   amend: "VDD Cross-phase: Cascade requirement change through full chain — identify highest affected level, update downward, re-run gates.",
   e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
+  clone: "VDD Clone: Normalize a target domain (https/http/www/bare) and scaffold the clone pipeline (capture → evidence → schema → backend → AI tools). Entry point is `vdd e2e -clone <domain>`.",
   "detect-environment": "VDD Environment Detection: Reports per-phase tool/MCP requirements and — given the host's availableTools — which capabilities are present vs. missing plus research limitations. Use before Phase 2 (strategize) to plan research subagent dispatch.",
 };
 
-const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e","detect-environment"];
+const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e","clone","detect-environment"];
 
 function toolDefs() {
   return PHASE_NAMES.map((name) => ({
@@ -691,7 +718,7 @@ const HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VDD MCP Server — Vision Driven Design API</title>
-<meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 16 tools for template generation, environment detection, and bi-directional traceability in AI-assisted development.">
+<meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 17 tools for template generation, environment detection, website cloning, and bi-directional traceability in AI-assisted development.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
 <style>
   /* Dark theme (default) — all contrast >= 7:1 (WCAG 2.2 AAA) */

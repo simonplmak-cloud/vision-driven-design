@@ -180,6 +180,7 @@ Each gate verifies both directions and validates 4 S&T assumptions:
 | `/vdd:amend "what changed"` | any | Cascade a requirement change through the full chain |
 | `/vdd:detect-environment` | any | Report per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: execute full chain init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate in one call. Writes all 10+ template files. Accept optional `--actionItemId` / `--feature` to customize feature name (default: "feature-1"). |
+| `/vdd:e2e -clone <domain>` | 7 | **Clone**: gather exact UI/UX, rebuild backend, generate DB schema, emit AI tools. Accepts https/http/www/bare domain (e.g. `https://www.ascent-partners.com` or `ascent-partners.com`). |
 
 ---
 

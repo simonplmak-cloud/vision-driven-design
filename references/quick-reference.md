@@ -36,6 +36,7 @@ One-page cheat sheet. For full details, see referenced files.
 | `/vdd:amend [what changed]` | any | updated chain from change point down |
 | `/vdd:detect-environment` | any | per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e [vision statement]` | 0–8 | full 8-phase chain in one call, writes 10+ template files |
+| `/vdd:e2e -clone [domain]` | 7 | clone pipeline: capture → evidence → schema → backend → AI tools |
 
 ## 7 Bi-Directional Gates
 

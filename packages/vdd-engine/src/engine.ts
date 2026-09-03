@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import { dirname } from 'path';
 import { VddPhaseFn, VddPhaseInput, VddContext, VddOutput } from './types.js';
+import { normalizeDomain } from './normalize-domain.js';
+import { runClone } from './clone-pipeline.js';
 import {
   RESEARCH_SUBAGENTS,
   detectEnvironment,
@@ -1365,8 +1367,75 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   };
 }
 
+// Phase 7c: clone — normalize a target domain and run the full clone pipeline.
+async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
+  const domain = input.description ?? input.statement ?? '';
+  const normalized = normalizeDomain(domain);
+  if ('code' in normalized) {
+    return { success: false, error: normalized.code + ': ' + normalized.message };
+  }
+  const target = normalized.scheme + '://' + normalized.host;
+
+  let pipeline;
+  try {
+    pipeline = await runClone(target, { browser: true });
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+
+  const stages = [
+    `- [x] A-001 domain normalization → ${target}`,
+    pipeline.browserSkipped
+      ? '- [ ] A-002/A-003 capture + evidence (browser skipped — Playwright unavailable)'
+      : `- [x] A-002/A-003 capture + evidence (${pipeline.evidence?.records.length ?? 0} evidence records)`,
+    `- [x] A-004 schema inference → ${pipeline.model.entities.length} entities`,
+    `- [x] A-005 backend → ${pipeline.backend.migrations.length} migrations, ${pipeline.backend.routes.length} routes`,
+    `- [x] A-007 AI tools → ${pipeline.tools.length} tools`,
+  ].join('\n');
+
+  const entityRows = pipeline.model.entities
+    .map((e) => `| ${e.name} | ${e.fields.map((f) => `${f.name}:${f.type}${f.confidence === 'low' ? '?' : ''}`).join(', ') || '—'} |`)
+    .join('\n');
+  const relRows = pipeline.model.relationships
+    .map((r) => `| ${r.source} → ${r.target} | \`${r.via}\` |`)
+    .join('\n');
+  const migrationRows = pipeline.backend.migrations
+    .map((m) => `| ${m.entity} | \`${m.up.replace(/\n/g, ' ')}\` | \`${m.down}\` |`)
+    .join('\n');
+  const routeRows = pipeline.backend.routes
+    .map((r) => `| ${r.method} | ${r.path} | ${r.summary} |`)
+    .join('\n');
+  const toolRows = pipeline.tools.map((t) => `| ${t.name} | ${t.description} |`).join('\n');
+
+  const artifact = ctx.projectRoot + '/vdd/clone.md';
+  const content = '# Clone\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006') +
+    '## Target\n' + target + '\n\n' +
+    '## Pipeline Stages\n' + stages + '\n\n' +
+    '## Inferred Entities\n\n| Entity | Fields |\n|---|---|\n' + (entityRows || '| (none) | — |') + '\n\n' +
+    '## Relationships\n\n| Relationship | Via |\n|---|---|\n' + (relRows || '| (none) | — |') + '\n\n' +
+    '## Migrations\n\n| Entity | Up | Down |\n|---|---|---|\n' + (migrationRows || '| (none) | — | — |') + '\n\n' +
+    '## Routes\n\n| Method | Path | Summary |\n|---|---|---|\n' + (routeRows || '| (none) | — | — |') + '\n\n' +
+    '## AI Tools\n\n| Name | Description |\n|---|---|\n' + (toolRows || '| (none) | — |') + '\n';
+
+  const result = await writeArtifact(artifact, content);
+  if (!result.written) return { success: false, error: 'Failed to write clone.md: ' + (result.error || 'unknown') };
+  return {
+    success: true,
+    artifact,
+    output: {
+      normalized: target,
+      entities: pipeline.model.entities.length,
+      relationships: pipeline.model.relationships.length,
+      migrations: pipeline.backend.migrations.length,
+      routes: pipeline.backend.routes.length,
+      tools: pipeline.tools.length,
+      browserSkipped: pipeline.browserSkipped,
+    },
+  };
+}
+
 export const PHASES: Record<string, VddPhaseFn> = {
   init, vision, strategize, tactics, specify, clarify,
-  plan, tasks, 'next-task': nextTask, implement, validate, trace, analyze, amend, e2e,
+  plan, tasks, 'next-task': nextTask, implement, validate, trace, analyze, amend, e2e, clone,
   'detect-environment': detectEnvironmentPhase,
 };

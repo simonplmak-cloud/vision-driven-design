@@ -122,6 +122,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | `/vdd:amend "what changed"` | any | Cascade requirement change through full chain |
 | `/vdd:detect-environment` | any | Report per-phase tool/MCP requirements + available capabilities |
 | `/vdd:e2e "vision statement"` | 0–8 | **End-to-end**: run full 8-phase chain in one call, writes all 10+ template files |
+| `/vdd:e2e -clone <domain>` | 7 | **Clone**: exact UI/UX + rebuilt backend + generated schema + AI tools from a domain (https/http/www/bare) |
 
 ---
 
@@ -207,7 +208,7 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 
 ### Tools (16)
 
-`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_detect_environment`, `vdd_e2e`.
+`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_e2e`, `vdd_clone`, `vdd_detect_environment`.
 
 All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`, `availableTools`, `capabilities`, `researchFindings`, `artifactFiles`.
 

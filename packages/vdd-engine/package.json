@@ -8,7 +8,7 @@
   "types": "./dist/index.d.ts",
   "exports": { ".": "./dist/index.js" },
   "files": ["dist"],
-  "scripts": { "build": "tsc", "check": "tsc --noEmit" },
+  "scripts": { "build": "tsc", "check": "tsc --noEmit", "test": "vitest run" },
   "dependencies": { "zod": "^3.23.0" },
-  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0", "vitest": "^2.1.0", "playwright": "^1.48.0" }
 }

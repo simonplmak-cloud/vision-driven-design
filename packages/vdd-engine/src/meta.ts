@@ -18,6 +18,7 @@ export const PHASE_NAMES = [
   'analyze',
   'amend',
   'e2e',
+  'clone',
   'detect-environment',
 ] as const;
 
@@ -93,6 +94,10 @@ export const PHASE_META: Record<PhaseName, PhaseMeta> = {
     description: 'VDD Environment Detection: Reports which tools/MCPs are required and optional per phase, and — when the host agent supplies its availableTools — which capabilities are present vs. missing, plus resulting research limitations.',
     instructions: 'Pass availableTools (array of MCP/tool names available to the host agent, e.g. ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"]). Returns a per-phase capability report. Used before Phase 2 (strategize) to plan research subagent dispatch.',
   },
+  clone: {
+    description: 'VDD Clone: Normalize a target domain (https/http/www/bare) and scaffold the clone pipeline (capture → evidence → schema → backend → AI tools). Entry point is `vdd e2e -clone <domain>`.',
+    instructions: 'Pass the domain as "description" (or "statement"). The phase normalizes the domain (normalizeDomain) and writes vdd/clone.md marking the pipeline stages. The host agent then executes the capture/inference/backend/tool-emission stages per vdd/specs/clone-*/ tasks.',
+  },
 };
 
 // Canonical tool keys used to match host-provided `availableTools`.
@@ -129,6 +134,7 @@ export const TOOL_REQUIREMENTS: Record<PhaseName, ToolRequirements> = {
   analyze: { required: ['filesystem'], optional: [] },
   amend: { required: ['filesystem'], optional: [] },
   e2e: { required: ['filesystem'], optional: ['brave-search', 'perplexity', 'context7', 'gh_grep', 'playwright', 'browserless', 'shell'] },
+  clone: { required: ['filesystem'], optional: ['playwright', 'browserless', 'shell'] },
   'detect-environment': { required: [], optional: [] },
 };
 
