@@ -68,4 +68,11 @@ describe('generateSite (A-006)', () => {
     expect(app).toContain("fetch('data/pages.json')");
     expect(app).toContain('hashchange');
   });
+
+  it('embeds an inline SVG favicon in index.html', () => {
+    const site = generateSite(dataset, capture);
+    const html = site.files.find((f) => f.path === 'index.html')!.content;
+    expect(html).toContain("<link rel=\"icon\" href=\"data:image/svg+xml,");
+    expect(html).toContain('%3C/svg%3E');
+  });
 });
