@@ -4,15 +4,16 @@
 
 ### Added
 - **`vdd:detect-environment` command** (16th tool): reports per-phase tool/MCP requirements and — given the host agent's `availableTools` — which capabilities are present vs. missing, plus resulting research limitations. Mirrors `references/ai-agent-patterns.md` "AI Tool Selection Per Phase".
-- **`meta.ts`** in `@vdd/engine`: canonical source of truth for phase names, phase metadata, per-phase tool requirements, the 5 research subagent dispatch specs, and the 7 domain primers (shared by engine, MCP server, CLI, and mirrored into `api/sse.js`).
+- **`meta.ts`** in `@simonmak-ascent/engine`: canonical source of truth for phase names, phase metadata, per-phase tool requirements, the 5 research subagent dispatch specs, and the 7 domain primers (shared by engine, MCP server, CLI, and mirrored into `api/sse.js`).
 
 ### Changed
 - **Phase 2 (`strategize`) is now an orchestration spec**: returns the 5 research subagent dispatch specs (Market/Competitive/Technology/Impact/Domain with tools, inputs, outputs, timeouts), the resolved domain primers, environment report, and research limitations; accepts `researchFindings` to synthesize `strategy.md` (previously a bare template).
 - **Substantive gates**: removed hardcoded `true` checks (F3.1, F3.5, A7.4); a freshly generated placeholder template no longer passes `vdd:validate`/`vdd:e2e` — gates now report placeholders, drift, orphans, and uncovered artifacts. Self-heal no longer auto-greens.
 - **`validate` computes real drift/orphan/uncovered** from `artifactFiles` (serverless) or the filesystem (stdio/CLI) instead of returning a static all-green report.
 - **`tactics` performs a real repo audit** (package.json stack, config files, top-level dirs, suggested domains) in the stdio/CLI engine.
-- **Reconciled the 4 surfaces**: removed the uncompiled `packages/vdd-mcp/api/sse.ts` stub (not in tsconfig `include`); `server.ts` now imports `PHASE_META`/`PHASE_NAMES` from `@vdd/engine`.
+- **Reconciled the 4 surfaces**: removed the uncompiled `packages/vdd-mcp/api/sse.ts` stub (not in tsconfig `include`); `server.ts` now imports `PHASE_META`/`PHASE_NAMES` from `@simonmak-ascent/engine`.
 - **16 tools** (was 15): `vdd_detect_environment` added across engine, MCP, SSE, and CLI.
+- **npm scope renamed + published**: packages published as `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli` (was `@vdd/*`; the `@vdd` org was unavailable).
 - **Version**: all surfaces aligned to `1.5.6`.
 
 ### Fixed

@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod';
-import { PHASES, PHASE_NAMES, PHASE_META, type VddContext, type VddPhaseInput } from '@vdd/engine';
+import { PHASES, PHASE_NAMES, PHASE_META, type VddContext, type VddPhaseInput } from '@simonmak-ascent/engine';
 
 const INPUT_SCHEMA = {
   statement: z.string().optional().describe('Freeform input (required for vision)'),

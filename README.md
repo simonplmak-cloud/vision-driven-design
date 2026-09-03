@@ -196,7 +196,7 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 ```json
 "vdd": {
   "command": "npx",
-  "args": ["-y", "@vdd/mcp"],
+  "args": ["-y", "@simonmak-ascent/mcp"],
   "type": "stdio"
 }
 ```

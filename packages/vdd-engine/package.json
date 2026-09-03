@@ -1,5 +1,5 @@
 {
-  "name": "@vdd/engine",
+  "name": "@simonmak-ascent/engine",
   "version": "1.5.6",
   "description": "Vision Driven Design shared engine — 16 phase functions, bi-directional gate logic, and phase/tool metadata.",
   "license": "MIT",

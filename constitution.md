@@ -38,7 +38,7 @@ Last updated: 2026-09-03
   pt for AGENTS.md (UPPER) and LICENSE.md (UPPER)
 - Skill frontmatter: OpenCode skill format
 - MCP tools: snake_case (`vdd_init`, `vdd_next_task`)
-- Package names: `@vdd/engine`, `@vdd/mcp`, `@vdd/cli`
+- Package names: `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli`
 
 ## Banned Patterns
 
@@ -57,5 +57,5 @@ Last updated: 2026-09-03
 ## Open Questions / Deferred Decisions
 
 - [PENDING] [Multi-language docs]: Should domain-primers be translated to Korean/Japanese/Mandarin?
-- [PENDING] [npm publish]: Should `@vdd/mcp` and `@vdd/cli` be published to npm?
+- [RESOLVED] [npm publish]: Published `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli` (v1.5.6) under the `@simonmak-ascent` scope.
 - [PENDING] [OAuth]: Should the MCP server add optional OAuth for rate-limited tiers?

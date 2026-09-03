@@ -858,7 +858,7 @@ const HTML = `<!DOCTYPE html>
     <p><strong>OpenCode</strong> — <code>opencode.json</code>:</p>
     <pre>"vdd": { "type": "remote", "url": "https://vdd.simonmak.com/api/sse", "timeout": 120000 }</pre>
     <p><strong>Claude Desktop</strong> — <code>claude_desktop_config.json</code>:</p>
-    <pre>"vdd": { "command": "npx", "args": ["-y", "@vdd/mcp"], "type": "stdio" }</pre>
+    <pre>"vdd": { "command": "npx", "args": ["-y", "@simonmak-ascent/mcp"], "type": "stdio" }</pre>
     <div class="cta-group">
       <a class="cta" href="https://github.com/simonplmak-cloud/vision-driven-design">GitHub repository</a>
       <a class="cta secondary" href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/SKILL.md#command-reference">Command reference</a>
