@@ -13,6 +13,7 @@
 
 import type { CrawledPage, CrawlOptions, PageFetcher, SiteDataset } from './clone-types.js';
 import { normalizeDomain } from './normalize-domain.js';
+import { probeCms } from './probe-cms.js';
 
 const ASSET_EXT = /\.(png|jpe?g|gif|svg|webp|ico|css|js|json|xml|pdf|zip|mp4|webm|woff2?|ttf|eot)$/i;
 const UA = 'vdd-clone/1.0 (+https://github.com/simonplmak-cloud/vision-driven-design)';
@@ -242,5 +243,7 @@ export async function crawlSite(domain: string, options: CrawlOptions = {}): Pro
     }
   }
 
-  return { root, crawledAt: new Date().toISOString(), maxPages, truncated, pages };
+  const cms = await probeCms(root, timeoutMs);
+
+  return { root, crawledAt: new Date().toISOString(), maxPages, truncated, pages, cms };
 }

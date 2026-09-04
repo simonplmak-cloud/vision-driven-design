@@ -35,11 +35,20 @@ export function emitTools(model: InferredModel): ToolManifest[] {
     },
     {
       name: 'clone_generate_backend',
-      description: 'Generate migrations and CRUD routes from the inferred model.',
+      description: 'Generate Payload collections, SQL migrations, and CRUD routes from the inferred model.',
       inputSchema: {
         type: 'object',
         properties: { model: { type: 'object' } },
         required: ['model'],
+      },
+    },
+    {
+      name: 'clone_scaffold_site',
+      description: 'Scaffold a live Next.js + Payload + Postgres site from the clone manifest at the project root.',
+      inputSchema: {
+        type: 'object',
+        properties: { manifest: { type: 'object' }, projectRoot: { type: 'string' } },
+        required: ['manifest', 'projectRoot'],
       },
     },
     {

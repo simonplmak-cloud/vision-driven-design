@@ -1383,22 +1383,25 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
     return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 
-  const siteFiles = pipeline.site?.files ?? [];
   const pageCount = pipeline.dataset?.pages.length ?? 0;
+  const platform = pipeline.model.platform;
+  const localeCount = pipeline.model.locales.length;
+  const collectionCount = pipeline.backend.payloadCollections.length;
   const stages = [
     `- [x] A-001 domain normalization → ${target}`,
     pipeline.dataset
       ? `- [x] A-002 crawl → ${pageCount} pages${pipeline.dataset.truncated ? ' (truncated)' : ''} (browserless/fetch)`
       : '- [ ] A-002 crawl (skipped — fetch/browserless unavailable)',
     pipeline.browserSkipped
-      ? '- [ ] A-003 capture + evidence (browser skipped — Playwright unavailable)'
+      ? '- [ ] A-003 capture + evidence (browser skipped — Playwright unavailable; host agent can re-capture)'
       : `- [x] A-003 capture + evidence (${pipeline.evidence?.records.length ?? 0} evidence records)`,
-    `- [x] A-004 schema inference → ${pipeline.model.entities.length} entities`,
-    `- [x] A-005 backend → ${pipeline.backend.migrations.length} migrations, ${pipeline.backend.routes.length} routes`,
-    pipeline.site
-      ? `- [x] A-006 dynamic site generation → ${siteFiles.length} files in vdd/clone-site/ (covers ${pageCount} crawled pages)`
-      : '- [ ] A-006 dynamic site generation (skipped — no crawled dataset)',
+    `- [x] A-004 schema inference → ${pipeline.model.entities.length} entities (platform: ${platform}, ${localeCount} locales)`,
+    `- [x] A-005 backend → ${pipeline.backend.migrations.length} migrations, ${pipeline.backend.routes.length} routes, ${collectionCount} Payload collections`,
+    pipeline.manifest
+      ? '- [x] A-006 scaffold manifest → vdd/clone-manifest.json'
+      : '- [ ] A-006 scaffold manifest (skipped — no crawled dataset)',
     `- [x] A-007 AI tools → ${pipeline.tools.length} tools`,
+    '- [ ] A-008 live site (host agent: scaffold at project root via `vdd-clone` skill → docker compose → deploy)',
   ].join('\n');
 
   const entityRows = pipeline.model.entities
@@ -1406,6 +1409,12 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
     .join('\n');
   const relRows = pipeline.model.relationships
     .map((r) => `| ${r.source} → ${r.target} | \`${r.via}\` |`)
+    .join('\n');
+  const localeRows = pipeline.model.locales
+    .map((l) => `| ${l.code} | ${l.name} | ${l.locale} | ${l.homeUrl || '—'} |`)
+    .join('\n');
+  const collectionRows = pipeline.backend.payloadCollections
+    .map((c) => `| \`${c.slug}\` | ${c.label} | ${c.localized ? 'yes' : 'no'} | ${c.useAsTitle} |`)
     .join('\n');
   const migrationRows = pipeline.backend.migrations
     .map((m) => `| ${m.entity} | \`${m.up.replace(/\n/g, ' ')}\` | \`${m.down}\` |`)
@@ -1416,7 +1425,6 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   const toolRows = pipeline.tools.map((t) => `| ${t.name} | ${t.description} |`).join('\n');
 
   const artifact = ctx.projectRoot + '/vdd/clone.md';
-  const siteRoot = '/vdd/clone-site/';
   const datasetRows = pipeline.dataset
     ? pipeline.dataset.pages.map((p) => `| \`${p.path}\` | ${p.title || '—'} | ${p.lang || '—'} |`).join('\n')
     : '';
@@ -1424,29 +1432,37 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
     '## Target\n' + target + '\n\n' +
     '## Pipeline Stages\n' + stages + '\n\n' +
     '## Crawled Dataset\n\n| Path | Title | Lang |\n|---|---|---|\n' + (datasetRows || '| (none) | — | — |') + '\n\n' +
+    '## Locales\n\n| Code | Name | Locale | Home |\n|---|---|---|---|\n' + (localeRows || '| (none) | — | — | — |') + '\n\n' +
     '## Inferred Entities\n\n| Entity | Fields |\n|---|---|\n' + (entityRows || '| (none) | — |') + '\n\n' +
     '## Relationships\n\n| Relationship | Via |\n|---|---|\n' + (relRows || '| (none) | — |') + '\n\n' +
-    '## Migrations\n\n| Entity | Up | Down |\n|---|---|---|\n' + (migrationRows || '| (none) | — | — |') + '\n\n' +
-    '## Routes\n\n| Method | Path | Summary |\n|---|---|---|\n' + (routeRows || '| (none) | — | — |') + '\n\n' +
-    '## Live Site\n\n' + (pipeline.site
-      ? `Deployable **dynamic** clone generated at \`${siteRoot}\` (${siteFiles.length} files, entry \`${pipeline.site.index}\`) serving the ${pageCount}-page crawled dataset. Deploy the folder to Vercel/Netlify/GH Pages to get a live URL.\n\n`
-      : 'No site generated (no crawled dataset).\n\n') +
+    '## Payload Collections\n\n| Slug | Label | Localized | useAsTitle |\n|---|---|---|---|\n' + (collectionRows || '| (none) | — | — | — |') + '\n\n' +
+    '## Migrations (audit)\n\n| Entity | Up | Down |\n|---|---|---|\n' + (migrationRows || '| (none) | — | — |') + '\n\n' +
+    '## Routes (contract)\n\n| Method | Path | Summary |\n|---|---|---|\n' + (routeRows || '| (none) | — | — |') + '\n\n' +
+    '## Live Site\n\n' + (pipeline.manifest
+      ? `Scaffold manifest emitted at \`vdd/clone-manifest.json\` (${collectionCount} collections, ${pageCount} pages). To make it live, run the \`vdd-clone\` skill: scaffold a Next.js + Payload + Postgres app **at the project root**, then \`docker compose\` + \`cs tunnel\`.\n\n`
+      : 'No manifest generated (no crawled dataset).\n\n') +
     '## AI Tools\n\n| Name | Description |\n|---|---|\n' + (toolRows || '| (none) | — |') + '\n';
 
   const result = await writeArtifact(artifact, content);
   if (!result.written) return { success: false, error: 'Failed to write clone.md: ' + (result.error || 'unknown') };
 
-  const writtenSiteFiles: string[] = [];
-  if (pipeline.site) {
-    for (const f of siteFiles) {
-      const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-site/' + f.path, f.content);
-      if (w.written) writtenSiteFiles.push('/vdd/clone-site/' + f.path);
-    }
-  }
   let datasetPath: string | undefined;
   if (pipeline.dataset) {
     const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-dataset.json', JSON.stringify(pipeline.dataset, null, 2));
     if (w.written) datasetPath = '/vdd/clone-dataset.json';
+  }
+  let schemaPath: string | undefined;
+  const schemaW = await writeArtifact(ctx.projectRoot + '/vdd/clone-schema.json', JSON.stringify(pipeline.model, null, 2));
+  if (schemaW.written) schemaPath = '/vdd/clone-schema.json';
+  let capturePath: string | undefined;
+  if (pipeline.capture) {
+    const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-capture.json', JSON.stringify(pipeline.capture, null, 2));
+    if (w.written) capturePath = '/vdd/clone-capture.json';
+  }
+  let manifestPath: string | undefined;
+  if (pipeline.manifest) {
+    const w = await writeArtifact(ctx.projectRoot + '/vdd/clone-manifest.json', JSON.stringify(pipeline.manifest, null, 2));
+    if (w.written) manifestPath = '/vdd/clone-manifest.json';
   }
 
   return {
@@ -1454,22 +1470,25 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
     artifact,
     output: {
       normalized: target,
+      platform,
       pages: pageCount,
       dataset: datasetPath,
+      schema: schemaPath,
+      capture: capturePath,
+      manifest: manifestPath,
       truncated: pipeline.dataset?.truncated ?? false,
+      locales: localeCount,
       entities: pipeline.model.entities.length,
       relationships: pipeline.model.relationships.length,
       migrations: pipeline.backend.migrations.length,
       routes: pipeline.backend.routes.length,
+      collections: collectionCount,
       tools: pipeline.tools.length,
       crawlSkipped: pipeline.crawlSkipped,
       browserSkipped: pipeline.browserSkipped,
-      site: pipeline.site
-        ? { root: '/vdd/clone-site', index: pipeline.site.index, files: writtenSiteFiles }
-        : undefined,
-      deploy: pipeline.site
-        ? 'Deploy vdd/clone-site/ to a static host (e.g. `vercel deploy_to_vercel` with target "preview") to get a live URL for the dynamic clone serving the full crawled dataset.'
-        : 'No site to deploy — the crawl produced no dataset.',
+      deploy: pipeline.manifest
+        ? 'Run the `vdd-clone` skill to scaffold a Next.js + Payload + Postgres app at the project root (`.`) from vdd/clone-manifest.json, then `docker compose up` on SWAS and expose via `cs tunnel`.'
+        : 'No manifest to deploy — the crawl produced no dataset.',
     },
   };
 }

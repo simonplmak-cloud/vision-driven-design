@@ -8,10 +8,12 @@ describe('runClone (pure, browser + crawl disabled)', () => {
     expect(r.browserSkipped).toBe(true);
     expect(r.crawlSkipped).toBe(false);
     expect(r.dataset).toBeUndefined();
+    expect(r.model.platform).toBe('unknown');
     expect(r.model.entities).toEqual([]);
     expect(r.backend.migrations).toEqual([]);
-    expect(r.site).toBeUndefined();
-    expect(r.tools).toHaveLength(5);
+    expect(r.backend.payloadCollections).toEqual([]);
+    expect(r.manifest).toBeUndefined();
+    expect(r.tools).toHaveLength(6);
   });
 
   it('rejects an invalid domain', async () => {

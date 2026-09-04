@@ -1,7 +1,8 @@
 // Clone pipeline orchestrator — normalizes a domain, then runs the full
-// crawl → capture → evidence → schema → backend → site → tools chain.
-// Crawl (browserless/fetch) and browser capture (Playwright) are best-effort;
-// the pure stages always run.
+// crawl → capture → evidence → schema → backend → manifest → tools chain.
+// Crawl (fetch/browserless) and browser capture (Playwright) are best-effort;
+// the pure stages always run. Emits a scaffold manifest the host agent
+// consumes to produce a live site.
 
 import { normalizeDomain } from './normalize-domain.js';
 import { crawlSite } from './crawl.js';
@@ -9,9 +10,17 @@ import { capture } from './capture.js';
 import { recordEvidence } from './evidence.js';
 import { inferSchema } from './infer-schema.js';
 import { generateBackend } from './generate-backend.js';
-import { generateSite } from './generate-site.js';
+import { generateManifest } from './generate-manifest.js';
 import { emitTools } from './emit-tools.js';
-import type { CaptureBundle, EvidenceBundle, GeneratedBackend, GeneratedSite, InferredModel, SiteDataset, ToolManifest } from './clone-types.js';
+import type {
+  CaptureBundle,
+  CloneManifest,
+  EvidenceBundle,
+  GeneratedBackend,
+  InferredModel,
+  SiteDataset,
+  ToolManifest,
+} from './clone-types.js';
 
 export interface CloneResult {
   normalized: { scheme: string; host: string };
@@ -20,7 +29,7 @@ export interface CloneResult {
   evidence?: EvidenceBundle;
   model: InferredModel;
   backend: GeneratedBackend;
-  site?: GeneratedSite;
+  manifest?: CloneManifest;
   tools: ToolManifest[];
   crawlSkipped: boolean;
   browserSkipped: boolean;
@@ -42,8 +51,8 @@ export async function runClone(domain: string, options: ClonePipelineOptions = {
 
   const result: CloneResult = {
     normalized: { scheme: normalized.scheme, host: normalized.host },
-    model: { entities: [], relationships: [] },
-    backend: { migrations: [], routes: [] },
+    model: { platform: 'unknown', locales: [], entities: [], relationships: [] },
+    backend: { migrations: [], routes: [], payloadCollections: [] },
     tools: [],
     crawlSkipped: false,
     browserSkipped: true,
@@ -69,10 +78,10 @@ export async function runClone(domain: string, options: ClonePipelineOptions = {
     }
   }
 
-  result.model = inferSchema(evidence);
+  result.model = inferSchema(evidence, result.dataset?.cms);
   result.backend = generateBackend(result.model);
   if (result.dataset) {
-    result.site = generateSite(result.dataset, result.capture);
+    result.manifest = generateManifest(target, result.dataset, result.model, result.backend, result.capture);
   }
   result.tools = emitTools(result.model);
   return result;

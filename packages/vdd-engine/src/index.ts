@@ -7,12 +7,16 @@ export { emitTools } from './emit-tools.js';
 export { capture } from './capture.js';
 export { recordEvidence } from './evidence.js';
 export { crawlSite } from './crawl.js';
-export { generateSite } from './generate-site.js';
+export { probeCms } from './probe-cms.js';
+export { generateManifest } from './generate-manifest.js';
 export { runClone } from './clone-pipeline.js';
 export type {
   EvidenceBundle, EvidenceRecord, InferredModel, InferredEntity, InferredField,
   InferredRelationship, CaptureBundle, GeneratedBackend, Migration, RouteSpec, ToolManifest,
-  GeneratedSite, GeneratedSiteFile, CrawledPage, SiteDataset, PageFetcher, CrawlOptions,
+  CrawledPage, SiteDataset, PageFetcher, CrawlOptions,
+  CmsDescriptor, CmsContentType, CmsTaxonomy, I18nLocale, CmsPlatform,
+  PayloadCollection, PayloadField, CloneManifest, DesignSystem, LayoutRegion,
+  PageMapEntry, DeployConfig, DonationConfig,
 } from './clone-types.js';
 export { VddContext, VddOutput, VddPhaseInput, VddMode, Constitution } from './types.js';
 export type { VddPhaseFn } from './types.js';

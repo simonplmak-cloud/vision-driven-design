@@ -3,6 +3,8 @@ import { generateBackend } from '../src/generate-backend.js';
 import type { InferredModel } from '../src/clone-types.js';
 
 const model: InferredModel = {
+  platform: 'unknown',
+  locales: [],
   entities: [
     {
       name: 'Product',
@@ -32,5 +34,17 @@ describe('generateBackend', () => {
     expect(b.routes).toHaveLength(5);
     expect(b.routes[0]).toEqual({ entity: 'Product', method: 'GET', path: '/products', summary: 'List Product' });
     expect(b.routes.map((r) => r.method)).toEqual(['GET', 'GET', 'POST', 'PATCH', 'DELETE']);
+  });
+
+  it('emits a Payload collection per entity', () => {
+    const b = generateBackend(model);
+    expect(b.payloadCollections).toHaveLength(1);
+    const col = b.payloadCollections[0];
+    expect(col.slug).toBe('products');
+    expect(col.useAsTitle).toBe('title');
+    expect(col.localized).toBe(false);
+    const names = col.fields.map((f) => f.name);
+    expect(names).toContain('title');
+    expect(names).toContain('price');
   });
 });

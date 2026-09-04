@@ -3,13 +3,23 @@
 ## [Unreleased]
 
 ### Added
-- **`vdd:clone` website cloning pipeline** (`vdd e2e -clone <domain>`): normalizes a target domain and runs crawl → capture → evidence → schema inference → backend generation → **dynamic site generation** → AI-tool emission.
-  - **`crawl.ts` (A-002)** crawls the whole site (origin root + `sitemap.xml`/`sitemap_index.xml` + same-origin `<a>` link BFS, capped by `maxPages`) into a structured dataset (`vdd/clone-dataset.json`): title, description, lang, headings, paragraphs, images, and links per page. Transport is **browserless-first** (`BROWSERLESS_HOST`/`BROWSERLESS_TOKEN` → `/content`) with a plain-`fetch` fallback, so JS-rendered pages crawl without a build step and server-rendered sites still work when Browserless is down.
-  - **`generate-site.ts` (A-006)** now emits a deployable **dynamic** single-page app — `index.html` + `app.js` (dependency-free hash router) + `data/pages.json` (full dataset) + `style.css` (captured design tokens) + `vercel.json` — that renders every crawled page. Deploy `vdd/clone-site/` to Vercel/Netlify/GH Pages for a live clone.
+- **`vdd:clone` produces a live, operational site** — the pipeline now emits a scaffold manifest for a real Next.js + Payload + Postgres stack (was a static single-page app), ready to be scaffolded/deployed by a host-side `vdd-clone` skill.
+  - **`probe-cms.ts` (A-002b)** detects WordPress over HTTP (`/wp-json/`, `/wp-json/wp/v2/types`, `/wp-json/wp/v2/taxonomies`, `/wp-json/pll/v1/languages`) and returns a typed `CmsDescriptor`: content types, taxonomies, and Polylang locales — no browser required.
+  - **`infer-schema.ts` (A-004)** is now **WordPress-aware**: reconstructs the real editorial model (Page, Post, Project, Media, NavMenuItem, custom post types, taxonomies, locales) instead of guessing from JSON. Derives custom post types (Divi Machine et al.) from taxonomy `types` even when hidden from `/types`.
+  - **`generate-backend.ts` (A-005)** now emits **Payload CMS collections** (`payloadCollections`: slug, localized, useAsTitle, typed fields, relationship fields) in addition to SQL migrations and CRUD route specs.
+  - **`generate-manifest.ts` (A-008)** bundles dataset + model + collections + design system + page map + deploy config into a machine-readable `vdd/clone-manifest.json` for a host `vdd-clone` skill.
+  - **`clone_scaffold_site`** AI tool emitted (6 tools total).
+  - **`scripts/vdd-clone-scaffold.mjs`** — host-side scaffold generator: emits a buildable Next.js (App Router) + Payload 3.69 + self-hosted Postgres project (collections, localization, admin/REST routes, token-faithful frontend, `docker-compose.yml`, seed script) from `vdd/clone-manifest.json`.
+  - **`references/clone-playbook.md`** — end-to-end runbook (scaffold → build on SWAS → self-hosted deploy → seed → fidelity audit). A standalone `vdd-clone` skill wraps it for the host agent.
 
 ### Changed
-- **`clone` phase** writes `vdd/clone-site/` + `vdd/clone-dataset.json`, adds a `## Crawled Dataset` section to `clone.md`, and returns `output.pages` / `output.dataset` / `output.truncated` / `output.site` / `output.deploy`.
-- **`runClone`** now accepts `{ maxPages, crawl, browser }` options and returns `dataset` + `crawlSkipped`.
+- **`clone` phase** writes `vdd/clone-manifest.json` + `vdd/clone-dataset.json` + `vdd/clone-schema.json` + `vdd/clone-capture.json` + `clone.md`; `clone.md` gains Locales / Payload Collections / Routes / Migrations sections; `output` now reports `platform`, `locales`, `collections`, `manifest`, `schema`, and a `docker compose` deploy hint (project root `.` is the site root).
+- **`generate-site.ts`** replaced by **`generate-manifest.ts`** (static SPA removed).
+- **`runClone`** returns `manifest`; `inferSchema` takes a `cms` descriptor; `SiteDataset` carries `cms`.
+- **Workspace linking fixed**: `vdd-cli` and `vdd-mcp` now depend on `@simonmak-ascent/engine` via `workspace:*` (was `^1.5.6`, which resolved to the published package and predated the clone pipeline).
+
+### Fixed
+- **`singularize`** no longer mangles words ending in a vowel + `s` (e.g. `experiences` → `Experience`, not `Experienc`).
 
 ## [1.5.6] — 2026-09-03
 

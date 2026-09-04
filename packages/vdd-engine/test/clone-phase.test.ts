@@ -28,7 +28,7 @@ afterEach(() => {
 });
 
 describe('clone phase', () => {
-  it('AC-3/AC-1: normalizes domain, crawls dataset, and writes vdd/clone.md + vdd/clone-site/', async () => {
+  it('AC-3/AC-1: normalizes domain, crawls dataset, and writes vdd/clone.md + vdd/clone-manifest.json', async () => {
     const root = await fs.mkdtemp(join(tmpdir(), 'vdd-clone-'));
     try {
       stubFetch();
@@ -44,14 +44,14 @@ describe('clone phase', () => {
       expect(content).toContain('https://ascent-partners.com');
       expect(content).toContain('[x] A-001 domain normalization');
       expect(content).toContain('[x] A-002 crawl → 1 page');
-      expect(content).toContain('[x] A-006 dynamic site generation');
+      expect(content).toContain('[x] A-006 scaffold manifest');
 
-      const index = await fs.readFile(join(root, 'vdd/clone-site/index.html'), 'utf-8');
-      expect(index).toContain('app.js');
-      const pagesJson = await fs.readFile(join(root, 'vdd/clone-site/data/pages.json'), 'utf-8');
-      expect(JSON.parse(pagesJson).pages).toHaveLength(1);
+      const manifest = await fs.readFile(join(root, 'vdd/clone-manifest.json'), 'utf-8');
+      expect(JSON.parse(manifest).target).toBe('https://ascent-partners.com');
       const dataset = await fs.readFile(join(root, 'vdd/clone-dataset.json'), 'utf-8');
       expect(JSON.parse(dataset).pages).toHaveLength(1);
+      const schema = await fs.readFile(join(root, 'vdd/clone-schema.json'), 'utf-8');
+      expect(JSON.parse(schema).platform).toBe('unknown');
     } finally {
       await fs.rm(root, { recursive: true, force: true });
     }

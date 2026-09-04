@@ -235,6 +235,7 @@ vdd/
 | One-page cheat sheet | `references/quick-reference.md` |
 | Topic navigation | `references/INDEX.md` |
 | Compliance evidence templates | `references/compliance-evidence.md` |
+| Clone pipeline → live site playbook | `references/clone-playbook.md` |
 | Domain-specific research patterns | `domain-primers/*.md` |
 
 ## MCP & Packages

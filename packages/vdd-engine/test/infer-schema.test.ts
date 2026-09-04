@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { inferSchema } from '../src/infer-schema.js';
-import type { EvidenceBundle } from '../src/clone-types.js';
+import type { CmsDescriptor, EvidenceBundle } from '../src/clone-types.js';
 
 const evidence: EvidenceBundle = {
   records: [
@@ -53,6 +53,35 @@ describe('inferSchema', () => {
   });
 
   it('returns an empty model for no evidence', () => {
-    expect(inferSchema({ records: [] })).toEqual({ entities: [], relationships: [] });
+    expect(inferSchema({ records: [] })).toEqual({ platform: 'unknown', locales: [], entities: [], relationships: [] });
+  });
+
+  it('reconstructs the WordPress content model from a CMS descriptor', () => {
+    const cms: CmsDescriptor = {
+      platform: 'wordpress',
+      detectedAt: '2026-09-04T00:00:00.000Z',
+      restBase: 'https://example.com/wp-json',
+      contentTypes: [
+        { slug: 'page', name: 'Pages', restBase: 'pages', hierarchical: true, hasArchive: false, taxonomies: [] },
+        { slug: 'post', name: 'Posts', restBase: 'posts', hierarchical: false, hasArchive: true, taxonomies: ['category'] },
+        { slug: 'project', name: 'Projects', restBase: 'project', hierarchical: false, hasArchive: true, taxonomies: ['project_category'] },
+      ],
+      taxonomies: [
+        { slug: 'category', name: 'Categories', restBase: 'categories', types: ['post'] },
+        { slug: 'project_category', name: 'Project Categories', restBase: 'project_category', types: ['project'] },
+      ],
+      languages: [{ code: 'en', name: 'EN', locale: 'en_US', w3c: 'en-US', homeUrl: 'https://example.com/en/', isDefault: true }],
+    };
+    const model = inferSchema({ records: [] }, cms);
+    expect(model.platform).toBe('wordpress');
+    expect(model.locales).toHaveLength(1);
+    const names = model.entities.map((e) => e.name);
+    expect(names).toContain('Page');
+    expect(names).toContain('Post');
+    expect(names).toContain('Project');
+    expect(names).toContain('Category');
+    expect(names).toContain('ProjectCategory');
+    expect(model.relationships).toContainEqual({ source: 'Project', target: 'ProjectCategory', via: 'project_category', kind: 'manyToMany' });
+    expect(model.relationships).toContainEqual({ source: 'Page', target: 'Language', via: 'language', kind: 'belongsTo' });
   });
 });
