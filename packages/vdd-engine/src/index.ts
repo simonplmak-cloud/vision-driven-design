@@ -17,6 +17,7 @@ export type {
   CmsDescriptor, CmsContentType, CmsTaxonomy, I18nLocale, CmsPlatform,
   PayloadCollection, PayloadField, CloneManifest, DesignSystem, LayoutRegion,
   PageMapEntry, DeployConfig, DonationConfig,
+  FontFaceRef, RegionName, RegionCapture, LayoutMetrics,
 } from './clone-types.js';
 export { VddContext, VddOutput, VddPhaseInput, VddMode, Constitution } from './types.js';
 export type { VddPhaseFn } from './types.js';

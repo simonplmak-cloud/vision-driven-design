@@ -50,12 +50,40 @@ export interface InferredModel {
   relationships: InferredRelationship[];
 }
 
+export interface FontFaceRef {
+  family: string;
+  src: string;
+}
+
+export type RegionName = 'nav' | 'header' | 'hero' | 'main' | 'footer';
+
+export interface RegionCapture {
+  name: RegionName;
+  selector: string;
+  html: string;
+}
+
+// Key layout dimensions measured from the live page, so the scaffold can pin
+// JS-driven sizes (e.g. a logo whose height a page-builder sets at runtime).
+export interface LayoutMetrics {
+  headerHeight?: number;
+  logoHeight?: number;
+  headerPosition?: string;
+}
+
 export interface CaptureBundle {
   domain: string;
   html: string;
+  // Serialized stylesheet rules (all accessible rules + inline <style> blocks),
+  // with @media / @supports wrappers preserved — this is what makes the clone
+  // actually look like the original, not just share a few CSS variables.
+  css: string;
   cssTokens: Record<string, string>;
   fonts: string[];
+  fontFaces: FontFaceRef[];
   breakpoints: number[];
+  regions: RegionCapture[];
+  metrics: LayoutMetrics;
 }
 
 export interface Migration {
@@ -185,9 +213,17 @@ export interface LayoutRegion {
 
 export interface DesignSystem {
   colors: Record<string, string>;
+  // All captured CSS custom properties (spacing, radius, shadow, color, …),
+  // not just color tokens — the scaffold re-emits these into :root so the
+  // captured CSS resolves var() references correctly.
+  tokens: Record<string, string>;
   fonts: string[];
+  fontFaces: FontFaceRef[];
   breakpoints: number[];
   layoutRegions: LayoutRegion[];
+  css: string;
+  regions: RegionCapture[];
+  metrics: LayoutMetrics;
 }
 
 export interface PageMapEntry {

@@ -44,9 +44,16 @@ const model: InferredModel = {
 const capture: CaptureBundle = {
   domain: 'https://example.com',
   html: '<html><body><nav></nav><footer></footer></body></html>',
-  cssTokens: { '--brand': '#140D14', '--empty': '  ' },
+  css: '@media (max-width: 768px) { body { background: red; } }',
+  cssTokens: { '--brand': '#140D14', '--space': '1rem', '--empty': '  ' },
   fonts: ['Source Sans Pro'],
-  breakpoints: [320, 768, 1440],
+  fontFaces: [{ family: 'Source Sans Pro', src: "url('/fonts/source-sans.woff2') format('woff2')" }],
+  breakpoints: [768],
+  regions: [
+    { name: 'nav', selector: 'nav', html: '<nav>Home</nav>' },
+    { name: 'footer', selector: 'footer', html: '<footer>Foot</footer>' },
+  ],
+  metrics: { headerHeight: 112, logoHeight: 60 },
 };
 
 describe('generateManifest (A-008)', () => {
@@ -74,8 +81,18 @@ describe('generateManifest (A-008)', () => {
     const m = generateManifest('https://example.com', dataset, model, backend, capture);
     expect(m.designSystem.colors['--brand']).toBe('#140D14');
     expect(m.designSystem.colors['--empty']).toBeUndefined();
+    expect(m.designSystem.tokens['--space']).toBe('1rem');
     expect(m.designSystem.fonts).toContain('Source Sans Pro');
     expect(m.designSystem.layoutRegions.length).toBeGreaterThan(0);
+  });
+
+  it('carries full CSS, font faces, and region HTML for faithful reproduction', () => {
+    const m = generateManifest('https://example.com', dataset, model, backend, capture);
+    expect(m.designSystem.css).toContain('@media');
+    expect(m.designSystem.fontFaces).toHaveLength(1);
+    expect(m.designSystem.regions.map((r) => r.name)).toEqual(['nav', 'footer']);
+    expect(m.designSystem.regions.find((r) => r.name === 'nav')?.html).toBe('<nav>Home</nav>');
+    expect(m.designSystem.metrics).toEqual({ headerHeight: 112, logoHeight: 60 });
   });
 
   it('detects a donation surface from the crawled pages', () => {

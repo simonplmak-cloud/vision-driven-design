@@ -27,6 +27,18 @@ function colorTokens(capture?: CaptureBundle): Record<string, string> {
   return out;
 }
 
+// Every non-empty custom property (color, spacing, radius, shadow, …) so the
+// scaffold can re-emit the full token set into :root, not just colors.
+function allTokens(capture?: CaptureBundle): Record<string, string> {
+  if (!capture) return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(capture.cssTokens)) {
+    const val = v.trim();
+    if (val) out[k] = val;
+  }
+  return out;
+}
+
 function detectRegions(capture?: CaptureBundle): LayoutRegion[] {
   const regions: LayoutRegion[] = [
     { name: 'nav', selector: 'header nav, nav', role: 'site navigation' },
@@ -55,9 +67,14 @@ export function generateManifest(
 ): CloneManifest {
   const designSystem: DesignSystem = {
     colors: colorTokens(capture),
+    tokens: allTokens(capture),
     fonts: capture?.fonts ?? [],
+    fontFaces: capture?.fontFaces ?? [],
     breakpoints: capture?.breakpoints ?? [320, 768, 1440],
     layoutRegions: detectRegions(capture),
+    css: capture?.css ?? '',
+    regions: capture?.regions ?? [],
+    metrics: capture?.metrics ?? {},
   };
 
   const pageMap: PageMapEntry[] = dataset.pages.map((p) => ({

@@ -23,8 +23,78 @@ const outDir = resolve(arg('--out', '.'));
 
 const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
 
+const collections = manifest.collections ?? [];
 const locales = manifest.locales ?? [];
 const defaultLocale = locales.find((l) => l.isDefault)?.code ?? locales[0]?.code ?? 'en';
+
+// ---------- fidelity: dataset + captured design system ----------
+
+// The crawled dataset (title/headings/paragraphs/images per page) lives next to
+// the manifest; read it so the scaffold can seed *real* content, not a dummy page.
+// `manifest.dataset.path` is project-root-relative (e.g. `vdd/clone-dataset.json`)
+// while the manifest itself sits at `<root>/vdd/clone-manifest.json`, so try the
+// project root first and fall back to the manifest's own directory.
+const projectRoot = dirname(dirname(manifestPath));
+let dataset = null;
+if (manifest.dataset?.path) {
+  const p = manifest.dataset.path;
+  for (const candidate of [resolve(projectRoot, p), resolve(dirname(manifestPath), '..', p), resolve(dirname(manifestPath), p)]) {
+    try {
+      dataset = JSON.parse(await readFile(candidate, 'utf-8'));
+      break;
+    } catch {
+      dataset = null;
+    }
+  }
+}
+const crawledPages = dataset?.pages ?? [];
+
+// The content collection that backs rendered pages (defaults to `pages` for
+// WordPress-derived models, else the first plural collection).
+const pageCollection =
+  collections.find((c) => c.slug === 'pages')?.slug ??
+  collections.find((c) => c.slug.endsWith('s'))?.slug ??
+  collections[0]?.slug ??
+  'pages';
+const pageCol = collections.find((c) => c.slug === pageCollection);
+const titleField = pageCol?.useAsTitle && pageCol.useAsTitle !== 'id' ? pageCol.useAsTitle : 'title';
+
+// Design system: full token set (colors are a subset), captured CSS, font faces,
+// and the rendered region HTML (header/nav, hero, main, footer) from the live site.
+const tokens = { ...(manifest.designSystem?.colors ?? {}), ...(manifest.designSystem?.tokens ?? {}) };
+const capturedCss = manifest.designSystem?.css ?? '';
+const fontFaces = manifest.designSystem?.fontFaces ?? [];
+const regions = manifest.designSystem?.regions ?? [];
+
+// The captured region HTML references the original's relative asset paths
+// (images, fonts) that don't exist in the clone. Rewrite `src`/`srcset`/media
+// attributes to the original origin (hotlink) so the clone renders the same
+// imagery; leave `href` links internal (they should point into the clone).
+function absolutizeAssetSrcs(html, target) {
+  if (!html) return html;
+  let origin = 'https://example.com';
+  try { origin = new URL(target).origin; } catch { /* keep default */ }
+  const abs = (u) => {
+    const p = (u || '').trim();
+    if (!p || /^(https?:|data:|#|\/\/)/i.test(p)) return u;
+    if (p.startsWith('/')) return origin + p;
+    return origin + '/' + p.replace(/^(\.\.?\/)+/, '');
+  };
+  return html
+    .replace(/\bsrcset\s*=\s*(["'])(.*?)\1/gi, (_m, q, val) => {
+      const out = val.split(',').map((seg) => {
+        const mm = seg.trim().match(/^(\S+)(.*)$/);
+        return mm ? abs(mm[1]) + mm[2] : seg;
+      }).join(',');
+      return `srcset=${q}${out}${q}`;
+    })
+    .replace(/\b(src|poster|data-src|data-bg)\s*=\s*(["'])(.*?)\2/gi, (_m, attr, q, val) => `${attr}=${q}${abs(val)}${q}`);
+}
+
+const headerHtml = absolutizeAssetSrcs(regions.find((r) => r.name === 'header')?.html || regions.find((r) => r.name === 'nav')?.html || '', manifest.target);
+const footerHtml = absolutizeAssetSrcs(regions.find((r) => r.name === 'footer')?.html || '', manifest.target);
+const heroHtml = absolutizeAssetSrcs(regions.find((r) => r.name === 'hero')?.html || '', manifest.target);
+const mainHtml = absolutizeAssetSrcs(regions.find((r) => r.name === 'main')?.html || '', manifest.target);
 
 // ---------- helpers ----------
 
@@ -70,6 +140,18 @@ function pascal(kebab) {
   return kebab.split('-').filter(Boolean).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join('');
 }
 
+function slugFromPath(path) {
+  const clean = (path || '/').replace(/^\/+|\/+$/g, '');
+  if (!clean) return 'home';
+  return clean.replace(/[^a-zA-Z0-9-_]+/g, '-').toLowerCase();
+}
+
+// Real content rows (slug + title) for the seed script, derived from the crawl.
+const seedRows = crawledPages.map((p) => ({
+  slug: slugFromPath(p.path),
+  title: p.title || p.headings?.[0] || p.path || 'Untitled',
+}));
+
 function collectionFile(c) {
   const useAsTitle = c.useAsTitle || 'title';
   const fields = c.fields
@@ -93,20 +175,23 @@ ${fields}
 
 // ---------- collections ----------
 
-const collections = manifest.collections ?? [];
 const collectionImports = collections.map((c) => `import { ${pascal(c.slug)} } from './collections/${pascal(c.slug)}'`).join('\n');
 const collectionRegistry = collections.map((c) => pascal(c.slug)).join(', ');
 
 // ---------- design tokens ----------
 
-const colors = manifest.designSystem?.colors ?? {};
 const fontStack = manifest.designSystem?.fonts?.length
   ? manifest.designSystem.fonts.map((f) => (f.includes(' ') ? `"${f}"` : f)).join(', ') + ', sans-serif'
   : 'sans-serif';
 
-const tokenVars = Object.entries(colors)
-  .filter(([, v]) => v && v.trim())
+const tokenVars = Object.entries(tokens)
+  .filter(([, v]) => v && String(v).trim())
   .map(([k, v]) => `  ${k}: ${v};`)
+  .join('\n');
+
+const fontFaceCss = fontFaces
+  .filter((f) => f && f.family && f.src)
+  .map((f) => `@font-face { font-family: ${f.family.includes(' ') ? `"${f.family}"` : f.family}; src: ${f.src}; }`)
   .join('\n');
 
 const siteName = manifest.name || 'Cloned Site';
@@ -121,6 +206,10 @@ files['package.json'] = JSON.stringify({
   version: '1.0.0',
   private: true,
   type: 'module',
+  // Pin pnpm so the Docker image (corepack) uses the same version that honors
+  // `pnpm.onlyBuiltDependencies` below — otherwise sharp/esbuild postinstall
+  // scripts are ignored and `pnpm install` fails inside the container.
+  packageManager: 'pnpm@10.30.3',
   scripts: {
     dev: 'next dev',
     build: 'payload generate:importmap && next build',
@@ -148,6 +237,11 @@ files['package.json'] = JSON.stringify({
     '@types/node': '^22.0.0',
     '@types/react': '^19.0.0',
     '@types/react-dom': '^19.0.0',
+  },
+  pnpm: {
+    // pnpm 10 blocks postinstall scripts by default; sharp/esbuild need them
+    // for their native binaries, otherwise `next build` and image handling fail.
+    onlyBuiltDependencies: ['sharp', 'esbuild'],
   },
 }, null, 2) + '\n';
 
@@ -323,12 +417,35 @@ export const OPTIONS = REST_OPTIONS(config)
 
 // ---------- frontend ----------
 
-files['src/app/(frontend)/globals.css'] = `:root {
+// The captured CSS can carry relative `url(...)` asset references (fonts,
+// images) that don't exist in the clone. Next/webpack parses `globals.css` and
+// fails on unresolvable urls, so the captured CSS is instead written to
+// `public/` (served raw, never parsed) with `url(...)` refs rewritten to the
+// original origin (hotlink), and pulled in via a <link> tag.
+function absolutizeCssUrls(css, target) {
+  let origin = 'https://example.com';
+  try { origin = new URL(target).origin; } catch { /* keep default */ }
+  return css.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (_m, q, u) => {
+    const p = (u || '').trim();
+    if (/^(https?:|data:|#|\/\/)/i.test(p)) return _m; // already absolute / data / anchor
+    if (p.startsWith('/')) return `url(${q}${origin}${p}${q})`;
+    const clean = p.replace(/^(\.\.?\/)+/, '');
+    return `url(${q}${origin}/${clean}${q})`;
+  });
+}
+
+// Base reset + tokens only (webpack-safe: no url() refs). A minimal fallback
+// shell is injected only when nothing was captured.
+const BASE_CSS = absolutizeCssUrls(`:root {
 ${tokenVars || '  --color-fg: #140D14;\n  --color-bg: #FFFFFF;'}
 }
+
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; color: var(--color-fg, #140D14); background: var(--color-bg, #FFFFFF); font-family: ${fontStack}; }
+html, body { margin: 0; padding: 0; font-family: ${fontStack}; }
 a { color: inherit; }
+`, target);
+
+const FALLBACK_SHELL_CSS = `body { color: var(--color-fg, #140D14); background: var(--color-bg, #FFFFFF); }
 .site-header { display: flex; align-items: center; gap: 2rem; padding: 1rem 2rem; border-bottom: 1px solid var(--color-border, #e8e8e8); }
 .site-header .brand { font-weight: 700; }
 .site-nav { display: flex; gap: 1.25rem; }
@@ -337,51 +454,86 @@ main { padding: 2rem; max-width: 1080px; margin: 0 auto; }
 @media (max-width: 768px) { .site-footer { grid-template-columns: 1fr; } .site-nav { display: none; } }
 `;
 
+// Pin JS-driven layout sizes to the values measured on the live site. Page
+// builders (Divi, Elementor, …) often set logo/header dimensions at runtime;
+// without their JS the clone renders them at intrinsic size and breaks layout.
+const metrics = manifest.designSystem?.metrics ?? {};
+const normParts = [];
+if (metrics.logoHeight) {
+  normParts.push(`#logo { height: ${metrics.logoHeight}px !important; width: auto !important; max-height: ${metrics.logoHeight}px !important; }`);
+}
+// A fixed header overlays the content; offset it by the measured header height,
+// but only on desktop — mobile header heights differ and are JS-driven.
+if (metrics.headerPosition === 'fixed' && metrics.headerHeight) {
+  normParts.push(`@media (min-width: 981px) { main { padding-top: ${metrics.headerHeight}px; } }`);
+}
+const NORMALIZE_CSS = normParts.length
+  ? '/* layout normalization — sizes measured on the live site */\n' + normParts.join('\n') + '\n'
+  : '';
+
+files['src/app/(frontend)/globals.css'] = BASE_CSS + (capturedCss ? NORMALIZE_CSS : FALLBACK_SHELL_CSS);
+
+if (capturedCss || fontFaceCss) {
+  const raw = (fontFaceCss ? fontFaceCss + '\n' : '') + (capturedCss || '') + NORMALIZE_CSS;
+  files['public/captured.css'] = absolutizeCssUrls(raw, target) + '\n';
+}
+
 files['src/app/(frontend)/layout.tsx'] = `import React from 'react'
 import './globals.css'
 
 export const metadata = { title: '${siteName}' }
 
+const HEADER_HTML = ${JSON.stringify(headerHtml)};
+const FOOTER_HTML = ${JSON.stringify(footerHtml)};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/captured.css" />
+      </head>
       <body>
-        <header className="site-header">
-          <span className="brand">${siteName}</span>
-          <nav className="site-nav">
-            <a href="/">Home</a>
-            <a href="/admin">Admin</a>
-          </nav>
-        </header>
+        {HEADER_HTML ? (
+          <div className="site-header-root" dangerouslySetInnerHTML={{ __html: HEADER_HTML }} />
+        ) : (
+          <header className="site-header">
+            <span className="brand">${siteName}</span>
+            <nav className="site-nav">
+              <a href="/">Home</a>
+              <a href="/admin">Admin</a>
+            </nav>
+          </header>
+        )}
         {children}
-        <footer className="site-footer">
-          <div>${siteName}</div>
-          <div>Locales: ${locales.map((l) => l.code).join(', ') || '—'}</div>
-          <div>Payload + Next.js</div>
-          <div>Clone of ${target}</div>
-        </footer>
+        {FOOTER_HTML ? (
+          <div className="site-footer-root" dangerouslySetInnerHTML={{ __html: FOOTER_HTML }} />
+        ) : (
+          <footer className="site-footer">
+            <div>${siteName}</div>
+            <div>Locales: ${locales.map((l) => l.code).join(', ') || '—'}</div>
+            <div>Payload + Next.js</div>
+            <div>Clone of ${target}</div>
+          </footer>
+        )}
       </body>
     </html>
   )
 }
 `;
 
-files['src/app/(frontend)/page.tsx'] = `import { getPayload } from 'payload'
-import config from '@payload-config'
+files['src/app/(frontend)/page.tsx'] = `const MAIN_HTML = ${JSON.stringify(mainHtml)};
+const HERO_HTML = ${JSON.stringify(heroHtml)};
 
-export const dynamic = 'force-dynamic'
-
-export default async function Home() {
-  const payload = await getPayload({ config })
-  const pages = await payload.find({ collection: 'pages', limit: 20, depth: 1 })
+export default function Home() {
   return (
     <main>
-      <h1>${siteName}</h1>
-      <ul>
-        {pages.docs.map((p) => (
-          <li key={String(p.id)}>{String((p as { title?: string }).title ?? (p as { slug?: string }).slug)}</li>
-        ))}
-      </ul>
+      {MAIN_HTML ? (
+        <div className="site-main-root" dangerouslySetInnerHTML={{ __html: MAIN_HTML }} />
+      ) : HERO_HTML ? (
+        <div className="site-hero-root" dangerouslySetInnerHTML={{ __html: HERO_HTML }} />
+      ) : (
+        <h1>${siteName}</h1>
+      )}
     </main>
   )
 }
@@ -391,7 +543,7 @@ files['docker-compose.yml'] = `services:
   postgres:
     image: postgres:16-alpine
     ports:
-      - "5433:5432"
+      - "\${PG_PORT:-5433}:5432"
     environment:
       POSTGRES_USER: clone
       POSTGRES_PASSWORD: clone
@@ -407,7 +559,7 @@ files['docker-compose.yml'] = `services:
   app:
     build: .
     ports:
-      - "3001:3000"
+      - "\${APP_PORT:-3001}:3000"
     environment:
       DATABASE_URI: postgres://clone:clone@postgres:5432/clone
       PAYLOAD_SECRET: \${PAYLOAD_SECRET:-dev-secret-change-me}
@@ -440,21 +592,38 @@ EXPOSE 3000
 CMD ["pnpm", "start"]
 `;
 
+files['src/seed-data.json'] = JSON.stringify(seedRows, null, 2) + '\n';
+
 files['src/seed.ts'] = `import { getPayload } from 'payload'
 import config from '@payload-config'
+import { readFileSync } from 'fs'
 
 async function seed() {
   const payload = await getPayload({ config })
-  const existing = await payload.find({ collection: 'pages', limit: 1 })
+  const existing = await payload.find({ collection: '${pageCollection}', limit: 1 })
   if (existing.totalDocs > 0) {
-    console.log('pages already seeded; skipping')
+    console.log('${pageCollection} already seeded; skipping')
     return
   }
-  const page = await payload.create({
-    collection: 'pages',
-    data: { slug: 'home', title: '${siteName}', status: 'published' },
-  })
-  console.log('seeded page', page.id)
+  let rows: Array<{ slug: string; title: string }> = []
+  try {
+    rows = JSON.parse(readFileSync(new URL('./seed-data.json', import.meta.url), 'utf-8'))
+  } catch {
+    rows = []
+  }
+  let created = 0
+  for (const row of rows) {
+    try {
+      await payload.create({
+        collection: '${pageCollection}',
+        data: { slug: row.slug, ${titleField}: row.title, status: 'published' },
+      })
+      created++
+    } catch {
+      // skip rows that fail (e.g. unknown field in a non-WordPress model)
+    }
+  }
+  console.log('seeded ' + created + ' ${pageCollection} from src/seed-data.json')
 }
 
 await seed()
@@ -462,6 +631,15 @@ await seed()
 
 files['.env.example'] = `DATABASE_URI=postgres://clone:clone@localhost:5432/clone
 PAYLOAD_SECRET=replace-me-with-a-long-random-string
+`;
+
+files['.dockerignore'] = `node_modules
+.next
+.env
+.git
+vdd
+run-clone.mjs
+*.log
 `;
 
 files['.gitignore'] = `node_modules

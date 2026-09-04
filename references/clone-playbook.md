@@ -13,6 +13,14 @@ normalize → crawl → probe CMS → capture → evidence → infer schema
    → Payload collections → scaffold manifest → AI tools
 ```
 
+`capture` gathers the **full rendered UI** — serialized stylesheet rules
+(media queries preserved), every CSS custom property, `@font-face` sources, the
+rendered outerHTML of the header/nav, hero, and footer regions, and real
+responsive breakpoints — so the scaffold reproduces the original look rather
+than a generic shell. The scaffold then re-emits the captured CSS into
+`globals.css`, renders the captured region HTML into `layout.tsx` / `page.tsx`,
+and seeds the crawled page titles/slugs into Payload (`src/seed-data.json`).
+
 Outputs (all under `vdd/`):
 
 | File | Purpose |
@@ -37,7 +45,9 @@ node scripts/vdd-clone-scaffold.mjs --manifest vdd/clone-manifest.json --out .
 Emits a buildable Next.js (App Router) + Payload 3 + Postgres project at the
 project root (`.` = the cloned-site root): Payload collections (localized,
 relationship fields from the manifest), `payload.config.ts`, admin + REST
-routes, a token-faithful frontend shell, `docker-compose.yml`, and a seed script.
+routes, a token- and CSS-faithful frontend shell (captured `globals.css` +
+region HTML), `docker-compose.yml`, a seed script, and `src/seed-data.json`
+(the crawled page titles/slugs).
 
 ### 2. Configure
 
