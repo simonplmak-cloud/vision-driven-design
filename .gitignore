@@ -10,3 +10,7 @@ vdd/specs/
 node_modules/
 packages/*/dist/
 packages/*/node_modules/
+*.tsbuildinfo
+
+# Local tool artifacts
+.playwright-mcp/

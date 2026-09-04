@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.5.9] — 2026-09-04
 
 ### Added
 - **`vdd:clone` produces a live, operational site** — the pipeline now emits a scaffold manifest for a real Next.js + Payload + Postgres stack (was a static single-page app), ready to be scaffolded/deployed by a host-side `vdd-clone` skill.
@@ -11,6 +11,9 @@
   - **`clone_scaffold_site`** AI tool emitted (6 tools total).
   - **`scripts/vdd-clone-scaffold.mjs`** — host-side scaffold generator: emits a buildable Next.js (App Router) + Payload 3.69 + self-hosted Postgres project (collections, localization, admin/REST routes, token-faithful frontend, `docker-compose.yml`, seed script) from `vdd/clone-manifest.json`.
   - **`references/clone-playbook.md`** — end-to-end runbook (scaffold → build on SWAS → self-hosted deploy → seed → fidelity audit). A standalone `vdd-clone` skill wraps it for the host agent.
+  - **Faithful UI capture** (`capture.ts`) — captures the full rendered UI instead of CSS variables only: serialized stylesheet rules (media queries preserved), `@font-face` sources, rendered region HTML (header/nav/hero/main/footer), real `@media` breakpoints, and JS-driven layout metrics (header/logo height, header position).
+  - **Token-faithful scaffold** — `vdd-clone-scaffold.mjs` re-emits the captured CSS (webpack-safe `public/captured.css`, `url()` hotlink-rewritten), renders captured region HTML, seeds real crawled content (`src/seed-data.json`), and injects layout normalization for page-builder sizes.
+  - **Inline SVG favicon** on the landing page + MCP HTML page (eliminates the `/favicon.ico` 404).
 
 ### Changed
 - **`clone` phase** writes `vdd/clone-manifest.json` + `vdd/clone-dataset.json` + `vdd/clone-schema.json` + `vdd/clone-capture.json` + `clone.md`; `clone.md` gains Locales / Payload Collections / Routes / Migrations sections; `output` now reports `platform`, `locales`, `collections`, `manifest`, `schema`, and a `docker compose` deploy hint (project root `.` is the site root).
@@ -20,6 +23,7 @@
 
 ### Fixed
 - **`singularize`** no longer mangles words ending in a vowel + `s` (e.g. `experiences` → `Experience`, not `Experienc`).
+- **`@simonmak-ascent/mcp` bin shebang** — `dist/stdio.js` lacked `#!/usr/bin/env node`, so `npx @simonmak-ascent/mcp` was executed as a shell script (`import: command not found`). Added the shebang so the npm-published bin runs under Node (local opencode worked only because it invoked `node` explicitly).
 
 ## [1.5.6] — 2026-09-03
 

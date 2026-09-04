@@ -670,7 +670,7 @@ function handleJsonRpc(body) {
   const { method, params, id } = body || {};
 
   if (method === "initialize") {
-    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "1.5.6" }, capabilities: { tools: {} } } };
+    return { jsonrpc: "2.0", id, result: { protocolVersion: "2024-11-05", serverInfo: { name: "vdd", version: "1.5.9" }, capabilities: { tools: {} } } };
   }
 
   if (method === "tools/list") {

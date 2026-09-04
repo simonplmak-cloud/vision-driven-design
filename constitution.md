@@ -2,7 +2,7 @@
 
 > Impact Chain: Phase 0 — Constitution (immutable)
 
-Version: 1.5.6
+Version: 1.5.9
 Last updated: 2026-09-03
 
 ## Architecture Principles
@@ -57,5 +57,5 @@ Last updated: 2026-09-03
 ## Open Questions / Deferred Decisions
 
 - [PENDING] [Multi-language docs]: Should domain-primers be translated to Korean/Japanese/Mandarin?
-- [RESOLVED] [npm publish]: Published `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli` (v1.5.6) under the `@simonmak-ascent` scope.
+- [RESOLVED] [npm publish]: Published `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli` (v1.5.9) under the `@simonmak-ascent` scope.
 - [PENDING] [OAuth]: Should the MCP server add optional OAuth for rate-limited tiers?

@@ -17,7 +17,7 @@ const INPUT_SCHEMA = {
 };
 
 export function createVddMcpServer(): McpServer {
-  const server = new McpServer({ name: 'vdd', version: '1.5.6' });
+    const server = new McpServer({ name: 'vdd', version: '1.5.9' });
 
   for (const name of PHASE_NAMES) {
     const toolName = `vdd_${name.replace(/-/g, '_')}`;
