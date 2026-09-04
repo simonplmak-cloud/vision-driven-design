@@ -717,6 +717,7 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2363c8c4'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='18' font-weight='700' fill='%230f1115' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E">
 <title>VDD MCP Server — Vision Driven Design API</title>
 <meta name="description" content="Public Model Context Protocol (MCP) server for Vision Driven Design (VDD) — 17 tools for template generation, environment detection, website cloning, and bi-directional traceability in AI-assisted development.">
 <link rel="canonical" href="https://vdd.simonmak.com/api/sse">
