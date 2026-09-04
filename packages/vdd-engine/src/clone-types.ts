@@ -235,7 +235,7 @@ export interface PageMapEntry {
 
 export interface DeployConfig {
   target: 'docker-swaw' | 'vercel';
-  database: 'postgres';
+  database: 'postgres' | 'surreal' | 'none';
   composeService: string;
   port: number;
   env: Record<string, string>;
@@ -251,10 +251,10 @@ export interface CloneManifest {
   generatedAt: string;
   target: string;
   stack: {
-    frontend: 'nextjs';
-    cms: 'payload';
-    database: 'postgres';
-    styling: 'tailwind';
+    frontend: string;
+    cms: 'payload' | 'custom';
+    database: 'postgres' | 'surreal' | 'none';
+    styling: string;
     runtime: 'node';
   };
   platform: CmsPlatform;
@@ -273,5 +273,6 @@ export type PageFetcher = (url: string) => Promise<string | null>;
 export interface CrawlOptions {
   maxPages?: number;
   timeoutMs?: number;
+  concurrency?: number;
   fetcher?: PageFetcher;
 }

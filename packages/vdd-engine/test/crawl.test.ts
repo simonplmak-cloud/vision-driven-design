@@ -77,4 +77,68 @@ describe('crawlSite (A-002)', () => {
   it('rejects an invalid domain', async () => {
     await expect(crawlSite('not a url', {})).rejects.toThrow('INVALID_HOST');
   });
+
+  it('skips bare relative footer links and keeps root-relative links', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 404 })));
+    const HOME = '<html lang="en"><head><title>Home</title></head><body><main><h1>Hello</h1>' +
+      '<p>This is a long enough paragraph for the home page extraction.</p></main>' +
+      '<a href="en/personal-data-policy">Privacy</a><a href="/about">About</a></body></html>';
+    const fetcher = async (url: string) => (url.endsWith('/about') ? null : HOME);
+
+    const ds = await crawlSite('https://example.com', { fetcher });
+    const home = ds.pages.find((p) => p.path === '/')!;
+    expect(home.links).toEqual(['https://example.com/about']);
+    expect(ds.pages.some((p) => p.path.includes('personal-data-policy'))).toBe(false);
+  });
+
+  it('strips inline scripts and scopes headings/paragraphs to main content', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 404 })));
+    const HTML = '<html lang="en"><head><title>T</title></head><body>' +
+      '<main><h1>Title <script>var junk = "x";</script>End</h1>' +
+      '<p>This is a long enough paragraph for the extraction test to pass.</p></main>' +
+      '<footer><h2>Footer Nav</h2><p>short</p></footer></body></html>';
+    const ds = await crawlSite('https://example.com', { fetcher: async () => HTML });
+    const home = ds.pages[0];
+    expect(home.headings).toEqual(['Title End']);
+    expect(home.headings).not.toContain('Footer Nav');
+    expect(home.paragraphs.some((p) => p.includes('long enough paragraph'))).toBe(true);
+  });
+
+  it('extracts srcset/data-src lazy images and normalizes hosts + scheme', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 404 })));
+    const HTML = '<html><head><title>T</title></head><body><main>' +
+      '<h1>Hi</h1><p>This is a long enough paragraph for the extraction test.</p>' +
+      '<img data-src="/lazy.jpg">' +
+      '<img srcset="/a.jpg 480w, /b.jpg 1280w">' +
+      '<img src="http://staging.youdomain.hk/wp-content/logo.png">' +
+      '<img src="http://www.example.com/x.jpg">' +
+      '<img src="/wp-content/plugins/x/submit.svg">' +
+      '</main></body></html>';
+    const ds = await crawlSite('https://example.com', { fetcher: async () => HTML });
+    const imgs = ds.pages[0].images;
+    expect(imgs).toContain('https://example.com/lazy.jpg');
+    expect(imgs).toContain('https://example.com/a.jpg');
+    expect(imgs).toContain('https://example.com/b.jpg');
+    expect(imgs).toContain('https://example.com/wp-content/logo.png'); // staging host → origin
+    expect(imgs).toContain('https://example.com/x.jpg'); // www → apex, http → https
+    expect(imgs.some((i) => i.includes('submit.svg'))).toBe(false); // plugin junk filtered
+  });
+
+  it('dedupes percent-encoding variants of the same path', async () => {
+    const sitemap = '<?xml version="1.0"?><urlset>' +
+      '<url><loc>https://example.com/tc/%E5%85%A8</loc></url>' +
+      '<url><loc>https://example.com/tc/%e5%85%a8</loc></url></urlset>';
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith('/sitemap.xml')) {
+        return new Response(sitemap, { status: 200, headers: { 'content-type': 'application/xml' } });
+      }
+      return new Response('', { status: 404 });
+    }));
+    const fetcher = async () =>
+      '<html><head><title>T</title></head><body><main><h1>Hi</h1><p>Long enough paragraph for the extraction.</p></main></body></html>';
+
+    const ds = await crawlSite('https://example.com', { fetcher });
+    expect(ds.pages.filter((p) => p.path.includes('/tc/'))).toHaveLength(1);
+  });
 });

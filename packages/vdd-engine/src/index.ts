@@ -4,7 +4,7 @@ export type { NormalizedUrl, NormalizeError } from './normalize-domain.js';
 export { inferSchema } from './infer-schema.js';
 export { generateBackend } from './generate-backend.js';
 export { emitTools } from './emit-tools.js';
-export { capture } from './capture.js';
+export { capture, staticCapture } from './capture.js';
 export { recordEvidence } from './evidence.js';
 export { crawlSite } from './crawl.js';
 export { probeCms } from './probe-cms.js';

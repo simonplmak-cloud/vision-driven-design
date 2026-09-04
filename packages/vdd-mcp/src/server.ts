@@ -14,10 +14,16 @@ const INPUT_SCHEMA = {
   capabilities: z.array(z.string()).optional().describe('Alias for availableTools'),
   researchFindings: z.string().optional().describe('Consolidated research subagent findings to synthesize into strategy.md'),
   artifactFiles: z.record(z.string(), z.string()).optional().describe('Map of artifact path → content for serverless validate/drift detection'),
+  maxPages: z.number().int().positive().optional().describe('Clone: max pages to crawl (default 200)'),
+  timeoutMs: z.number().int().positive().optional().describe('Clone: per-request timeout in ms'),
+  concurrency: z.number().int().positive().optional().describe('Clone: concurrent crawl workers (default 8)'),
+  crawl: z.boolean().optional().describe('Clone: run the crawl (default true)'),
+  browser: z.boolean().optional().describe('Clone: run browser/static capture (default true)'),
+  refresh: z.boolean().optional().describe('Clone: force re-crawl, ignore a fresh cached dataset'),
 };
 
 export function createVddMcpServer(): McpServer {
-    const server = new McpServer({ name: 'vdd', version: '1.5.9' });
+    const server = new McpServer({ name: 'vdd', version: '1.6.0' });
 
   for (const name of PHASE_NAMES) {
     const toolName = `vdd_${name.replace(/-/g, '_')}`;
@@ -40,6 +46,12 @@ export function createVddMcpServer(): McpServer {
           capabilities: params.capabilities as string[] | undefined,
           researchFindings: params.researchFindings as string | undefined,
           artifactFiles: params.artifactFiles as Record<string, string> | undefined,
+          maxPages: params.maxPages as number | undefined,
+          timeoutMs: params.timeoutMs as number | undefined,
+          concurrency: params.concurrency as number | undefined,
+          crawl: params.crawl as boolean | undefined,
+          browser: params.browser as boolean | undefined,
+          refresh: params.refresh as boolean | undefined,
           json: false,
         };
         const result = await PHASES[name](input, ctx);

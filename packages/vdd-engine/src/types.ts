@@ -38,6 +38,12 @@ export const VddPhaseInput = z.object({
   capabilities: z.array(z.string()).optional(),
   researchFindings: z.string().optional(),
   artifactFiles: z.record(z.string(), z.string()).optional(),
+  maxPages: z.number().int().positive().optional(),
+  timeoutMs: z.number().int().positive().optional(),
+  concurrency: z.number().int().positive().optional(),
+  crawl: z.boolean().optional(),
+  browser: z.boolean().optional(),
+  refresh: z.boolean().optional(),
 });
 export type VddPhaseInput = z.infer<typeof VddPhaseInput>;
 

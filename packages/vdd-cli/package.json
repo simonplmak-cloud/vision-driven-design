@@ -1,6 +1,6 @@
 {
   "name": "@simonmak-ascent/cli",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "description": "Vision Driven Design CLI — 16 subcommands for the VDD 8-phase chain.",
   "license": "MIT",
   "type": "module",

@@ -99,4 +99,14 @@ describe('generateManifest (A-008)', () => {
     const m = generateManifest('https://example.com', dataset, model, backend, capture);
     expect(m.donation).toEqual({ provider: 'stripe', methods: ['card'] });
   });
+
+  it('honors a stack/deploy override (surreal + vercel)', () => {
+    const m = generateManifest('https://example.com', dataset, model, backend, capture, {
+      stack: { cms: 'custom', database: 'surreal', styling: 'css' },
+      deploy: { target: 'vercel', database: 'surreal', port: 443, composeService: 'app', env: {} },
+    });
+    expect(m.stack).toEqual({ frontend: 'nextjs', cms: 'custom', database: 'surreal', styling: 'css', runtime: 'node' });
+    expect(m.deploy.target).toBe('vercel');
+    expect(m.deploy.database).toBe('surreal');
+  });
 });

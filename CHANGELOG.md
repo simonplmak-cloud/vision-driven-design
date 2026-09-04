@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0] — 2026-09-04
+
+### Fixed (clone pipeline correctness — fixes over-segmentation, junk data, dead hosts, and the MCP timeout)
+- **Crawler skips bare relative links** (`en/foo` — no leading slash) that resolve to nested junk paths like `/en/homepage/en/…`; only root-relative and absolute same-origin links are followed (`crawl.ts`).
+- **Headings/paragraphs scoped to the content region** (`<main>`/`<article>`) with a boilerplate blocklist, and `<script>/<style>/<noscript>` stripped before extraction — no more footer-nav headings or JS-template leakage (`' + content + "`).
+- **Image extraction reads `srcset` + `data-src`/`data-lazy-src`/`data-original`** (largest `srcset` candidate), and filters boilerplate assets (`/wp-includes/`, `/wp-content/plugins/`, `s.w.org` emoji, favicons, `.gif` placeholders).
+- **Image host normalization**: staging `*.youdomain.hk` → page origin, `www.` → apex, `http` → `https`.
+- **Page dedupe**: canonical path from `<link rel="canonical">`/`og:url` + percent-encoding/trailing-slash normalization (`%E5…` ≡ `%e5…`).
+- **Bounded-concurrency BFS crawl** (default 8 workers) — a 200-page crawl no longer blocks the MCP request to a timeout.
+- **Schema pruning**: internal Divi/Elementor/Gutenberg/ACF post types and taxonomies no longer emit Payload collections (was 35 collections for a marketing site).
+- **Design-system capture no longer requires Playwright**: a static capture path (browserless `/content` HTML + fetched `<link rel=stylesheet>` CSS) parses CSS vars / `@font-face` / breakpoints / regions, so `browserSkipped` no longer leaves an empty `designSystem`.
+
+### Added
+- `runClone` options: `crawl`, `browser`, `reuseDataset`, `maxPages`, `timeoutMs`, `concurrency`.
+- `clone` phase idempotency: reuses a fresh (< 24h) `vdd/clone-dataset.json` unless `refresh: true`.
+- Manifest stack/deploy detection from the target repo (SurrealDB/Vercel vs Payload/Postgres) — `detectTargetStack` + `generateManifest` `stack`/`deploy` override.
+- `vdd_clone` MCP input: `maxPages`, `timeoutMs`, `concurrency`, `crawl`, `browser`, `refresh`.
+
 ## [1.5.9] — 2026-09-04
 
 ### Added

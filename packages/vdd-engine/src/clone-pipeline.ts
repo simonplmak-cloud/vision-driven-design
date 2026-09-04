@@ -1,8 +1,8 @@
 // Clone pipeline orchestrator — normalizes a domain, then runs the full
 // crawl → capture → evidence → schema → backend → manifest → tools chain.
-// Crawl (fetch/browserless) and browser capture (Playwright) are best-effort;
-// the pure stages always run. Emits a scaffold manifest the host agent
-// consumes to produce a live site.
+// Crawl (fetch/browserless) and browser capture (Playwright → browserless →
+// static) are best-effort; the pure stages always run. Emits a scaffold
+// manifest the host agent consumes to produce a live site.
 
 import { normalizeDomain } from './normalize-domain.js';
 import { crawlSite } from './crawl.js';
@@ -38,8 +38,11 @@ export interface CloneResult {
 export interface ClonePipelineOptions {
   timeoutMs?: number;
   maxPages?: number;
+  concurrency?: number;
   crawl?: boolean;
   browser?: boolean;
+  /** Reuse a previously-crawled dataset instead of crawling (idempotency). */
+  reuseDataset?: SiteDataset;
 }
 
 export async function runClone(domain: string, options: ClonePipelineOptions = {}): Promise<CloneResult> {
@@ -59,10 +62,18 @@ export async function runClone(domain: string, options: ClonePipelineOptions = {
   };
 
   if (options.crawl !== false) {
-    try {
-      result.dataset = await crawlSite(target, { maxPages: options.maxPages, timeoutMs: options.timeoutMs });
-    } catch {
-      result.crawlSkipped = true;
+    if (options.reuseDataset) {
+      result.dataset = options.reuseDataset;
+    } else {
+      try {
+        result.dataset = await crawlSite(target, {
+          maxPages: options.maxPages,
+          timeoutMs: options.timeoutMs,
+          concurrency: options.concurrency,
+        });
+      } catch {
+        result.crawlSkipped = true;
+      }
     }
   }
 
@@ -70,11 +81,15 @@ export async function runClone(domain: string, options: ClonePipelineOptions = {
   if (options.browser !== false) {
     try {
       result.capture = await capture(target, options);
-      evidence = await recordEvidence(target, options);
-      result.evidence = evidence;
       result.browserSkipped = false;
     } catch {
       result.browserSkipped = true;
+    }
+    try {
+      evidence = await recordEvidence(target, options);
+      result.evidence = evidence;
+    } catch {
+      /* evidence is best-effort (requires a headless browser) */
     }
   }
 

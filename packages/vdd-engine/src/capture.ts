@@ -1,4 +1,4 @@
-// A-002 — UI/UX capture (browser, Playwright).
+// A-002 — UI/UX capture (browser, Playwright → browserless → static).
 // Captures the *actual* rendered UI, not just a handful of CSS variables:
 //   • full serialized stylesheet rules (media queries preserved) — the single
 //     most important input for a faithful clone
@@ -6,12 +6,18 @@
 //   • @font-face sources (so custom fonts survive, not just family names)
 //   • the rendered outerHTML of the key layout regions (header/nav, hero, footer)
 //   • real responsive breakpoints (from @media width conditions)
-// Everything is gathered in-page so the clone has enough signal to reproduce
-// the original look instead of falling back to a generic shell.
+//   • real layout metrics (Playwright only)
+//
+// Transport order: Playwright (richest, requires chromium) → a static capture
+// that fetches the HTML (via Browserless `/content` when configured, else plain
+// fetch) and its linked stylesheets, then parses CSS vars / @font-face /
+// breakpoints / regions without a browser. A server-rendered site (WordPress,
+// etc.) gets a faithful design system even with no headless browser installed.
 
 import type { CaptureBundle, FontFaceRef, LayoutMetrics, RegionCapture } from './clone-types.js';
 
 const PROBE_WIDTHS = [320, 768, 1440];
+const UA = 'vdd-clone/1.0 (+https://github.com/simonplmak-cloud/vision-driven-design)';
 
 // Loose structural view of a CSS rule so we can read subtype-specific members
 // (media wrappers, @font-face, style declarations) without casting to `any`.
@@ -118,8 +124,6 @@ async function evaluateCapture(): Promise<{
   const heroEl =
     document.querySelector('main section:first-of-type') || document.querySelector('main > :first-child');
   if (heroEl) regions.push({ name: 'hero', selector: 'main section:first-of-type', html: heroEl.outerHTML });
-  // The page body — for WordPress/Divi this is `#main-content` (hero + builder
-  // sections); for generic sites `main` or `[role=main]`.
   const mainEl =
     document.querySelector('main') ||
     document.querySelector('#main-content') ||
@@ -139,8 +143,6 @@ async function evaluateCapture(): Promise<{
 
   const families = [...new Set(Array.from(document.fonts).map((f) => f.family))];
 
-  // Layout metrics for JS-driven sizes (page-builder logos, fixed headers)
-  // that a static CSS+HTML snapshot can't recompute on its own.
   const headerEl = document.querySelector('#main-header, header');
   const logoEl = document.querySelector('#logo, header img, nav img');
   const metrics: LayoutMetrics = {
@@ -174,33 +176,155 @@ function extractBreakpoints(css: string): number[] {
   return sorted.length > 0 ? sorted : PROBE_WIDTHS;
 }
 
+// --- Static capture (no headless browser) ---
+
+async function fetchText(url: string, timeoutMs: number): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(timeoutMs),
+      redirect: 'follow',
+      headers: { 'user-agent': UA, accept: 'text/html,application/xhtml+xml,text/css,*/*' },
+    });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchRenderedHtml(domain: string, timeoutMs: number): Promise<string | null> {
+  const host = process.env.BROWSERLESS_HOST || 'http://localhost:3000';
+  const token = process.env.BROWSERLESS_TOKEN || '';
+  if (token) {
+    try {
+      const sep = host.includes('?') ? '&' : '?';
+      const res = await fetch(`${host}/content${sep}token=${encodeURIComponent(token)}`, {
+        method: 'POST',
+        signal: AbortSignal.timeout(timeoutMs),
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url: domain, waitForTimeout: 1500, rejectResourceTypes: ['image', 'font', 'media'] }),
+      });
+      if (res.ok) {
+        const text = await res.text();
+        if (/<html|<body|<title/i.test(text.slice(0, 500))) return text;
+      }
+    } catch {
+      /* fall through to plain fetch */
+    }
+  }
+  return fetchText(domain, timeoutMs);
+}
+
+function extractElement(html: string, tag: string): string {
+  const m = new RegExp('<' + tag + '(\\s[^>]*)?>', 'i').exec(html);
+  if (!m) return '';
+  const close = html.toLowerCase().indexOf('</' + tag + '>', m.index);
+  return close !== -1 ? html.slice(m.index, close) : html.slice(m.index);
+}
+
+export async function staticCapture(domain: string, options?: { timeoutMs?: number }): Promise<CaptureBundle> {
+  const timeoutMs = options?.timeoutMs ?? 15000;
+  const html = (await fetchRenderedHtml(domain, timeoutMs)) ?? '';
+  const base = new URL(domain + '/');
+
+  const cssParts: string[] = [];
+  for (const m of html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)) {
+    if (m[1].trim()) cssParts.push(m[1]);
+  }
+  const seenSheets = new Set<string>();
+  for (const m of html.matchAll(/<link[^>]+rel=["']stylesheet["'][^>]*href=["']([^"']+)["']/gi)) {
+    const href = m[1].trim();
+    if (seenSheets.has(href)) continue;
+    seenSheets.add(href);
+    const u = absolutizeUrl(base, href);
+    if (!u) continue;
+    const css = await fetchText(u, timeoutMs);
+    if (css) cssParts.push(css);
+  }
+  const css = cssParts.join('\n');
+
+  const tokens: Record<string, string> = {};
+  for (const m of css.matchAll(/(--[a-zA-Z0-9_-]+)\s*:\s*([^;}]+)[;}]/g)) {
+    tokens[m[1]] = m[2].trim();
+  }
+
+  const fontFaces: FontFaceRef[] = [];
+  for (const m of css.matchAll(/@font-face\s*{([^}]*)}/g)) {
+    const fam = (m[1].match(/font-family\s*:\s*([^;}]+)/i) || [, ''])[1].trim().replace(/['"]/g, '');
+    const src = (m[1].match(/src\s*:\s*([^;}]+)/i) || [, ''])[1].trim();
+    if (fam && src) fontFaces.push({ family: fam, src });
+  }
+
+  const families = new Set<string>();
+  for (const m of css.matchAll(/font-family\s*:\s*([^;}]+)/gi)) {
+    const v = m[1].replace(/['"]/g, '').split(',')[0].trim();
+    if (v && !v.startsWith('var(')) families.add(v);
+  }
+
+  const regions: RegionCapture[] = [];
+  const nav = extractElement(html, 'nav');
+  if (nav) regions.push({ name: 'nav', selector: 'nav', html: nav });
+  const header = extractElement(html, 'header');
+  if (header) regions.push({ name: 'header', selector: 'header', html: header });
+  const main = extractElement(html, 'main');
+  if (main) regions.push({ name: 'main', selector: 'main', html: main });
+  const footer = extractElement(html, 'footer');
+  if (footer) regions.push({ name: 'footer', selector: 'footer', html: footer });
+
+  return {
+    domain,
+    html,
+    css,
+    cssTokens: tokens,
+    fonts: [...families],
+    fontFaces,
+    breakpoints: extractBreakpoints(css),
+    regions,
+    metrics: {},
+  };
+}
+
+function absolutizeUrl(base: URL, raw: string): string | null {
+  try {
+    return new URL(raw, base).toString();
+  } catch {
+    return null;
+  }
+}
+
 export async function capture(domain: string, options?: { timeoutMs?: number }): Promise<CaptureBundle> {
-  let pw: typeof import('playwright');
+  // 1. Playwright — richest capture (computed tokens, metrics, full rules).
+  let pw: typeof import('playwright') | null = null;
   try {
     pw = await import('playwright');
   } catch {
-    throw new Error('Playwright is not installed. Run `pnpm add -D playwright && npx playwright install chromium`.');
+    pw = null;
+  }
+  if (pw) {
+    let browser: Awaited<ReturnType<typeof pw.chromium.launch>> | null = null;
+    try {
+      browser = await pw.chromium.launch();
+      const page = await browser.newPage();
+      await page.goto(domain, { timeout: options?.timeoutMs ?? 60000, waitUntil: 'domcontentloaded' });
+      const result = await page.evaluate(evaluateCapture);
+      return {
+        domain,
+        html: result.html,
+        css: result.css,
+        cssTokens: result.tokens,
+        fonts: result.fonts,
+        fontFaces: result.fontFaces,
+        breakpoints: extractBreakpoints(result.css),
+        regions: result.regions,
+        metrics: result.metrics,
+      };
+    } catch {
+      /* launch/navigation failed — fall through to static capture */
+    } finally {
+      if (browser) await browser.close().catch(() => {});
+    }
   }
 
-  const browser = await pw.chromium.launch();
-  try {
-    const page = await browser.newPage();
-    await page.goto(domain, { timeout: options?.timeoutMs ?? 60000, waitUntil: 'domcontentloaded' });
-
-    const result = await page.evaluate(evaluateCapture);
-
-    return {
-      domain,
-      html: result.html,
-      css: result.css,
-      cssTokens: result.tokens,
-      fonts: result.fonts,
-      fontFaces: result.fontFaces,
-      breakpoints: extractBreakpoints(result.css),
-      regions: result.regions,
-      metrics: result.metrics,
-    };
-  } finally {
-    await browser.close();
-  }
+  // 2. Static capture — browserless HTML + fetched stylesheets, no browser.
+  return staticCapture(domain, options);
 }

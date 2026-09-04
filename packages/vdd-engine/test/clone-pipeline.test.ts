@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { runClone } from '../src/clone-pipeline.js';
+import type { SiteDataset } from '../src/clone-types.js';
 
 describe('runClone (pure, browser + crawl disabled)', () => {
   it('normalizes and produces deterministic empty output without network', async () => {
@@ -18,5 +19,32 @@ describe('runClone (pure, browser + crawl disabled)', () => {
 
   it('rejects an invalid domain', async () => {
     await expect(runClone('not a url', { browser: false, crawl: false })).rejects.toThrow('INVALID_HOST');
+  });
+
+  it('reuses a provided dataset without crawling (idempotency)', async () => {
+    const dataset: SiteDataset = {
+      root: 'https://example.com',
+      crawledAt: new Date().toISOString(),
+      maxPages: 200,
+      truncated: false,
+      pages: [
+        {
+          url: 'https://example.com/',
+          path: '/',
+          title: 'Home',
+          description: '',
+          lang: 'en',
+          headings: ['Hello'],
+          paragraphs: ['A long enough paragraph for the reuse test.'],
+          images: [],
+          links: [],
+        },
+      ],
+    };
+    const r = await runClone('https://example.com', { browser: false, crawl: true, reuseDataset: dataset });
+    expect(r.dataset).toBe(dataset);
+    expect(r.crawlSkipped).toBe(false);
+    expect(r.manifest).toBeDefined();
+    expect(r.manifest!.dataset.pageCount).toBe(1);
   });
 });

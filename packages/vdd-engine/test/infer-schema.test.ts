@@ -84,4 +84,26 @@ describe('inferSchema', () => {
     expect(model.relationships).toContainEqual({ source: 'Project', target: 'ProjectCategory', via: 'project_category', kind: 'manyToMany' });
     expect(model.relationships).toContainEqual({ source: 'Page', target: 'Language', via: 'language', kind: 'belongsTo' });
   });
+
+  it('prunes internal plugin/builder post types and taxonomies', () => {
+    const cms: CmsDescriptor = {
+      platform: 'wordpress',
+      detectedAt: '2026-09-04T00:00:00.000Z',
+      restBase: 'https://example.com/wp-json',
+      contentTypes: [
+        { slug: 'page', name: 'Pages', restBase: 'pages', hierarchical: true, hasArchive: false, taxonomies: [] },
+        { slug: 'project', name: 'Projects', restBase: 'project', hierarchical: false, hasArchive: true, taxonomies: ['category'] },
+        { slug: 'et_pb_layout', name: 'Divi Layouts', restBase: 'et_pb_layout', hierarchical: false, hasArchive: false, taxonomies: [] },
+        { slug: 'wp_block', name: 'Blocks', restBase: 'wp_blocks', hierarchical: false, hasArchive: false, taxonomies: [] },
+        { slug: 'elementor_library', name: 'Templates', restBase: 'elementor_library', hierarchical: false, hasArchive: false, taxonomies: ['elementor_library_type'] },
+      ],
+      taxonomies: [
+        { slug: 'category', name: 'Categories', restBase: 'categories', types: ['project'] },
+        { slug: 'elementor_library_type', name: 'Template Types', restBase: 'elementor_library_type', types: ['elementor_library'] },
+      ],
+      languages: [{ code: 'en', name: 'EN', locale: 'en_US', w3c: 'en-US', homeUrl: 'https://example.com/en/', isDefault: true }],
+    };
+    const model = inferSchema({ records: [] }, cms);
+    expect(model.entities.map((e) => e.name)).toEqual(['Page', 'Project', 'Category']);
+  });
 });

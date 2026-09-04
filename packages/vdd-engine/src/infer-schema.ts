@@ -48,6 +48,27 @@ function entityNameFromOperation(operation: string): string {
 
 const CORE_CONTENT_SLUGS = new Set(['post', 'page', 'attachment', 'nav_menu_item']);
 
+// Internal plugin/builder post types and taxonomies (Divi, Elementor, Gutenberg,
+// ACF, WP plumbing) that are not editorial content — emitting a Payload
+// collection for each over-segments the model for a marketing/content site.
+const INTERNAL_TYPE_SLUGS = new Set([
+  'et_pb_layout', 'et_footer_layout', 'et_body_layout', 'et_header_layout',
+  'et_template', 'et_theme_builder', 'et_pb_global_colors', 'et_code_snippet',
+  'dmach_post', 'dmach_tax',
+  'wp_block', 'wp_navigation', 'wp_global_styles', 'wp_template', 'wp_template_part',
+  'wp_font_family', 'wp_font_face', 'revision', 'custom_css', 'customize_changeset',
+  'oembed_cache', 'user_request', 'acf-field-group', 'acf-field',
+  'elementor_library', 'astra-advanced-hook', 'wpcf7_contact_form', 'brb_collection',
+  'wp_stream_alert', 'shop_order', 'shop_coupon', 'shop_webhook',
+]);
+
+const INTERNAL_TAXONOMY_SLUGS = new Set([
+  'nav_menu', 'post_format', 'link_category', 'wp_theme', 'wp_pattern_category',
+  'wp_template_part_area', 'elementor_library_type', 'elementor_library_category',
+  'fl-builder-template-category', 'et_theme_builder', 'et_template_category',
+  'acf-taxonomy', 'product_shipping_class', 'product_type', 'product_visibility',
+]);
+
 function wpEntityName(ct: CmsContentType): string {
   switch (ct.slug) {
     case 'page': return 'Page';
@@ -72,7 +93,7 @@ function taxonomyEntityName(taxonomySlug: string): string {
 }
 
 function isContentTaxonomy(slug: string): boolean {
-  return !slug.startsWith('wp_') && slug !== 'nav_menu';
+  return !slug.startsWith('wp_') && slug !== 'nav_menu' && !INTERNAL_TAXONOMY_SLUGS.has(slug);
 }
 
 function field(name: string, type: string, required = false): InferredField {
@@ -122,7 +143,7 @@ function fieldsFor(slug: string): InferredField[] {
 }
 
 function isContentType(slug: string): boolean {
-  return CORE_CONTENT_SLUGS.has(slug) || !slug.startsWith('wp_');
+  return (CORE_CONTENT_SLUGS.has(slug) || !slug.startsWith('wp_')) && !INTERNAL_TYPE_SLUGS.has(slug);
 }
 
 function inferWordpress(cms: CmsDescriptor): InferredModel {
@@ -138,7 +159,7 @@ function inferWordpress(cms: CmsDescriptor): InferredModel {
   for (const tax of cms.taxonomies) {
     for (const typeSlug of tax.types) {
       if (knownSlugs.has(typeSlug)) continue;
-      if (typeSlug.startsWith('wp_') || typeSlug === 'nav_menu') continue;
+      if (typeSlug.startsWith('wp_') || typeSlug === 'nav_menu' || INTERNAL_TYPE_SLUGS.has(typeSlug)) continue;
       knownSlugs.add(typeSlug);
       contentTypes.push({
         slug: typeSlug,

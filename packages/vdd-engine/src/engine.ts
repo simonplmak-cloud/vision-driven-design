@@ -3,12 +3,8 @@ import { dirname } from 'path';
 import { VddPhaseFn, VddPhaseInput, VddContext, VddOutput } from './types.js';
 import { normalizeDomain } from './normalize-domain.js';
 import { runClone } from './clone-pipeline.js';
-import {
-  RESEARCH_SUBAGENTS,
-  detectEnvironment,
-  domainPrimersForTargets,
-  type DomainPrimer,
-} from './meta.js';
+import { RESEARCH_SUBAGENTS, detectEnvironment, domainPrimersForTargets, type DomainPrimer } from './meta.js';
+import type { CloneManifest, DeployConfig, SiteDataset } from './clone-types.js';
 
 function today(): string {
   return new Date().toISOString().split('T')[0];
@@ -1367,6 +1363,47 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   };
 }
 
+const CLONE_TTL_MS = 24 * 60 * 60 * 1000;
+
+// Detect the target project's real stack (framework/db/cms/deploy) from its
+// package.json + config files, so the clone manifest reflects reality instead
+// of the hardcoded Payload/Postgres default.
+async function detectTargetStack(root: string): Promise<{ stack: Partial<CloneManifest['stack']>; deploy: Partial<DeployConfig> }> {
+  const has = async (p: string) => {
+    try {
+      await fs.access(root + '/' + p);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const deps: Record<string, string> = {};
+  try {
+    const raw = await readIfExists(root + '/package.json');
+    const pkg = JSON.parse(raw ?? '{}') as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+    Object.assign(deps, pkg.dependencies, pkg.devDependencies);
+  } catch {
+    /* no package.json */
+  }
+
+  let database: 'postgres' | 'surreal' | 'none' = 'none';
+  if (deps.pg || deps.postgres || deps['@payloadcms/db-postgres']) database = 'postgres';
+  if (await has('src/lib/surreal.ts')) database = 'surreal';
+  if (database === 'none') {
+    const env = await readIfExists(root + '/.env.example');
+    if (env && /SURREAL_URL/i.test(env)) database = 'surreal';
+  }
+
+  const cms: 'payload' | 'custom' = deps['@payloadcms/payload'] || deps.payload ? 'payload' : 'custom';
+  const vercel = await has('vercel.json');
+  const targetDeploy: 'docker-swaw' | 'vercel' = vercel ? 'vercel' : 'docker-swaw';
+
+  return {
+    stack: { frontend: 'nextjs', cms, database, styling: deps.tailwindcss ? 'tailwind' : 'css' },
+    deploy: { target: targetDeploy, database, port: vercel ? 443 : 3000, composeService: 'app', env: {} },
+  };
+}
+
 // Phase 7c: clone — normalize a target domain and run the full clone pipeline.
 async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   const domain = input.description ?? input.statement ?? '';
@@ -1376,11 +1413,51 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   }
   const target = normalized.scheme + '://' + normalized.host;
 
+  const maxPages = input.maxPages ?? 200;
+  const timeoutMs = input.timeoutMs;
+  const concurrency = input.concurrency;
+  const doCrawl = input.crawl !== false;
+  const doBrowser = input.browser !== false;
+  const refresh = input.refresh === true;
+
+  // Idempotency: reuse a fresh dataset unless a refresh is forced (avoids a
+  // redundant full re-crawl, which is what previously timed the MCP call out).
+  let reuseDataset: SiteDataset | undefined;
+  if (doCrawl && !refresh) {
+    const existing = await readIfExists(ctx.projectRoot + '/vdd/clone-dataset.json');
+    if (existing) {
+      try {
+        const ds = JSON.parse(existing) as SiteDataset;
+        const ageMs = Date.now() - new Date(ds.crawledAt || 0).getTime();
+        if (Array.isArray(ds.pages) && ds.pages.length > 0 && ageMs < CLONE_TTL_MS) reuseDataset = ds;
+      } catch {
+        /* corrupt dataset — re-crawl */
+      }
+    }
+  }
+
   let pipeline;
   try {
-    pipeline = await runClone(target, { browser: true });
+    pipeline = await runClone(target, {
+      browser: doBrowser,
+      crawl: doCrawl,
+      maxPages,
+      timeoutMs,
+      concurrency,
+      reuseDataset,
+    });
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+
+  // Reflect the target repo's real stack in the manifest.
+  if (pipeline.manifest) {
+    const detected = await detectTargetStack(ctx.projectRoot);
+    pipeline.manifest = {
+      ...pipeline.manifest,
+      stack: { ...pipeline.manifest.stack, ...detected.stack },
+      deploy: { ...pipeline.manifest.deploy, ...detected.deploy },
+    };
   }
 
   const pageCount = pipeline.dataset?.pages.length ?? 0;

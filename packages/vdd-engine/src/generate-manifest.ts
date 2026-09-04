@@ -7,6 +7,7 @@
 import type {
   CaptureBundle,
   CloneManifest,
+  DeployConfig,
   DesignSystem,
   GeneratedBackend,
   InferredModel,
@@ -16,6 +17,11 @@ import type {
 } from './clone-types.js';
 
 const COLOR_RE = /^(#|rgba?\(|hsla?\()/i;
+
+export interface ManifestOptions {
+  stack?: Partial<CloneManifest['stack']>;
+  deploy?: Partial<DeployConfig>;
+}
 
 function colorTokens(capture?: CaptureBundle): Record<string, string> {
   if (!capture) return {};
@@ -64,6 +70,7 @@ export function generateManifest(
   model: InferredModel,
   backend: GeneratedBackend,
   capture?: CaptureBundle,
+  options: ManifestOptions = {},
 ): CloneManifest {
   const designSystem: DesignSystem = {
     colors: colorTokens(capture),
@@ -86,11 +93,31 @@ export function generateManifest(
 
   const hasDonation = dataset.pages.some((p) => /donation|checkout|payme|fps/i.test(p.path));
 
+  const stack: CloneManifest['stack'] = {
+    frontend: 'nextjs',
+    cms: 'payload',
+    database: 'postgres',
+    styling: 'tailwind',
+    runtime: 'node',
+    ...options.stack,
+  };
+  const deploy: DeployConfig = {
+    target: 'docker-swaw',
+    database: 'postgres',
+    composeService: 'app',
+    port: 3000,
+    env: {
+      DATABASE_URI: 'postgres://clone:clone@postgres:5432/clone',
+      PAYLOAD_SECRET: '<generate-32-byte-random>',
+    },
+    ...options.deploy,
+  };
+
   return {
     schemaVersion: '1.0',
     generatedAt: new Date().toISOString(),
     target,
-    stack: { frontend: 'nextjs', cms: 'payload', database: 'postgres', styling: 'tailwind', runtime: 'node' },
+    stack,
     platform: model.platform,
     locales: model.locales,
     collections: backend.payloadCollections,
@@ -98,16 +125,7 @@ export function generateManifest(
     designSystem,
     pageMap,
     dataset: { path: 'vdd/clone-dataset.json', pageCount: dataset.pages.length, truncated: dataset.truncated },
-    deploy: {
-      target: 'docker-swaw',
-      database: 'postgres',
-      composeService: 'app',
-      port: 3000,
-      env: {
-        DATABASE_URI: 'postgres://clone:clone@postgres:5432/clone',
-        PAYLOAD_SECRET: '<generate-32-byte-random>',
-      },
-    },
+    deploy,
     donation: hasDonation ? { provider: 'stripe', methods: ['card'] } : undefined,
   };
 }
