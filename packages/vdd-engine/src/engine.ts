@@ -90,7 +90,7 @@ async function vision(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput>
   if (!input.statement) return { success: false, error: 'statement is required' };
   const artifact = ctx.projectRoot + '/vdd/vision.md';
   const escapedStatement = input.statement.replace(/`/g, '\\`');
-  const content = '# Vision\n' + templateHeader('V-001') +
+  const content = '# Vision\n' + templateHeader((await chainContext(ctx.projectRoot)).vision) +
     '## Vision Statement\n\n<!-- Human freeform vision, expanded and formalized by AI -->\n\n> ' + escapedStatement + '\n\n' +
     '[AI assistant: expand the above freeform statement into a structured vision. Describe WHO benefits, WHAT changes in their world, and WHY it matters. 1-3 paragraphs.]\n\n' +
     '## Impact Model\n\n### Goal (the desired future state)\n\n[1 sentence — the measurable outcome this product aims to create]\n\n' +
@@ -174,7 +174,7 @@ async function strategize(input: VddPhaseInput, ctx: VddContext): Promise<VddOut
       '### Technology Landscape\n[Summary of viable technologies, trade-offs, constraints imposed by constitution]\n\n' +
       '### Feasibility Assessment\n[Is this vision technically and operationally achievable with current resources?]\n';
 
-  const content = '# Strategy\n' + templateHeader('V-001 → S-002') +
+  const content = '# Strategy\n' + templateHeader((await chainContext(ctx.projectRoot)).strategy) +
     '## Vision Reference\nDerived from: `vdd/vision.md`\n\n' +
     '## Domain Primers Loaded\n<!-- Determined by vision Target Domains -->\n' + primerLines + '\n\n' +
     synthesis +
@@ -291,7 +291,7 @@ async function tactics(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
     '',
   ].join('\n');
 
-  const content = '# Tactics\n' + templateHeader('V-001 → S-002 → T-003') +
+  const content = '# Tactics\n' + templateHeader((await chainContext(ctx.projectRoot)).tactics) +
     '## Strategy Reference\nDerived from: `vdd/strategy.md`\n\n' +
     '## Codebase Audit\n\n' + detectedStack +
     '### What Exists\n\n| Asset | Location | Purpose | Strategic Pillar Trace | Quality |\n' +
@@ -339,7 +339,7 @@ async function specify(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput
   const id = input.feature || input.actionItemId || input.description;
   if (!id) return { success: false, error: 'feature, actionItemId, or description required' };
   const artifact = ctx.projectRoot + '/vdd/specs/' + id + '/spec.md';
-  const content = '# [Feature Name]\n' + templateHeader('V-001 → S-002 → T-003 → SP-004') +
+  const content = '# [Feature Name]\n' + templateHeader((await chainContext(ctx.projectRoot)).tactics + ' → SP-<n>') +
     '## Tactical Origin\nImplements: `vdd/tactics.md` → Action Item [' + id + ']\n\n' +
     '## Overview\n<!-- 1-2 sentences describing the feature. Reference which vision impact this serves. -->\n\n' +
     '## User Stories\n\n### Primary\nAs a [role], I want [goal] so that [benefit].\n\n' +
@@ -410,8 +410,9 @@ async function clarify(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput
 async function plan(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   if (!input.feature) return { success: false, error: 'feature is required' };
   const base = ctx.projectRoot + '/vdd/specs/' + input.feature;
+  const specChain = (await readChain(base + '/spec.md')) ?? ((await chainContext(ctx.projectRoot)).tactics + ' → SP-<n>');
 
-  const planContent = '# Technical Plan: [Feature Name]\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005') +
+  const planContent = '# Technical Plan: [Feature Name]\n' + templateHeader(specChain + ' → PL-<n>') +
     '## Spec Reference\nImplements: `vdd/specs/' + input.feature + '/spec.md`\n\n' +
     '## Architecture Overview\n<!-- High-level description of the approach. 3-5 sentences max. -->\n\n' +
     '## Component Breakdown\n\n### [Component 1 Name]\n' +
@@ -431,7 +432,7 @@ async function plan(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
     '**Sufficiency:** Why is the planned task decomposition sufficient to implement this Plan?\n\n' +
     '**Warnings:** What must go right / be avoided for Tasks to succeed?\n';
 
-  const dataModelContent = '# Data Model: [Feature Name]\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005') +
+  const dataModelContent = '# Data Model: [Feature Name]\n' + templateHeader(specChain + ' → PL-<n>') +
     '## Spec Reference\nImplements: `vdd/specs/' + input.feature + '/spec.md`\n\n' +
     '## Entities\n\n### [EntityName]\n| Field | Type | Constraints | Description |\n|-------|------|-------------|-------------|\n' +
     '| id | uuid | PK, NOT NULL | Primary key |\n| [field] | [type] | [constraints] | [description] |\n' +
@@ -441,7 +442,7 @@ async function plan(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
     '## Constraints\n- [e.g., `CHECK (status IN (\'active\', \'inactive\', \'pending\'))` on `users`]\n\n' +
     '## Migrations\n\n### [Migration 001] Initial schema\n- Create `[table_name]` table with all fields above\n- Add indexes from the Indexes section above\n- **Rollback:** drop `[table_name]` table\n';
 
-  const contractContent = '# API Contract: [Endpoint Name]\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005') +
+  const contractContent = '# API Contract: [Endpoint Name]\n' + templateHeader(specChain + ' → PL-<n>') +
     '## [HTTP METHOD] [/path/:param]\n\n### Description\n[One sentence describing what this endpoint does]\n\n' +
     '### Authentication\n[e.g., "Bearer token required" / "Public" / "Admin role required"]\n\n' +
     '### Request\n\n**Path Parameters:**\n| Name | Type | Required | Description |\n|------|------|----------|-------------|\n| [param] | string | yes | [description] |\n\n' +
@@ -481,7 +482,8 @@ async function plan(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
 async function tasks(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   if (!input.feature) return { success: false, error: 'feature is required' };
   const artifact = ctx.projectRoot + '/vdd/specs/' + input.feature + '/tasks.md';
-  const content = '# Task List: [Feature Name]\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006') +
+  const planChain = (await readChain(ctx.projectRoot + '/vdd/specs/' + input.feature + '/plan.md')) ?? ((await chainContext(ctx.projectRoot)).tactics + ' → SP-<n> → PL-<n>');
+  const content = '# Task List: [Feature Name]\n' + templateHeader(planChain + ' → TK-<n>') +
     '## Plan Reference\nImplements: `vdd/specs/' + input.feature + '/plan.md`\n\n' +
     '## Tasks\n\n### Setup\n\n- [ ] **TASK-001** [S] Set up [component/module] skeleton\n  - Creates: `[file path]`\n  - Depends on: none\n\n' +
     '### [Component Group]\n\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Tests: AC-1, AC-2 from `vdd/specs/' + input.feature + '/spec.md`\n  - Depends on: TASK-001\n\n' +
@@ -536,16 +538,16 @@ async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutpu
   const featureDir = input.feature || 'feature-1';
   const artifact = root + '/vdd/impact-report.md';
 
-  const canonical: Array<{ key: string; path: string; expectedChain: string }> = [
-    { key: 'constitution.md', path: 'constitution.md', expectedChain: 'Phase 0 — Constitution (immutable)' },
-    { key: 'vision.md', path: 'vdd/vision.md', expectedChain: 'V-001' },
-    { key: 'strategy.md', path: 'vdd/strategy.md', expectedChain: 'V-001 → S-002' },
-    { key: 'tactics.md', path: 'vdd/tactics.md', expectedChain: 'V-001 → S-002 → T-003' },
-    { key: 'spec.md', path: `vdd/specs/${featureDir}/spec.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004' },
-    { key: 'plan.md', path: `vdd/specs/${featureDir}/plan.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
-    { key: 'data-model.md', path: `vdd/specs/${featureDir}/data-model.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
-    { key: 'contract.md', path: `vdd/specs/${featureDir}/contracts/primary-endpoint.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005' },
-    { key: 'tasks.md', path: `vdd/specs/${featureDir}/tasks.md`, expectedChain: 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006' },
+  const canonical: Array<{ key: string; path: string; parent: string | null; fixedChain?: string }> = [
+    { key: 'constitution.md', path: 'constitution.md', parent: null, fixedChain: 'Phase 0 — Constitution (immutable)' },
+    { key: 'vision.md', path: 'vdd/vision.md', parent: null },
+    { key: 'strategy.md', path: 'vdd/strategy.md', parent: 'vision.md' },
+    { key: 'tactics.md', path: 'vdd/tactics.md', parent: 'strategy.md' },
+    { key: 'spec.md', path: `vdd/specs/${featureDir}/spec.md`, parent: 'tactics.md' },
+    { key: 'plan.md', path: `vdd/specs/${featureDir}/plan.md`, parent: 'spec.md' },
+    { key: 'data-model.md', path: `vdd/specs/${featureDir}/data-model.md`, parent: 'spec.md' },
+    { key: 'contract.md', path: `vdd/specs/${featureDir}/contracts/primary-endpoint.md`, parent: 'spec.md' },
+    { key: 'tasks.md', path: `vdd/specs/${featureDir}/tasks.md`, parent: 'plan.md' },
   ];
 
   const drift: Array<{ artifact: string; type: string; detail: string }> = [];
@@ -554,41 +556,73 @@ async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutpu
   let present = 0;
   const total = canonical.length;
 
+  // Read every artifact once; a child's expected chain is derived from its
+  // parent's *actual* chain (not a hardcoded V-001 → S-002 → … numbering, which
+  // false-flags drift whenever a project renumbers its V/S/T/SP/PL/TK IDs).
+  const contents: Record<string, string | null> = {};
   for (const c of canonical) {
-    let content: string | null = input.artifactFiles?.[c.path] ?? null;
-    if (content == null) {
-      try { content = await fs.readFile(root + '/' + c.path, 'utf-8'); } catch { content = null; }
+    let body: string | null = input.artifactFiles?.[c.path] ?? null;
+    if (body == null) {
+      try { body = await fs.readFile(root + '/' + c.path, 'utf-8'); } catch { body = null; }
     }
-    if (content == null) { uncovered.push(c.key); continue; }
+    contents[c.key] = body;
+  }
+
+  const chainOf = (key: string): string | null => {
+    const body = contents[key];
+    if (body == null) return null;
+    const m = body.match(/> Impact Chain:\s*(.+)/);
+    return m ? m[1].trim() : null;
+  };
+  const lastId = (chain: string): string => chain.split('→').pop()!.trim();
+
+  for (const c of canonical) {
+    const body = contents[c.key];
+    if (body == null) { uncovered.push(c.key); continue; }
     present++;
-    placeholders += countSubstancePlaceholders(content);
-    const m = content.match(/> Impact Chain:\s*(.+)/);
-    const actual = m ? m[1].trim() : null;
-    if (actual == null) drift.push({ artifact: c.key, type: 'Header', detail: 'Missing Impact Chain header' });
-    else if (actual !== c.expectedChain) drift.push({ artifact: c.key, type: 'Chain', detail: `Expected "${c.expectedChain}", found "${actual}"` });
+    placeholders += countSubstancePlaceholders(body);
+    const actual = chainOf(c.key);
+    if (actual == null) { drift.push({ artifact: c.key, type: 'Header', detail: 'Missing Impact Chain header' }); continue; }
+    let expected: string | null = null;
+    if (c.fixedChain) expected = c.fixedChain;
+    else if (c.parent != null) {
+      const parentChain = chainOf(c.parent);
+      expected = parentChain == null ? null : `${parentChain} → ${lastId(actual)}`;
+    }
+    if (expected != null && actual !== expected) {
+      drift.push({ artifact: c.key, type: 'Chain', detail: `Expected "${expected}", found "${actual}"` });
+    }
   }
 
   const substancePassed = placeholders === 0 && uncovered.length === 0 && drift.length === 0 && present === total;
 
+  const visionId = chainOf('vision.md') ?? 'V-?';
+  const strategyId = chainOf('strategy.md') ? lastId(chainOf('strategy.md')!) : 'S-?';
+  const tacticsId = chainOf('tactics.md') ? lastId(chainOf('tactics.md')!) : 'T-?';
+  const specId = chainOf('spec.md') ? lastId(chainOf('spec.md')!) : 'SP-?';
+  const planId = chainOf('plan.md') ? lastId(chainOf('plan.md')!) : 'PL-?';
+  const tasksId = chainOf('tasks.md') ? lastId(chainOf('tasks.md')!) : 'TK-?';
+  const fullChain = [visionId, strategyId, tacticsId, specId, planId, tasksId].join(' → ');
+
   const driftRows = drift.length ? drift.map((d) => `| ${d.artifact} | ${d.type} | ${d.detail} |`).join('\n') : '| (none found) | — | — |';
   const uncoveredRows = uncovered.length ? uncovered.map((k) => `| ${k} | missing artifact |`).join('\n') : '| (none found) | — |';
 
-  const content = '# Impact Verification Report\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]') +
+  const content = '# Impact Verification Report\n' + templateHeader(fullChain + ' → [commits]') +
     'Date: ' + today() + '\n\n' +
     '## Traceability Summary\n\n| Level | Artifact | Status |\n|-------|----------|--------|\n' +
     '| Constitution | constitution.md | ' + (uncovered.includes('constitution.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Vision | V-001 | ' + (uncovered.includes('vision.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Strategy | S-002 | ' + (uncovered.includes('strategy.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Tactics | T-003 | ' + (uncovered.includes('tactics.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Spec | SP-004 | ' + (uncovered.includes('spec.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Plan | PL-005 | ' + (uncovered.includes('plan.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Tasks | TK-006 | ' + (uncovered.includes('tasks.md') ? 'Missing' : 'Present') + ' |\n\n' +
+    '| Vision | ' + visionId + ' | ' + (uncovered.includes('vision.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Strategy | ' + strategyId + ' | ' + (uncovered.includes('strategy.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Tactics | ' + tacticsId + ' | ' + (uncovered.includes('tactics.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Spec | ' + specId + ' | ' + (uncovered.includes('spec.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Plan | ' + planId + ' | ' + (uncovered.includes('plan.md') ? 'Missing' : 'Present') + ' |\n' +
+    '| Tasks | ' + tasksId + ' | ' + (uncovered.includes('tasks.md') ? 'Missing' : 'Present') + ' |\n\n' +
     '## Forward Coverage (Parent → Children)\n\n| Parent | Children | Covered? |\n|--------|----------|----------|\n' +
-    '| V-001 (Vision) | S-002 (Strategy) | ' + (uncovered.includes('strategy.md') ? 'No' : 'Yes') + ' |\n' +
-    '| S-002 (Strategy) | T-003 (Tactics) | ' + (uncovered.includes('tactics.md') ? 'No' : 'Yes') + ' |\n' +
-    '| T-003 (Tactics) | SP-004 (Spec) | ' + (uncovered.includes('spec.md') ? 'No' : 'Yes') + ' |\n' +
-    '| SP-004 (Spec) | PL-005 (Plan) | ' + (uncovered.includes('plan.md') ? 'No' : 'Yes') + ' |\n' +
-    '| PL-005 (Plan) | TK-006 (Tasks) | ' + (uncovered.includes('tasks.md') ? 'No' : 'Yes') + ' |\n\n' +
+    '| ' + visionId + ' (Vision) | ' + strategyId + ' (Strategy) | ' + (uncovered.includes('strategy.md') ? 'No' : 'Yes') + ' |\n' +
+    '| ' + strategyId + ' (Strategy) | ' + tacticsId + ' (Tactics) | ' + (uncovered.includes('tactics.md') ? 'No' : 'Yes') + ' |\n' +
+    '| ' + tacticsId + ' (Tactics) | ' + specId + ' (Spec) | ' + (uncovered.includes('spec.md') ? 'No' : 'Yes') + ' |\n' +
+    '| ' + specId + ' (Spec) | ' + planId + ' (Plan) | ' + (uncovered.includes('plan.md') ? 'No' : 'Yes') + ' |\n' +
+    '| ' + planId + ' (Plan) | ' + tasksId + ' (Tasks) | ' + (uncovered.includes('tasks.md') ? 'No' : 'Yes') + ' |\n\n' +
     '## Orphan / Uncovered Detection\n\n| Artifact | Status |\n|----------|--------|\n' + uncoveredRows + '\n\n' +
     '## Drift Report\n\n| Artifact | Type | Detail |\n|----------|------|--------|\n' + driftRows + '\n\n' +
     '## Substance Check\n\n- Artifacts present: ' + present + '/' + total + '\n- Placeholders remaining: ' + placeholders + '\n- Impact-chain drift: ' + drift.length + '\n- Uncovered artifacts: ' + uncovered.length + '\n\n' +
@@ -638,7 +672,7 @@ async function trace(_: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
     success: true,
     artifact: 'Traceability matrix generated',
     output: {
-      chain: 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [commits]',
+      chain: (await chainContext(root)).tactics + ' → SP-<n> → PL-<n> → TK-<n> → [commits]',
       nodes,
       specDirs,
     },
@@ -757,6 +791,42 @@ function hasSection(content: string, heading: string): boolean {
 function impactChainMatches(content: string, expected: string): boolean {
   const m = content.match(/> Impact Chain:\s*(.+)/);
   return m !== null && m[1].trim() === expected;
+}
+
+function extractChain(content: string): string | null {
+  const m = content.match(/> Impact Chain:\s*(.+)/);
+  return m ? m[1].trim() : null;
+}
+
+function lastChainId(chain: string): string {
+  return chain.split('→').pop()!.trim();
+}
+
+// True when a child artifact's impact chain extends its parent's *actual* chain
+// (e.g. parent "V-002 → S-201", child "V-002 → S-201 → T-201"). Replaces the
+// hardcoded V-001 → S-002 → … numbering so the engine is numbering-agnostic.
+function chainExtendsParent(childContent: string, parentContent: string): boolean {
+  const child = extractChain(childContent);
+  const parent = extractChain(parentContent);
+  if (!child || !parent) return false;
+  return child === `${parent} → ${lastChainId(child)}`;
+}
+
+async function readChain(path: string): Promise<string | null> {
+  const content = await readIfExists(path);
+  return content ? extractChain(content) : null;
+}
+
+// Current chain context (vision → strategy → tactics), falling back to the
+// canonical V-001 → S-002 → T-003 numbering for a fresh project.
+async function chainContext(root: string): Promise<{ vision: string; strategy: string; tactics: string }> {
+  const v = await readChain(root + '/vdd/vision.md');
+  const s = await readChain(root + '/vdd/strategy.md');
+  const t = await readChain(root + '/vdd/tactics.md');
+  const vision = v ?? 'V-001';
+  const strategy = s ?? `${vision} → S-002`;
+  const tactics = t ?? `${strategy} → T-003`;
+  return { vision, strategy, tactics };
 }
 
 function countPlaceholders(content: string): number {
@@ -894,7 +964,7 @@ async function gate1(root: string): Promise<GateResult> {
   checks.push(check({ id: 'A1.4', label: 'Warnings (V→S) → risk mitigations documented' }, hasSection(s, 'Risk Register')));
 
   // Impact chain check
-  checks.push(check({ id: 'G1.CHAIN', label: 'Impact Chain: V-001 → S-002 in strategy.md' }, impactChainMatches(s, 'V-001 → S-002')));
+  checks.push(check({ id: 'G1.CHAIN', label: 'Impact Chain: strategy extends vision', }, chainExtendsParent(s, v)));
 
   return tallyGate('G1', 'Vision → Strategy', checks, 5, 5, 4);
 }
@@ -927,7 +997,7 @@ async function gate2(root: string): Promise<GateResult> {
   checks.push(check({ id: 'A2.4', label: 'Warnings (S→T) → dependency risks' }, hasSection(t, 'Dependency Map')));
 
   // Impact chain check
-  checks.push(check({ id: 'G2.CHAIN', label: 'Impact Chain: V-001 → S-002 → T-003 in tactics.md' }, impactChainMatches(t, 'V-001 → S-002 → T-003')));
+  checks.push(check({ id: 'G2.CHAIN', label: 'Impact Chain: tactics extends strategy', }, chainExtendsParent(t, s)));
 
   return tallyGate('G2', 'Strategy → Tactics', checks, 4, 5, 4);
 }
@@ -969,7 +1039,7 @@ async function gate3(root: string, featureDir: string): Promise<GateResult> {
   checks.push(check({ id: 'A3.4', label: 'Warnings (T→SP) → error ACs covered' }, (sp.match(/AC-E\d+/g) || []).length >= 1));
 
   // Impact chain check
-  checks.push(check({ id: 'G3.CHAIN', label: 'Impact Chain: V-001 → S-002 → T-003 → SP-004 in spec.md' }, impactChainMatches(sp, 'V-001 → S-002 → T-003 → SP-004')));
+  checks.push(check({ id: 'G3.CHAIN', label: 'Impact Chain: spec extends tactics', }, chainExtendsParent(sp, t)));
 
   return tallyGate('G3', 'Tactics → Specs', checks, 10, 4, 4);
 }
@@ -1010,7 +1080,7 @@ async function gate4(root: string, featureDir: string): Promise<GateResult> {
   checks.push(check({ id: 'A4.4', label: 'Warnings (SP→PL) → risks in plan' }, !!pl && hasSection(pl, 'Risks')));
 
   // Impact chain check
-  checks.push(check({ id: 'G4.CHAIN', label: 'Impact Chain: V-001 → S-002 → T-003 → SP-004 → PL-005 in plan.md' }, !!pl && impactChainMatches(pl, 'V-001 → S-002 → T-003 → SP-004 → PL-005')));
+  checks.push(check({ id: 'G4.CHAIN', label: 'Impact Chain: plan extends spec', }, !!pl && chainExtendsParent(pl, sp)));
 
   return tallyGate('G4', 'Specs → Plan', checks, 7, 6, 4);
 }
@@ -1050,7 +1120,7 @@ async function gate5(root: string, featureDir: string): Promise<GateResult> {
   checks.push(check({ id: 'A5.4', label: 'Warnings (PL→TK) → dependency risks' }, (tk.match(/Depends on/g) || []).length >= 1));
 
   // Impact chain
-  checks.push(check({ id: 'G5.CHAIN', label: 'Impact Chain: ... → TK-006 in tasks.md' }, impactChainMatches(tk, 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006')));
+  checks.push(check({ id: 'G5.CHAIN', label: 'Impact Chain: tasks extends plan', }, chainExtendsParent(tk, pl)));
 
   return tallyGate('G5', 'Plan → Tasks', checks, 6, 6, 4);
 }
@@ -1321,7 +1391,7 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
       statement: input.statement,
       feature: featureDir,
       actionItemId: input.actionItemId || featureDir,
-      chain: 'V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → [implementation]',
+      chain: (await chainContext(ctx.projectRoot)).tactics + ' → SP-<n> → PL-<n> → TK-<n> → [implementation]',
       phasesCompleted: 10, // init, vision, strategize, tactics, specify, clarify, plan, tasks, next-task, validate
       errors: errors.length > 0 ? errors : [],
       files: allFiles,
@@ -1505,7 +1575,7 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   const datasetRows = pipeline.dataset
     ? pipeline.dataset.pages.map((p) => `| \`${p.path}\` | ${p.title || '—'} | ${p.lang || '—'} |`).join('\n')
     : '';
-  const content = '# Clone\n' + templateHeader('V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006') +
+  const content = '# Clone\n' + templateHeader((await chainContext(ctx.projectRoot)).tactics + ' → SP-<n> → PL-<n> → TK-<n>') +
     '## Target\n' + target + '\n\n' +
     '## Pipeline Stages\n' + stages + '\n\n' +
     '## Crawled Dataset\n\n| Path | Title | Lang |\n|---|---|---|\n' + (datasetRows || '| (none) | — | — |') + '\n\n' +
