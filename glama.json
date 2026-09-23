@@ -9,7 +9,7 @@
     "url": "https://github.com/simonplmak-cloud/vision-driven-design"
   },
   "homepage": "https://vdd.simonmak.com",
-  "transport": "stdio",
+  "transport": "streamable-http",
   "dockerfile": "glama/Dockerfile",
   "tags": [
     "mcp",

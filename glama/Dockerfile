@@ -1,8 +1,10 @@
-# Glama-only build: compiles the VDD stdio MCP server and exposes it over stdio
-# so Glama's sandbox can run the standard MCP introspection exchange.
+# Glama build: compiles the VDD MCP server and exposes it over the MCP
+# Streamable HTTP transport on port 3000. This lets Glama's sandbox run the
+# standard MCP introspection exchange AND host (one-click "Deploy") the server
+# as a remote streamable-HTTP connector.
 #
-# The monorepo's hosted endpoint (api/sse.js) is a Vercel SSE server; this image
-# instead builds the local stdio server at packages/vdd-mcp/dist/stdio.js.
+# The stdio entrypoint (packages/vdd-mcp/dist/stdio.js) remains available for
+# local `npx @simonmak-ascent/mcp` use; this image runs the HTTP transport.
 FROM node:22-alpine
 
 # Install pnpm (workspace installs require it).
@@ -20,5 +22,7 @@ RUN pnpm install --no-frozen-lockfile --ignore-scripts
 # Build all workspace packages in topological order (engine → cli → mcp).
 RUN pnpm -r build
 
-# Run the stdio MCP server. No environment variables or network access required.
-CMD ["node", "packages/vdd-mcp/dist/stdio.js"]
+# Run the streamable-HTTP MCP server. No environment variables or network
+# access required. Port is configurable via $PORT (default 3000).
+EXPOSE 3000
+CMD ["node", "packages/vdd-mcp/dist/http-entry.js"]

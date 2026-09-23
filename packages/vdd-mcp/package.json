@@ -1,7 +1,7 @@
 {
   "name": "@simonmak-ascent/mcp",
   "version": "1.6.0",
-  "description": "Vision Driven Design MCP server — 16 tools (stdio + SSE) for bi-directional traceability.",
+  "description": "Vision Driven Design MCP server — 17 tools (stdio + Streamable HTTP) for bi-directional traceability.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,5 +13,5 @@
     "@modelcontextprotocol/server": "^2.0.0",
     "zod": "^4.0.0"
   },
-  "devDependencies": { "typescript": "^5.6.0" }
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
 }
