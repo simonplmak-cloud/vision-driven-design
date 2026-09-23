@@ -3,23 +3,46 @@ import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod';
 import { PHASES, PHASE_NAMES, PHASE_META, type VddContext, type VddPhaseInput } from '@simonmak-ascent/engine';
 
-const INPUT_SCHEMA = {
-  statement: z.string().optional().describe('Freeform input (required for vision)'),
-  projectRoot: z.string().default('.').describe('Path to project root directory'),
-  actionItemId: z.string().optional().describe('Tactical action item ID (e.g., "A-001")'),
-  feature: z.string().optional().describe('Feature name (spec directory name)'),
-  taskId: z.string().optional().describe('Task ID to implement (e.g., "TASK-003")'),
-  description: z.string().optional().describe('Freeform description input'),
-  availableTools: z.array(z.string()).optional().describe('MCP/tool names available to the host agent (e.g., ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"])'),
-  capabilities: z.array(z.string()).optional().describe('Alias for availableTools'),
-  researchFindings: z.string().optional().describe('Consolidated research subagent findings to synthesize into strategy.md'),
-  artifactFiles: z.record(z.string(), z.string()).optional().describe('Map of artifact path → content for serverless validate/drift detection'),
-  maxPages: z.number().int().positive().optional().describe('Clone: max pages to crawl (default 200)'),
-  timeoutMs: z.number().int().positive().optional().describe('Clone: per-request timeout in ms'),
-  concurrency: z.number().int().positive().optional().describe('Clone: concurrent crawl workers (default 8)'),
-  crawl: z.boolean().optional().describe('Clone: run the crawl (default true)'),
-  browser: z.boolean().optional().describe('Clone: run browser/static capture (default true)'),
-  refresh: z.boolean().optional().describe('Clone: force re-crawl, ignore a fresh cached dataset'),
+// Shared field definitions, then a per-phase input schema so each tool advertises
+// only the parameters it actually reads (feeds Glama's "Parameter Semantics" score).
+const projectRoot = z.string().default('.').describe('Path to project root directory');
+const statement = z.string().optional().describe('Freeform vision statement (required for vision/e2e)');
+const statementReq = z.string().describe('Freeform vision statement');
+const actionItemId = z.string().optional().describe('Tactical action item ID (e.g., "A-001")');
+const feature = z.string().optional().describe('Feature name (spec directory name)');
+const featureReq = z.string().describe('Feature name (spec directory name)');
+const taskId = z.string().describe('Task ID to implement (e.g., "TASK-003")');
+const description = z.string().optional().describe('Freeform description input');
+const descriptionReq = z.string().describe('Description of the requirement change');
+const availableTools = z.array(z.string()).optional().describe('MCP/tool names available to the host agent (e.g., ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"])');
+const capabilities = z.array(z.string()).optional().describe('Alias for availableTools');
+const researchFindings = z.string().optional().describe('Consolidated research subagent findings to synthesize into strategy.md');
+const artifactFiles = z.record(z.string(), z.string()).optional().describe('Map of artifact path → content for serverless validate/drift detection');
+const maxPages = z.number().int().positive().optional().describe('Clone: max pages to crawl (default 200)');
+const timeoutMs = z.number().int().positive().optional().describe('Clone: per-request timeout in ms');
+const concurrency = z.number().int().positive().optional().describe('Clone: concurrent crawl workers (default 8)');
+const crawl = z.boolean().optional().describe('Clone: run the crawl (default true)');
+const browser = z.boolean().optional().describe('Clone: run browser/static capture (default true)');
+const refresh = z.boolean().optional().describe('Clone: force re-crawl, ignore a fresh cached dataset');
+
+const PHASE_INPUT_SCHEMAS: Record<string, Record<string, z.ZodType>> = {
+  init: { projectRoot },
+  vision: { statement: statementReq, projectRoot },
+  strategize: { availableTools, capabilities, researchFindings, projectRoot },
+  tactics: { projectRoot },
+  specify: { feature, actionItemId, description, projectRoot },
+  clarify: { feature: featureReq, projectRoot },
+  plan: { feature: featureReq, projectRoot },
+  tasks: { feature: featureReq, projectRoot },
+  'next-task': { feature: featureReq, projectRoot },
+  implement: { taskId, projectRoot },
+  validate: { feature, artifactFiles, projectRoot },
+  trace: { projectRoot },
+  analyze: { feature: featureReq, projectRoot },
+  amend: { description: descriptionReq, projectRoot },
+  e2e: { statement: statementReq, feature, actionItemId, projectRoot },
+  clone: { description, statement, maxPages, timeoutMs, concurrency, crawl, browser, refresh, projectRoot },
+  'detect-environment': { availableTools, capabilities, projectRoot },
 };
 
 // MCP annotation hints feed Glama's Tool Definition Quality Score (Behavioral
@@ -66,7 +89,7 @@ export function createVddMcpServer(): McpServer {
       {
         title: toolMeta?.title,
         description: meta?.description ?? `VDD Phase: ${name}`,
-        inputSchema: INPUT_SCHEMA,
+        inputSchema: PHASE_INPUT_SCHEMAS[name],
         annotations: toolMeta?.annotations,
       },
       async (params: Record<string, unknown>) => {
