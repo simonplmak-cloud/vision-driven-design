@@ -22,17 +22,52 @@ const INPUT_SCHEMA = {
   refresh: z.boolean().optional().describe('Clone: force re-crawl, ignore a fresh cached dataset'),
 };
 
+// MCP annotation hints feed Glama's Tool Definition Quality Score (Behavioral
+// Transparency dimension). Read-only tools are safe to re-run; write tools
+// mutate the project; open-world tools reach external systems (web research,
+// site cloning).
+const TOOL_ANNOTATIONS: Record<string, {
+  title: string;
+  annotations: {
+    readOnlyHint?: boolean;
+    destructiveHint?: boolean;
+    idempotentHint?: boolean;
+    openWorldHint?: boolean;
+  };
+}> = {
+  init: { title: 'Initialize Constitution', annotations: { destructiveHint: true } },
+  vision: { title: 'Expand Vision', annotations: { destructiveHint: true } },
+  strategize: { title: 'Research Strategy', annotations: { destructiveHint: true, openWorldHint: true } },
+  tactics: { title: 'Audit Tactics', annotations: { destructiveHint: true } },
+  specify: { title: 'Generate Spec', annotations: { destructiveHint: true } },
+  clarify: { title: 'Clarify Spec', annotations: { destructiveHint: true } },
+  plan: { title: 'Generate Plan', annotations: { destructiveHint: true } },
+  tasks: { title: 'Generate Tasks', annotations: { destructiveHint: true } },
+  'next-task': { title: 'Get Next Task', annotations: { readOnlyHint: true, idempotentHint: true } },
+  implement: { title: 'Implement Task', annotations: { destructiveHint: true } },
+  validate: { title: 'Validate Impact', annotations: { destructiveHint: true } },
+  trace: { title: 'Traceability Matrix', annotations: { readOnlyHint: true, idempotentHint: true } },
+  analyze: { title: 'Analyze Consistency', annotations: { readOnlyHint: true, idempotentHint: true } },
+  amend: { title: 'Amend Requirements', annotations: { destructiveHint: true } },
+  e2e: { title: 'Run End-to-End', annotations: { destructiveHint: true } },
+  clone: { title: 'Clone Website', annotations: { destructiveHint: true, openWorldHint: true } },
+  'detect-environment': { title: 'Detect Environment', annotations: { readOnlyHint: true, idempotentHint: true } },
+};
+
 export function createVddMcpServer(): McpServer {
     const server = new McpServer({ name: 'vdd', version: '1.6.0' });
 
   for (const name of PHASE_NAMES) {
     const toolName = `vdd_${name.replace(/-/g, '_')}`;
     const meta = PHASE_META[name];
+    const toolMeta = TOOL_ANNOTATIONS[name];
     server.registerTool(
       toolName,
       {
+        title: toolMeta?.title,
         description: meta?.description ?? `VDD Phase: ${name}`,
         inputSchema: INPUT_SCHEMA,
+        annotations: toolMeta?.annotations,
       },
       async (params: Record<string, unknown>) => {
         const ctx: VddContext = { projectRoot: String(params.projectRoot || '.'), mode: 'auto' };

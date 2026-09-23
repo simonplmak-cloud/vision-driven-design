@@ -3,7 +3,7 @@
   "maintainers": ["simonplmak-cloud"],
   "name": "vision-driven-design",
   "title": "Vision Driven Design",
-  "description": "Bi-directional traceability for AI-assisted development. 16 MCP tools implement the 8-phase VDD chain (Vision → Strategy → Tactics → Spec → Plan → Tasks) with 7 quality gates, turning a freeform vision into a validated, test-first task list with full V→S→T→SP→PL→TK traceability.",
+  "description": "Bi-directional traceability for AI-assisted development. 17 MCP tools implement the 8-phase VDD chain (Vision → Strategy → Tactics → Spec → Plan → Tasks) with 7 quality gates, turning a freeform vision into a validated, test-first task list with full V→S→T→SP→PL→TK traceability.",
   "repository": {
     "type": "git",
     "url": "https://github.com/simonplmak-cloud/vision-driven-design"
