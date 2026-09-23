@@ -1,23 +1,26 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["simonplmak-cloud"],
+  "name": "vision-driven-design",
   "title": "Vision Driven Design",
   "description": "Bi-directional traceability for AI-assisted development. 16 MCP tools implement the 8-phase VDD chain (Vision → Strategy → Tactics → Spec → Plan → Tasks) with 7 quality gates, turning a freeform vision into a validated, test-first task list with full V→S→T→SP→PL→TK traceability.",
-  "category": "Developer Tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonplmak-cloud/vision-driven-design"
+  },
+  "homepage": "https://vdd.simonmak.com",
+  "transport": "stdio",
+  "dockerfile": "glama/Dockerfile",
   "tags": [
+    "mcp",
+    "model-context-protocol",
     "ai-agents",
     "bi-directional-traceability",
     "spec-driven-development",
     "software-methodology",
     "software-quality",
     "traceability",
-    "sdd",
     "compliance",
     "audit"
-  ],
-  "repository": "https://github.com/simonplmak-cloud/vision-driven-design",
-  "homepage": "https://vdd.simonmak.com",
-  "license": "MIT",
-  "transport": "stdio",
-  "dockerfile": "glama/Dockerfile"
+  ]
 }
