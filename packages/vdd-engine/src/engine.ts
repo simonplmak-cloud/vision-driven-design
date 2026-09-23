@@ -535,20 +535,48 @@ async function implement(input: VddPhaseInput, ctx: VddContext): Promise<VddOutp
 // Phase 8: validate
 async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   const root = ctx.projectRoot;
-  const featureDir = input.feature || 'feature-1';
-  const artifact = root + '/vdd/impact-report.md';
 
-  const canonical: Array<{ key: string; path: string; parent: string | null; fixedChain?: string }> = [
+  // Discover the feature directories under `vdd/specs` (this project has SP-002…SP-00n),
+  // rather than assuming a single `feature-1` — the old default validated only that one
+  // and false-flagged every other feature as uncovered. An explicit `input.feature`
+  // narrows the run to one.
+  const specsDir = root + '/vdd/specs';
+  let features: string[];
+  if (input.feature) {
+    features = [input.feature];
+  } else {
+    try {
+      features = (await fs.readdir(specsDir, { withFileTypes: true }))
+        .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
+        .map((e) => e.name)
+        .sort();
+    } catch {
+      features = [];
+    }
+    if (features.length === 0) features = ['feature-1'];
+  }
+
+  interface Node {
+    key: string;
+    path: string;
+    parent: string | null;
+    fixedChain?: string;
+  }
+  const canonical: Node[] = [
     { key: 'constitution.md', path: 'constitution.md', parent: null, fixedChain: 'Phase 0 — Constitution (immutable)' },
     { key: 'vision.md', path: 'vdd/vision.md', parent: null },
     { key: 'strategy.md', path: 'vdd/strategy.md', parent: 'vision.md' },
     { key: 'tactics.md', path: 'vdd/tactics.md', parent: 'strategy.md' },
-    { key: 'spec.md', path: `vdd/specs/${featureDir}/spec.md`, parent: 'tactics.md' },
-    { key: 'plan.md', path: `vdd/specs/${featureDir}/plan.md`, parent: 'spec.md' },
-    { key: 'data-model.md', path: `vdd/specs/${featureDir}/data-model.md`, parent: 'spec.md' },
-    { key: 'contract.md', path: `vdd/specs/${featureDir}/contracts/primary-endpoint.md`, parent: 'spec.md' },
-    { key: 'tasks.md', path: `vdd/specs/${featureDir}/tasks.md`, parent: 'plan.md' },
   ];
+  for (const feature of features) {
+    canonical.push(
+      { key: `${feature}/spec.md`, path: `vdd/specs/${feature}/spec.md`, parent: 'tactics.md' },
+      { key: `${feature}/plan.md`, path: `vdd/specs/${feature}/plan.md`, parent: `${feature}/spec.md` },
+      { key: `${feature}/data-model.md`, path: `vdd/specs/${feature}/data-model.md`, parent: `${feature}/spec.md` },
+      { key: `${feature}/contracts/primary-endpoint.md`, path: `vdd/specs/${feature}/contracts/primary-endpoint.md`, parent: `${feature}/spec.md` },
+      { key: `${feature}/tasks.md`, path: `vdd/specs/${feature}/tasks.md`, parent: `${feature}/plan.md` },
+    );
+  }
 
   const drift: Array<{ artifact: string; type: string; detail: string }> = [];
   const uncovered: string[] = [];
@@ -556,9 +584,9 @@ async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutpu
   let present = 0;
   const total = canonical.length;
 
-  // Read every artifact once; a child's expected chain is derived from its
-  // parent's *actual* chain (not a hardcoded V-001 → S-002 → … numbering, which
-  // false-flags drift whenever a project renumbers its V/S/T/SP/PL/TK IDs).
+  // Read every artifact once; a child's expected chain is derived from its parent's
+  // *actual* chain (not a hardcoded V-001 → S-002 → … numbering, which false-flags drift
+  // whenever a project renumbers its V/S/T/SP/PL/TK IDs).
   const contents: Record<string, string | null> = {};
   for (const c of canonical) {
     let body: string | null = input.artifactFiles?.[c.path] ?? null;
@@ -599,42 +627,45 @@ async function validate(input: VddPhaseInput, ctx: VddContext): Promise<VddOutpu
   const visionId = chainOf('vision.md') ?? 'V-?';
   const strategyId = chainOf('strategy.md') ? lastId(chainOf('strategy.md')!) : 'S-?';
   const tacticsId = chainOf('tactics.md') ? lastId(chainOf('tactics.md')!) : 'T-?';
-  const specId = chainOf('spec.md') ? lastId(chainOf('spec.md')!) : 'SP-?';
-  const planId = chainOf('plan.md') ? lastId(chainOf('plan.md')!) : 'PL-?';
-  const tasksId = chainOf('tasks.md') ? lastId(chainOf('tasks.md')!) : 'TK-?';
-  const fullChain = [visionId, strategyId, tacticsId, specId, planId, tasksId].join(' → ');
+  const fullChain = [visionId, strategyId, tacticsId].join(' → ');
+
+  const featureRows = features.length
+    ? features.map((feature) => {
+        const specId = chainOf(`${feature}/spec.md`) ? lastId(chainOf(`${feature}/spec.md`)!) : 'SP-?';
+        const planId = chainOf(`${feature}/plan.md`) ? lastId(chainOf(`${feature}/plan.md`)!) : 'PL-?';
+        const tasksId = chainOf(`${feature}/tasks.md`) ? lastId(chainOf(`${feature}/tasks.md`)!) : 'TK-?';
+        const missing = ['spec.md', 'plan.md', 'tasks.md'].filter((n) => uncovered.includes(`${feature}/${n}`)).length;
+        return `| ${feature} | ${specId} → ${planId} → ${tasksId} | ${missing === 0 ? 'Present' : missing + ' missing'} |`;
+      }).join('\n')
+    : '| (no features) | — | — |';
 
   const driftRows = drift.length ? drift.map((d) => `| ${d.artifact} | ${d.type} | ${d.detail} |`).join('\n') : '| (none found) | — | — |';
-  const uncoveredRows = uncovered.length ? uncovered.map((k) => `| ${k} | missing artifact |`).join('\n') : '| (none found) | — |';
+  const uncoveredRows = uncovered.length ? uncovered.map((k) => `| ${k} | missing artifact |`).join('\n') : '| (none found) | — | — |';
 
-  const content = '# Impact Verification Report\n' + templateHeader(fullChain + ' → [commits]') +
-    'Date: ' + today() + '\n\n' +
+  const content = '# Impact Verification Report (generated)\n' + templateHeader(fullChain + ' → [commits]') +
+    'Date: ' + today() + '\n' +
+    'Generated by `vdd validate`; it never overwrites a hand-authored `impact-report.md`.\n\n' +
     '## Traceability Summary\n\n| Level | Artifact | Status |\n|-------|----------|--------|\n' +
     '| Constitution | constitution.md | ' + (uncovered.includes('constitution.md') ? 'Missing' : 'Present') + ' |\n' +
     '| Vision | ' + visionId + ' | ' + (uncovered.includes('vision.md') ? 'Missing' : 'Present') + ' |\n' +
     '| Strategy | ' + strategyId + ' | ' + (uncovered.includes('strategy.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Tactics | ' + tacticsId + ' | ' + (uncovered.includes('tactics.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Spec | ' + specId + ' | ' + (uncovered.includes('spec.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Plan | ' + planId + ' | ' + (uncovered.includes('plan.md') ? 'Missing' : 'Present') + ' |\n' +
-    '| Tasks | ' + tasksId + ' | ' + (uncovered.includes('tasks.md') ? 'Missing' : 'Present') + ' |\n\n' +
-    '## Forward Coverage (Parent → Children)\n\n| Parent | Children | Covered? |\n|--------|----------|----------|\n' +
-    '| ' + visionId + ' (Vision) | ' + strategyId + ' (Strategy) | ' + (uncovered.includes('strategy.md') ? 'No' : 'Yes') + ' |\n' +
-    '| ' + strategyId + ' (Strategy) | ' + tacticsId + ' (Tactics) | ' + (uncovered.includes('tactics.md') ? 'No' : 'Yes') + ' |\n' +
-    '| ' + tacticsId + ' (Tactics) | ' + specId + ' (Spec) | ' + (uncovered.includes('spec.md') ? 'No' : 'Yes') + ' |\n' +
-    '| ' + specId + ' (Spec) | ' + planId + ' (Plan) | ' + (uncovered.includes('plan.md') ? 'No' : 'Yes') + ' |\n' +
-    '| ' + planId + ' (Plan) | ' + tasksId + ' (Tasks) | ' + (uncovered.includes('tasks.md') ? 'No' : 'Yes') + ' |\n\n' +
+    '| Tactics | ' + tacticsId + ' | ' + (uncovered.includes('tactics.md') ? 'Missing' : 'Present') + ' |\n\n' +
+    '## Features (Spec → Plan → Tasks)\n\n| Feature | Chain | Status |\n|---------|-------|--------|\n' + featureRows + '\n\n' +
     '## Orphan / Uncovered Detection\n\n| Artifact | Status |\n|----------|--------|\n' + uncoveredRows + '\n\n' +
     '## Drift Report\n\n| Artifact | Type | Detail |\n|----------|------|--------|\n' + driftRows + '\n\n' +
     '## Substance Check\n\n- Artifacts present: ' + present + '/' + total + '\n- Placeholders remaining: ' + placeholders + '\n- Impact-chain drift: ' + drift.length + '\n- Uncovered artifacts: ' + uncovered.length + '\n\n' +
     '## Decision\n\n**Release Readiness:** ' + (substancePassed ? 'GO' : 'NO-GO — resolve uncovered artifacts, placeholders, and drift above') + '\n';
 
+  // Never clobber the hand-authored `vdd/impact-report.md`: write the generated report
+  // alongside it.
+  const artifact = root + '/vdd/impact-report.generated.md';
   const result = await writeArtifact(artifact, content);
-  if (!result.written) return { success: false, error: 'Failed to write impact-report.md: ' + (result.error || 'unknown') };
+  if (!result.written) return { success: false, error: 'Failed to write impact-report.generated.md: ' + (result.error || 'unknown') };
   return {
     success: true,
     artifact,
     output: {
-      feature: featureDir,
+      features,
       present,
       total,
       placeholders,

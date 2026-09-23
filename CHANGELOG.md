@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed (validate — feature discovery, and the report it writes)
+- **`validate` discovers the feature directories under `vdd/specs/`** instead of assuming a single `feature-1`. A project with several features (SP-002…SP-00n) no longer false-flags every other feature as uncovered, and the traceability table lists each feature. An explicit `feature` still narrows the run to one.
+- **`validate` no longer overwrites a hand-authored `vdd/impact-report.md`**; it writes `vdd/impact-report.generated.md` alongside it.
+
 ## [1.6.0] — 2026-09-04
 
 ### Fixed (clone pipeline correctness — fixes over-segmentation, junk data, dead hosts, and the MCP timeout)
