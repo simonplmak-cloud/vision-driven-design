@@ -6,7 +6,7 @@ import { PHASES, PHASE_NAMES, PHASE_META, type VddContext, type VddPhaseInput } 
 // Shared field definitions, then a per-phase input schema so each tool advertises
 // only the parameters it actually reads (feeds Glama's "Parameter Semantics" score).
 const projectRoot = z.string().default('.').describe('Project root: directory that constitution.md and the vdd/ folder are written to and resolved against (default ".")');
-const statement = z.string().optional().describe('Freeform vision statement (required for vision/e2e)');
+const statement = z.string().optional().describe('Freeform vision statement (required for vision)');
 const statementReq = z.string().describe('Freeform vision statement');
 const actionItemId = z.string().optional().describe('Tactical action item ID (e.g., "A-001")');
 const feature = z.string().optional().describe('Feature name (spec directory name)');
@@ -34,13 +34,12 @@ const PHASE_INPUT_SCHEMAS: Record<string, Record<string, z.ZodType>> = {
   clarify: { feature: featureReq, projectRoot },
   plan: { feature: featureReq, projectRoot },
   tasks: { feature: featureReq, projectRoot },
-  'next-task': { feature: featureReq, projectRoot },
+  'get-next-task': { feature: featureReq, projectRoot },
   implement: { taskId, projectRoot },
   validate: { feature, artifactFiles, projectRoot },
   trace: { projectRoot },
   analyze: { feature: featureReq, projectRoot },
   amend: { description: descriptionReq, projectRoot },
-  e2e: { statement: statementReq, feature, actionItemId, projectRoot },
   clone: { description, statement, maxPages, timeoutMs, concurrency, crawl, browser, refresh, projectRoot },
   'detect-environment': { availableTools, capabilities, projectRoot },
 };
@@ -66,13 +65,12 @@ const TOOL_ANNOTATIONS: Record<string, {
   clarify: { title: 'Clarify Spec', annotations: { destructiveHint: true } },
   plan: { title: 'Generate Plan', annotations: { destructiveHint: true } },
   tasks: { title: 'Generate Tasks', annotations: { destructiveHint: true } },
-  'next-task': { title: 'Get Next Task', annotations: { readOnlyHint: true, idempotentHint: true } },
+  'get-next-task': { title: 'Get Next Task', annotations: { readOnlyHint: true, idempotentHint: true } },
   implement: { title: 'Implement Task', annotations: { destructiveHint: true } },
   validate: { title: 'Validate Impact', annotations: { destructiveHint: true } },
   trace: { title: 'Traceability Matrix', annotations: { readOnlyHint: true, idempotentHint: true } },
   analyze: { title: 'Analyze Consistency', annotations: { readOnlyHint: true, idempotentHint: true } },
   amend: { title: 'Amend Requirements', annotations: { destructiveHint: true } },
-  e2e: { title: 'Run End-to-End', annotations: { destructiveHint: true } },
   clone: { title: 'Clone Website', annotations: { destructiveHint: true, openWorldHint: true } },
   'detect-environment': { title: 'Detect Environment', annotations: { readOnlyHint: true, idempotentHint: true } },
 };
@@ -93,10 +91,15 @@ const OUTPUT_SCHEMA = {
   _sdt: z.string().describe('Strategy-and-Tactic instructions for the next step'),
 };
 
+// The `e2e` phase is intentionally NOT exposed as an MCP tool: it is a one-call
+// convenience that duplicates the phase sequence (the coherence dimension flags
+// it as redundant). It stays available via the CLI (`vdd e2e`).
+const MCP_TOOL_PHASES = PHASE_NAMES.filter((name) => name !== 'e2e');
+
 export function createVddMcpServer(): McpServer {
     const server = new McpServer({ name: 'vdd', version: '1.6.0' });
 
-  for (const name of PHASE_NAMES) {
+  for (const name of MCP_TOOL_PHASES) {
     const toolName = `vdd_${name.replace(/-/g, '_')}`;
     const meta = PHASE_META[name];
     const toolMeta = TOOL_ANNOTATIONS[name];

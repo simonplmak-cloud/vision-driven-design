@@ -11,7 +11,7 @@ export const PHASE_NAMES = [
   'clarify',
   'plan',
   'tasks',
-  'next-task',
+  'get-next-task',
   'implement',
   'validate',
   'trace',
@@ -59,15 +59,15 @@ export const PHASE_META: Record<PhaseName, PhaseMeta> = {
     instructions: 'Pass "feature". AI agent translates the spec into architecture: component decomposition, technology decisions, AC→component mapping, verification tool selection (Vitest, Playwright, Browserless, Sentry), data model design, and API contract definitions. Outputs 3 files.',
   },
   tasks: {
-    description: 'VDD Phase 6: Break the plan into atomic test-first tasks in vdd/specs/<feature>/tasks.md — each references acceptance criteria (AC) and contracts, is sized S/M/L, and is marked [P] when parallelizable. Overwrites tasks.md. Requires plan.md; run after vdd_plan. To fetch the next uncompleted task from an existing tasks.md use vdd_next_task instead of re-running this.',
+    description: 'VDD Phase 6: Break the plan into atomic test-first tasks in vdd/specs/<feature>/tasks.md — each references acceptance criteria (AC) and contracts, is sized S/M/L, and is marked [P] when parallelizable. Overwrites tasks.md. Requires plan.md; run after vdd_plan. To fetch the next uncompleted task from an existing tasks.md use vdd_get_next_task instead of re-running this.',
     instructions: 'Pass "feature". AI agent decomposes each plan component into granular tasks with test-first ordering (test task before impl task). Every impl task traces to a contract and AC. Output to vdd/specs/<feature>/tasks.md.',
   },
-  'next-task': {
+  'get-next-task': {
     description: 'VDD Phase 7a: Read vdd/specs/<feature>/tasks.md and return the next uncompleted task (or a completion marker when none remain). Read-only; never edits tasks.md. Pass feature (the exact spec directory name). Use before each implementation session to keep context isolated; to regenerate the whole list use vdd_tasks, and to execute the returned task use vdd_implement.',
     instructions: 'Pass "feature". Returns the first uncompleted task line from tasks.md. The AI agent should then start a fresh context window for that task.',
   },
   implement: {
-    description: 'VDD Phase 7b: Execute one task — load constitution, spec, plan, and contracts, implement, verify, and commit with an impact-chain commit message. Mutates source code and commits to git. Pass taskId (e.g. "TASK-003") from the task returned by vdd_next_task. Run one task at a time, after vdd_next_task; for read-only inspection of tasks use vdd_next_task or vdd_trace instead.',
+    description: 'VDD Phase 7b: Execute one task — load constitution, spec, plan, and contracts, implement, verify, and commit with an impact-chain commit message. Mutates source code and commits to git. Pass taskId (e.g. "TASK-003") from the task returned by vdd_get_next_task. Run one task at a time, after vdd_get_next_task; for read-only inspection of tasks use vdd_get_next_task or vdd_trace instead.',
     instructions: 'Pass "taskId". AI agent loads constitution + task description + relevant spec/plan/contracts. Implements with constraints from Boundaries section. Commits with traceable message format.',
   },
   validate: {
@@ -87,11 +87,11 @@ export const PHASE_META: Record<PhaseName, PhaseMeta> = {
     instructions: 'Pass "description" of what changed. AI agent identifies the highest affected level, updates all downstream artifacts, re-runs affected gates (G1–G7), and commits each updated artifact with [AMEND] marker.',
   },
   e2e: {
-    description: 'VDD End-to-End: Run the full 8-phase chain (init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate) in one call, writing all 10+ template files with impact-chain headers. Overwrites existing artifacts. Pass the freeform vision statement; use feature (default "feature-1") to name the spec directory. Use for greenfield projects — for incremental changes, call the individual phase tools instead.',
+    description: 'VDD End-to-End: Run the full 8-phase chain (init → vision → strategize → tactics → specify → clarify → plan → tasks → get-next-task → validate) in one call, writing all 10+ template files with impact-chain headers. Overwrites existing artifacts. Pass the freeform vision statement; use feature (default "feature-1") to name the spec directory. Use for greenfield projects — for incremental changes, call the individual phase tools instead.',
     instructions: 'Pass "statement" with your vision. The tool runs all phases end-to-end, creating every artifact: constitution.md, vision.md, strategy.md, tactics.md, spec.md, plan.md, data-model.md, contracts/, tasks.md, and impact-report.md. Use optional "feature" (default "feature-1") to customize the spec directory name. The AI agent then fills in each template with domain-specific content.',
   },
   'detect-environment': {
-    description: 'VDD Environment Detection: Report which tools/MCPs each VDD phase requires vs treats as optional — across the 8-phase pipeline (init through validate) plus the cross-phase helpers (amend, e2e, clone, trace, analyze, next-task) — and which of the host agent availableTools are present vs missing. Read-only; returns a capability report without modifying files. Run before vdd_strategize to plan research-subagent dispatch, or when a phase fails for lack of a tool; to inspect artifacts instead of capabilities use vdd_trace. Pass availableTools (or its alias capabilities); omitting both returns the per-phase requirements without the present/missing comparison.',
+    description: 'VDD Environment Detection: Report which tools/MCPs each VDD phase requires vs treats as optional — across the 8-phase pipeline (init through validate) plus the cross-phase helpers (amend, clone, trace, analyze, get-next-task) — and which of the host agent availableTools are present vs missing. Read-only; returns a capability report without modifying files. Run before vdd_strategize to plan research-subagent dispatch, or when a phase fails for lack of a tool; to inspect artifacts instead of capabilities use vdd_trace. Pass availableTools (or its alias capabilities); omitting both returns the per-phase requirements without the present/missing comparison.',
     instructions: 'Pass availableTools (array of MCP/tool names available to the host agent, e.g. ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"]). Returns a per-phase capability report. Used before Phase 2 (strategize) to plan research subagent dispatch.',
   },
   clone: {
@@ -127,7 +127,7 @@ export const TOOL_REQUIREMENTS: Record<PhaseName, ToolRequirements> = {
   clarify: { required: ['filesystem'], optional: [] },
   plan: { required: ['filesystem'], optional: ['context7'] },
   tasks: { required: [], optional: [] },
-  'next-task': { required: ['filesystem'], optional: [] },
+  'get-next-task': { required: ['filesystem'], optional: [] },
   implement: { required: ['filesystem'], optional: ['shell'] },
   validate: { required: ['filesystem'], optional: ['shell'] },
   trace: { required: ['filesystem'], optional: [] },

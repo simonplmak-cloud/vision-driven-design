@@ -291,7 +291,7 @@ const TOOL_REQUIREMENTS = {
   clarify: { required: ["filesystem"], optional: [] },
   plan: { required: ["filesystem"], optional: ["context7"] },
   tasks: { required: [], optional: [] },
-  "next-task": { required: ["filesystem"], optional: [] },
+  "get-next-task": { required: ["filesystem"], optional: [] },
   implement: { required: ["filesystem"], optional: ["shell"] },
   validate: { required: ["filesystem"], optional: ["shell"] },
   trace: { required: ["filesystem"], optional: [] },
@@ -442,9 +442,9 @@ function phaseHandlers(input) {
       if (!feat) return { success: false, error: "feature is required" };
       return { success: true, artifact: `${root}/vdd/specs/${feat}/tasks.md`, template: `# Task List\n${hdr("V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006")}## Plan Reference\nImplements: \`vdd/specs/${feat}/plan.md\`\n\n## Tasks\n### Setup\n- [ ] **TASK-001** [S] Set up [module] skeleton\n  - Creates: \`[path]\`\n  - Depends on: none\n\n### Implementation\n- [ ] **TASK-002** [M] [P] Write tests for [component]\n  - Tests: AC-1, AC-2 from \`vdd/specs/${feat}/spec.md\`\n  - Depends on: TASK-001\n\n- [ ] **TASK-002b** [S] Write error-case tests for [component]\n  - Tests: AC-E1\n  - Depends on: TASK-002\n\n- [ ] **TASK-003** [M] Implement [component]\n  - Contract: \`contracts/[file].md\`\n  - Satisfies: AC-1, AC-2\n  - Depends on: TASK-002\n\n### Integration\n- [ ] **TASK-006** [L] Integration test\n  - Tests: AC-1 through AC-4\n  - Depends on: TASK-003\n\n## Legend\n- \`[S]\` < 1h, \`[M]\` 1-3h, \`[L]\` 3-6h, \`[P]\` Parallelizable\n` };
     },
-    "next-task"() {
+    "get-next-task"() {
       if (!feat) return { success: false, error: "feature is required" };
-      return { success: true, artifact: "Read tasks.md to find the next uncompleted task. Run /vdd:next-task from a stdio/local MCP to get auto-detection." };
+      return { success: true, artifact: "Read tasks.md to find the next uncompleted task. Run /vdd:get-next-task from a stdio/local MCP to get auto-detection." };
     },
     implement() {
       if (!tid) return { success: false, error: "taskId is required" };
@@ -550,7 +550,7 @@ function phaseHandlers(input) {
         impactReport: allTemplates.phase8_validate.template,
       };
 
-      // Phase 7a: next-task — return first uncompleted task
+      // Phase 7a: get-next-task — return first uncompleted task
       const firstTaskLine = (allTemplates.phase6_tasks.template.split("\n").find((l) => l.startsWith("- [ ] **TASK-")) || "All tasks completed.").trim();
       allTemplates.phase7_next_task = { artifact: firstTaskLine, task: firstTaskLine };
 
@@ -631,18 +631,17 @@ const PHASE_META = {
   clarify: "VDD Phase 4b: Clarification pass — scan for [NEEDS CLARIFICATION] markers, template placeholders, missing edge cases.",
   plan: "VDD Phase 5: Technical blueprint — plan.md (components, AC map, toolchain), data-model.md (entities, indexes, migrations), contracts/ (API contracts).",
   tasks: "VDD Phase 6: Break plan into atomic test-first tasks — sized (S/M/L), parallelizable ([P]), ordered test-first with spec/contract references.",
-  "next-task": "VDD Phase 7a: Read tasks.md, return next uncompleted task for context-isolated implementation session.",
+  "get-next-task": "VDD Phase 7a: Read tasks.md, return next uncompleted task for context-isolated implementation session.",
   implement: "VDD Phase 7b: Execute a single task — load constitution, task, spec, plan, contracts. Implement, verify, commit with traceable message.",
   validate: "VDD Phase 8: Full-chain validation — bidirectional traceability matrix, drift/orphan/uncovered detection, metric comparison, S&T validation (28 assumptions), release readiness.",
   trace: "VDD Cross-phase: Bidirectional traceability matrix — V→S→T→SP→PL→TK chain.",
   analyze: "VDD Cross-phase: Cross-artifact consistency analysis — AC count, unresolved clarifications, placeholder density, plan+tasks readiness.",
   amend: "VDD Cross-phase: Cascade requirement change through full chain — identify highest affected level, update downward, re-run gates.",
-  e2e: "VDD End-to-End: Execute the full 8-phase chain from vision to validation in one call. Runs init→vision→strategize→tactics→specify→clarify→plan→tasks→next-task→validate sequentially, writing all 10+ template files. Pass a freeform vision \"statement\".",
   clone: "VDD Clone: Normalize a target domain (https/http/www/bare) and run the clone pipeline (crawl → capture → evidence → schema → backend → dynamic site → AI tools). Entry point is `vdd e2e -clone <domain>`. Deploy vdd/clone-site/ for a live cloned site serving the full crawled dataset.",
   "detect-environment": "VDD Environment Detection: Reports per-phase tool/MCP requirements and — given the host's availableTools — which capabilities are present vs. missing plus research limitations. Use before Phase 2 (strategize) to plan research subagent dispatch.",
 };
 
-const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","next-task","implement","validate","trace","analyze","amend","e2e","clone","detect-environment"];
+const PHASE_NAMES = ["init","vision","strategize","tactics","specify","clarify","plan","tasks","get-next-task","implement","validate","trace","analyze","amend","clone","detect-environment"];
 
 function toolDefs() {
   return PHASE_NAMES.map((name) => ({
@@ -899,11 +898,11 @@ const HTML = `<!DOCTYPE html>
       <div class="row"><span class="label">Endpoint</span><span class="value">https://vdd.simonmak.com/api/sse</span></div>
       <div class="row"><span class="label">Auth</span><span class="value">None — public, no API key</span></div>
     </div>
-    <h3>Example: vdd_e2e (end-to-end)</h3>
+    <h3>Example: vdd_vision</h3>
     <pre>curl -X POST https://vdd.simonmak.com/api/sse \\
   -H "Content-Type: application/json" \\
-  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_e2e","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
-    <p>Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate. Returns all templates.</p>
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"vdd_vision","arguments":{"statement":"Build a platform that...","projectRoot":"."}},"id":1}'</pre>
+    <p>Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → get-next-task → validate. Returns all templates.</p>
   </section>
 </main>
 <footer>

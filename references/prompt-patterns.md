@@ -606,7 +606,7 @@ Warnings: What must go right / be avoided for Tasks to succeed?
 
 ## Phase 7 — Implement Prompts
 
-### Task Extraction Prompt (`/vdd:next-task`)
+### Task Extraction Prompt (`/vdd:get-next-task`)
 
 ```
 Read vdd/specs/[feature]/tasks.md.

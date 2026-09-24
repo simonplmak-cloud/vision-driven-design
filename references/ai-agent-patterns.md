@@ -283,7 +283,7 @@ Or override per-project via environment variable: `VDD_MODE=gated`
 
 ---
 
-## Task Extraction Tool (`/vdd:next-task`)
+## Task Extraction Tool (`/vdd:get-next-task`)
 
 Problem: If you show the AI agent the full tasks.md, it may try to implement multiple
 tasks at once, or reference future tasks that haven't been defined in context.
@@ -301,7 +301,7 @@ extract-task() {
 
 Or via VDD command:
 ```
-/vdd:next-task vdd/specs/[feature]
+/vdd:get-next-task vdd/specs/[feature]
 ```
 Returns the next uncompleted task (by checking `- [ ]` vs `- [x]`), with all
 necessary context for a single implementation session.

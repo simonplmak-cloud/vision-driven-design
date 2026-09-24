@@ -114,7 +114,7 @@ V-001 → S-002 → T-003 → SP-004 → PL-005 → TK-006 → commit
 | `/vdd:clarify <feature>` | 4 | Clarification pass on a spec |
 | `/vdd:plan <feature>` | 5 | Generate `plan.md`, `data-model.md`, `contracts/` |
 | `/vdd:tasks <feature>` | 6 | Generate `tasks.md` |
-| `/vdd:next-task <feature>` | 7 | Extract next uncompleted task |
+| `/vdd:get-next-task <feature>` | 7 | Extract next uncompleted task |
 | `/vdd:implement <task-id>` | 7 | Execute single task, verify, commit |
 | `/vdd:validate` | 8 | Full-chain traceability + drift + impact report |
 | `/vdd:trace` | any | Bidirectional traceability matrix |
@@ -180,7 +180,7 @@ pnpm -r build
 
 ## MCP API
 
-VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 17 tools, SSE transport with JSON-RPC 2.0, no API key required.
+VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 16 tools, SSE transport with JSON-RPC 2.0, no API key required.
 
 ### Agent Configuration
 
@@ -206,9 +206,11 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 
 **Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
-### Tools (17)
+### MCP Tools (16)
 
-`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_e2e`, `vdd_clone`, `vdd_detect_environment`.
+`vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_get_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_clone`, `vdd_detect_environment`.
+
+The one-call `e2e` shortcut is not an MCP tool (it duplicates the phase sequence); use the CLI `vdd e2e "vision"` instead.
 
 All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`, `availableTools`, `capabilities`, `researchFindings`, `artifactFiles`.
 
@@ -318,7 +320,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   └── specs/                       # 3 feature specs
 ├── packages/                        # TypeScript monorepo
 │   ├── vdd-engine/                  # Shared core — 17 phase functions + meta.ts
-│   ├── vdd-mcp/                     # MCP server — 17 tools, stdio + Streamable HTTP
+│   ├── vdd-mcp/                     # MCP server — 16 tools, stdio + Streamable HTTP
 │   └── vdd-cli/                     # CLI binary — 17 subcommands
 ├── api/                             # Vercel MCP endpoint
 │   └── sse.js                       # MCP SSE + JSON-RPC 2.0 handler

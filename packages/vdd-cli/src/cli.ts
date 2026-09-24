@@ -14,7 +14,7 @@ const PHASE_DESC: Record<string, { desc: string; args: string[] }> = {
   clarify:     { desc: 'Clarify ambiguities', args: ['feature'] },
   plan:        { desc: 'Generate plan.md + contracts/', args: ['feature'] },
   tasks:       { desc: 'Generate tasks.md', args: ['feature'] },
-  'next-task': { desc: 'Next uncompleted task', args: ['feature'] },
+  'get-next-task': { desc: 'Next uncompleted task', args: ['feature'] },
   implement:   { desc: 'Execute a task', args: ['taskId'] },
   validate:    { desc: 'Full-chain traceability report', args: [] },
   trace:       { desc: 'Bidirectional traceability matrix', args: [] },

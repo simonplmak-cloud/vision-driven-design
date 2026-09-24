@@ -498,7 +498,7 @@ async function tasks(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
   return { success: true, artifact };
 }
 
-// Phase 7a: next-task
+// Phase 7a: get-next-task
 async function nextTask(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   if (!input.feature) return { success: false, error: 'feature is required' };
   const tasksPath = ctx.projectRoot + '/vdd/specs/' + input.feature + '/tasks.md';
@@ -1357,10 +1357,10 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
   gateResults.push(g5);
   results['gate5'] = { passed: g5.passed, forward: g5.forwardPassed + '/' + g5.forwardTotal, backward: g5.backwardPassed + '/' + g5.backwardTotal, assumptions: g5.assumptionsPassed + '/' + g5.assumptionsTotal };
 
-  // Phase 7: next-task
+  // Phase 7: get-next-task
   r = await nextTask({ feature: featureDir, json: false }, ctx);
-  results['next-task'] = { success: r.success, task: r.artifact };
-  if (!r.success) errors.push('next-task: ' + (r.error || 'failed'));
+  results['get-next-task'] = { success: r.success, task: r.artifact };
+  if (!r.success) errors.push('get-next-task: ' + (r.error || 'failed'));
 
   // G6 — Tasks → Implementation
   const g6 = await gate6(root, featureDir);
@@ -1399,7 +1399,7 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
 
   // Collect all written files
   const allFiles: string[] = [];
-  for (const phase of ['init','vision','strategize','tactics','specify','clarify','plan','tasks','next-task','validate']) {
+  for (const phase of ['init','vision','strategize','tactics','specify','clarify','plan','tasks','get-next-task','validate']) {
     const res = results[phase] as Record<string, unknown>;
     if (res?.artifact && typeof res.artifact === 'string' && res.success) {
       allFiles.push(res.artifact);
@@ -1423,7 +1423,7 @@ async function e2e(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> {
       feature: featureDir,
       actionItemId: input.actionItemId || featureDir,
       chain: (await chainContext(ctx.projectRoot)).tactics + ' → SP-<n> → PL-<n> → TK-<n> → [implementation]',
-      phasesCompleted: 10, // init, vision, strategize, tactics, specify, clarify, plan, tasks, next-task, validate
+      phasesCompleted: 10, // init, vision, strategize, tactics, specify, clarify, plan, tasks, get-next-task, validate
       errors: errors.length > 0 ? errors : [],
       files: allFiles,
       substance: { placeholders: substancePlaceholders, passed: substancePassed },
@@ -1673,6 +1673,6 @@ async function clone(input: VddPhaseInput, ctx: VddContext): Promise<VddOutput> 
 
 export const PHASES: Record<string, VddPhaseFn> = {
   init, vision, strategize, tactics, specify, clarify,
-  plan, tasks, 'next-task': nextTask, implement, validate, trace, analyze, amend, e2e, clone,
+  plan, tasks, 'get-next-task': nextTask, implement, validate, trace, analyze, amend, e2e, clone,
   'detect-environment': detectEnvironmentPhase,
 };

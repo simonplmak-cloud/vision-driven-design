@@ -28,7 +28,7 @@ One-page cheat sheet. For full details, see referenced files.
 | `/vdd:clarify [feature]` | 4 | delta of resolutions and edge cases |
 | `/vdd:plan [feature]` | 5 | `plan.md`, `data-model.md`, `contracts/` |
 | `/vdd:tasks [feature]` | 6 | `tasks.md` |
-| `/vdd:next-task [feature]` | 7 | next uncompleted task |
+| `/vdd:get-next-task [feature]` | 7 | next uncompleted task |
 | `/vdd:implement [task-id]` | 7 | code commit |
 | `/vdd:validate` | 8 | `impact-report.md`, drift report |
 | `/vdd:trace` | any | traceability matrix |

@@ -37,7 +37,7 @@ Last updated: 2026-09-03
 - Files: kebab-case exce
   pt for AGENTS.md (UPPER) and LICENSE.md (UPPER)
 - Skill frontmatter: OpenCode skill format
-- MCP tools: snake_case (`vdd_init`, `vdd_next_task`)
+- MCP tools: snake_case (`vdd_init`, `vdd_get_next_task`)
 - Package names: `@simonmak-ascent/engine`, `@simonmak-ascent/mcp`, `@simonmak-ascent/cli`
 
 ## Banned Patterns
