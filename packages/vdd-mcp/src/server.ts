@@ -77,6 +77,22 @@ const TOOL_ANNOTATIONS: Record<string, {
   'detect-environment': { title: 'Detect Environment', annotations: { readOnlyHint: true, idempotentHint: true } },
 };
 
+// Documented output shape so clients and evaluators know what each tool returns
+// without the description having to restate it.
+const OUTPUT_SCHEMA = {
+  success: z.boolean().describe('Whether the phase completed successfully'),
+  artifact: z.string().optional().describe('Primary artifact produced or returned'),
+  gateResult: z.object({
+    passed: z.boolean().describe('Whether the quality gate passed'),
+    checks: z.number().describe('Number of checks run'),
+    total: z.number().describe('Total number of checks'),
+  }).optional().describe('Quality-gate result, when the phase runs a gate'),
+  output: z.record(z.string(), z.unknown()).optional().describe('Additional structured phase output'),
+  error: z.string().optional().describe('Error message when the phase fails'),
+  _phase: z.string().describe('VDD phase that produced this result'),
+  _sdt: z.string().describe('Strategy-and-Tactic instructions for the next step'),
+};
+
 export function createVddMcpServer(): McpServer {
     const server = new McpServer({ name: 'vdd', version: '1.6.0' });
 
@@ -90,6 +106,7 @@ export function createVddMcpServer(): McpServer {
         title: toolMeta?.title,
         description: meta?.description ?? `VDD Phase: ${name}`,
         inputSchema: PHASE_INPUT_SCHEMAS[name],
+        outputSchema: OUTPUT_SCHEMA,
         annotations: toolMeta?.annotations,
       },
       async (params: Record<string, unknown>) => {
@@ -113,12 +130,16 @@ export function createVddMcpServer(): McpServer {
           json: false,
         };
         const result = await PHASES[name](input, ctx);
-        const responseText = JSON.stringify({
+        const structured = {
           ...result,
           _phase: name,
           _sdt: meta?.instructions ?? '',
-        }, null, 2);
-        return { content: [{ type: 'text' as const, text: responseText }] };
+        };
+        const responseText = JSON.stringify(structured, null, 2);
+        return {
+          content: [{ type: 'text' as const, text: responseText }],
+          structuredContent: structured as Record<string, unknown>,
+        };
       }
     );
   }
