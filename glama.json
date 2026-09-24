@@ -10,7 +10,7 @@
   },
   "homepage": "https://vdd.simonmak.com",
   "transport": "streamable-http",
-  "dockerfile": "glama/Dockerfile",
+  "dockerfile": "Dockerfile",
   "tags": [
     "mcp",
     "model-context-protocol",

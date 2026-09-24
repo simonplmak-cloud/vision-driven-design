@@ -1,7 +1,8 @@
-# Glama build: compiles the VDD MCP server and exposes it over the MCP
-# Streamable HTTP transport on port 3000. This lets Glama's sandbox run the
-# standard MCP introspection exchange AND host (one-click "Deploy") the server
-# as a remote streamable-HTTP connector.
+# VDD MCP server — Streamable HTTP transport on port 3000.
+#
+# Builds the TypeScript monorepo and serves the 17 VDD tools over the MCP
+# Streamable HTTP transport, so Glama (or any remote client) can introspect it
+# and host it as a one-click "Deploy" connector.
 #
 # The stdio entrypoint (packages/vdd-mcp/dist/stdio.js) remains available for
 # local `npx @simonmak-ascent/mcp` use; this image runs the HTTP transport.
