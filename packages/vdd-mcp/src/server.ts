@@ -5,7 +5,7 @@ import { PHASES, PHASE_NAMES, PHASE_META, type VddContext, type VddPhaseInput } 
 
 // Shared field definitions, then a per-phase input schema so each tool advertises
 // only the parameters it actually reads (feeds Glama's "Parameter Semantics" score).
-const projectRoot = z.string().default('.').describe('Path to project root directory');
+const projectRoot = z.string().default('.').describe('Project root: directory that constitution.md and the vdd/ folder are written to and resolved against (default ".")');
 const statement = z.string().optional().describe('Freeform vision statement (required for vision/e2e)');
 const statementReq = z.string().describe('Freeform vision statement');
 const actionItemId = z.string().optional().describe('Tactical action item ID (e.g., "A-001")');
