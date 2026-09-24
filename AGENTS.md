@@ -12,6 +12,8 @@ index.html               ← GitHub Pages landing page at simonplmak-cloud.githu
 api/                     ← Vercel MCP endpoint (deployed at vdd.simonmak.com).
   sse.js                 ← MCP SSE transport — GET returns SSE stream (or HTML for browsers), POST handles JSON-RPC 2.0 (initialize, tools/list, tools/call). 16 tools.
 vercel.json              ← Vercel deploy config (Framework: Other).
+Dockerfile               ← Self-host build — Streamable HTTP MCP server. (Glama generates its own; it ignores this file.)
+glama.json               ← Glama registry file — `maintainers` only (the sole field Glama's schema consumes).
 package.json             ← Root workspace + Vercel runtime config.
 pnpm-workspace.yaml      ← Monorepo workspace config.
 packages/                ← TypeScript monorepo.

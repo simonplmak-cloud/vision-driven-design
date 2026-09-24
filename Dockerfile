@@ -1,11 +1,14 @@
 # VDD MCP server — Streamable HTTP transport on port 3000.
 #
-# Builds the TypeScript monorepo and serves the 17 VDD tools over the MCP
-# Streamable HTTP transport, so Glama (or any remote client) can introspect it
-# and host it as a one-click "Deploy" connector.
+# Builds the TypeScript monorepo and serves the 16 VDD MCP tools over the MCP
+# Streamable HTTP transport, for self-hosting or any remote client.
 #
-# The stdio entrypoint (packages/vdd-mcp/dist/stdio.js) remains available for
-# local `npx @simonmak-ascent/mcp` use; this image runs the HTTP transport.
+# Note: Glama does NOT build from this file — it generates its own container
+# from the stdio entrypoint (packages/vdd-mcp/dist/stdio.js), wrapped with
+# mcp-proxy. This image is for self-hosting the HTTP transport.
+#
+# The stdio entrypoint remains available for local `npx @simonmak-ascent/mcp`
+# use; this image runs the HTTP transport.
 FROM node:22-alpine
 
 # Install pnpm (workspace installs require it).

@@ -2,11 +2,12 @@
 
 <a href="https://github.com/simonplmak-cloud/vision-driven-design/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/phases-8-blueviolet" alt="8 Phases"></a>
-<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.5.9-blue" alt="Version 1.5.9"></a>
+<a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/version-1.6.0-blue" alt="Version 1.6.0"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/gates-7%20bidirectional-orange" alt="7 Bidirectional Gates"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/checks-108-green" alt="108 Verification Checks"></a>
 <a href="https://vdd.simonmak.com"><img src="https://img.shields.io/badge/API-vdd.simonmak.com-0d7377" alt="MCP API"></a>
 <a href="https://github.com/simonplmak-cloud/vision-driven-design"><img src="https://img.shields.io/badge/built%20with-VDD-0d7377" alt="Built with VDD"></a>
+<a href="https://glama.ai/mcp/servers/simonplmak-cloud/vision-driven-design"><img src="https://glama.ai/mcp/servers/simonplmak-cloud/vision-driven-design/badges/score.svg" alt="Glama MCP tool-definition quality and maintenance score"></a>
 
 **From vision to verified impact — an AI-native, fully autonomous software development methodology.**
 
@@ -214,6 +215,18 @@ The one-call `e2e` shortcut is not an MCP tool (it duplicates the phase sequence
 
 All tools accept: `statement`, `projectRoot`, `actionItemId`, `feature`, `taskId`, `description`, `availableTools`, `capabilities`, `researchFindings`, `artifactFiles`.
 
+### MCP Registry (Glama)
+
+The server is listed on [Glama](https://glama.ai/mcp/servers/simonplmak-cloud/vision-driven-design), which builds it from source and publishes a hosted remote endpoint plus a **Tool Definition Quality Score** and maintenance rating:
+
+<a href="https://glama.ai/mcp/servers/simonplmak-cloud/vision-driven-design"><img src="https://glama.ai/mcp/servers/simonplmak-cloud/vision-driven-design/badges/card.svg" alt="Glama quality and maintenance score"></a>
+
+Maintainer notes:
+
+- `glama.json` (repo root) is Glama's registry file. Its [schema](https://glama.ai/mcp/schemas/server.json) consumes exactly one field — `maintainers`. Build/transport/description metadata belongs in `package.json` and this README, **not** here; Glama ignores it.
+- Glama generates its own container build from the stdio entrypoint (`packages/vdd-mcp/dist/stdio.js`), wrapped with `mcp-proxy`. The root `Dockerfile` is for **self-hosting** the Streamable HTTP server, not for Glama.
+- After tool-definition changes: sync the repository and run **Build & Release** in the Glama admin. Tool-level scores refresh on the next sweep; the server-level *coherence* score re-runs less often.
+
 ### API Reference
 
 | Method | Description |
@@ -292,6 +305,8 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 ├── pnpm-workspace.yaml              # Workspace config
 ├── package.json                     # Root package (Vercel + workspace)
 ├── vercel.json                      # Vercel deployment config
+├── Dockerfile                       # Self-host build — Streamable HTTP MCP server
+├── glama.json                       # Glama registry file (maintainers only)
 ├── domain-primers/                  # 7 domain research patterns
 │   ├── webapp.md
 │   ├── data-storage.md

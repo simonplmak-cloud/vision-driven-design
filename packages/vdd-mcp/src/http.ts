@@ -5,9 +5,10 @@ import { createVddMcpServer } from './server.js';
 
 const PORT = Number(process.env.PORT ?? 3000);
 
-// Streamable-HTTP entrypoint. Exposes the same 17 VDD tools over the MCP
-// Streamable HTTP transport so Glama (or any remote client) can host/connect
-// to the server on a TCP port — required for one-click "Deploy" on the registry.
+// Streamable-HTTP entrypoint. Exposes the same 16 VDD MCP tools over the MCP
+// Streamable HTTP transport so any remote client can connect on a TCP port —
+// used when self-hosting the server. (Glama builds its own container from the
+// stdio entrypoint; it does not use this one.)
 export async function startHttpServer(): Promise<void> {
   const mcpServer = createVddMcpServer();
   const transport = new WebStandardStreamableHTTPServerTransport({

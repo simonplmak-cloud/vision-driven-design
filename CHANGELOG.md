@@ -3,13 +3,16 @@
 ## [Unreleased]
 
 ### Added (MCP distribution & Glama registry)
-- **Streamable HTTP transport** (`packages/vdd-mcp/src/http.ts` + `http-entry.ts`): the 17 VDD tools now serve over the MCP Streamable HTTP transport (port 3000) alongside the existing stdio entrypoint, making the server hostable/deployable.
-- **Root `Dockerfile`** + `glama.json` registry metadata (`maintainers`, `title`, `description`, `tags`, `transport: streamable-http`, `dockerfile`) for reproducible Glama sandbox builds, introspection, and one-click deploy.
-- **Tool titles + MCP annotation hints** (`readOnlyHint`/`destructiveHint`/`idempotentHint`/`openWorldHint`) on all 17 tools.
-- **Per-tool input schemas** — each tool now advertises only the parameters it actually reads (e.g. `vdd_init` → `projectRoot` only; clone-only params on `vdd_clone`).
+- **Streamable HTTP transport** (`packages/vdd-mcp/src/http.ts` + `http-entry.ts`): the VDD tools now serve over the MCP Streamable HTTP transport (port 3000) alongside the stdio entrypoint, making the server hostable/deployable.
+- **`glama.json`** registry file (repo root): `maintainers` only — the sole field Glama's [server schema](https://glama.ai/mcp/schemas/server.json) consumes. Glama generates its own container build from the stdio entrypoint (`packages/vdd-mcp/dist/stdio.js`) wrapped with `mcp-proxy`; the root **`Dockerfile`** is for self-hosting the Streamable HTTP server, not for Glama.
+- **Tool titles + MCP annotation hints** (`readOnlyHint`/`destructiveHint`/`idempotentHint`/`openWorldHint`) on every MCP tool.
+- **Per-tool input schemas** — each tool advertises only the parameters it actually reads (e.g. `vdd_init` → `projectRoot` only; clone-only params on `vdd_clone`).
+- **Documented output schema** (`outputSchema` + `structuredContent`) shared by every tool.
 
-### Changed
-- Tool count corrected to **17** (was documented as 16 — `vdd_detect_environment` was miscounted) across README, SKILL, AGENTS, and package metadata.
+### Changed (MCP tool surface)
+- `vdd_next_task` → **`vdd_get_next_task`** (consistent `verb_noun` naming) across the engine, MCP server, CLI, SSE endpoint, and docs.
+- **`e2e` is no longer an MCP/SSE tool** — it duplicates the phase sequence. It remains the CLI `vdd e2e` shortcut (and `vdd e2e -clone`) and an engine phase. **MCP tool surface: 17 → 16.**
+- Tool descriptions rewritten for the Glama Tool Definition Quality Score: explicit usage boundaries with named alternatives, defined domain jargon (AC, per-phase), overwrite/no-op behaviour, and non-obvious parameter meaning.
 
 ### Fixed (validate — feature discovery, and the report it writes)
 - **`validate` discovers the feature directories under `vdd/specs/`** instead of assuming a single `feature-1`. A project with several features (SP-002…SP-00n) no longer false-flags every other feature as uncovered, and the traceability table lists each feature. An explicit `feature` still narrows the run to one.
