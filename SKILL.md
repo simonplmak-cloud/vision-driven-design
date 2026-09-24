@@ -241,10 +241,10 @@ vdd/
 ## MCP & Packages
 
 The public MCP server at `vdd.simonmak.com/api/sse` and the TypeScript packages are in this repo:
-- `api/sse.js` — deployed Vercel handler (16 tools)
-- `packages/vdd-engine/` — shared core (16 phase functions + `meta.ts`: phase metadata, tool requirements, research subagents, domain primers)
-- `packages/vdd-mcp/` — MCP server (16 tools, stdio + SSE)
-- `packages/vdd-cli/` — CLI binary (16 subcommands, `--json`)
+- `api/sse.js` — deployed Vercel handler (17 tools)
+- `packages/vdd-engine/` — shared core (17 phase functions + `meta.ts`: phase metadata, tool requirements, research subagents, domain primers)
+- `packages/vdd-mcp/` — MCP server (17 tools, stdio + Streamable HTTP)
+- `packages/vdd-cli/` — CLI binary (17 subcommands, `--json`)
 
 **Capability contract:** the MCP is the *structured orchestration + verification* layer — it emits
 research-subagent dispatch specs, per-phase tool requirements (`/vdd:detect-environment`), domain-primer

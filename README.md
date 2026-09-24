@@ -180,7 +180,7 @@ pnpm -r build
 
 ## MCP API
 
-VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 16 tools, SSE transport with JSON-RPC 2.0, no API key required.
+VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 17 tools, SSE transport with JSON-RPC 2.0, no API key required.
 
 ### Agent Configuration
 
@@ -206,7 +206,7 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 
 **Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
-### Tools (16)
+### Tools (17)
 
 `vdd_init`, `vdd_vision`, `vdd_strategize`, `vdd_tactics`, `vdd_specify`, `vdd_clarify`, `vdd_plan`, `vdd_tasks`, `vdd_next_task`, `vdd_implement`, `vdd_validate`, `vdd_trace`, `vdd_analyze`, `vdd_amend`, `vdd_e2e`, `vdd_clone`, `vdd_detect_environment`.
 
@@ -317,9 +317,9 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 │   ├── docs/                        # 16 guides and references
 │   └── specs/                       # 3 feature specs
 ├── packages/                        # TypeScript monorepo
-│   ├── vdd-engine/                  # Shared core — 16 phase functions + meta.ts
-│   ├── vdd-mcp/                     # MCP server — 16 tools, stdio + SSE
-│   └── vdd-cli/                     # CLI binary — 16 subcommands
+│   ├── vdd-engine/                  # Shared core — 17 phase functions + meta.ts
+│   ├── vdd-mcp/                     # MCP server — 17 tools, stdio + Streamable HTTP
+│   └── vdd-cli/                     # CLI binary — 17 subcommands
 ├── api/                             # Vercel MCP endpoint
 │   └── sse.js                       # MCP SSE + JSON-RPC 2.0 handler
 ├── scripts/                         # 4 installer/helper scripts

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added (MCP distribution & Glama registry)
+- **Streamable HTTP transport** (`packages/vdd-mcp/src/http.ts` + `http-entry.ts`): the 17 VDD tools now serve over the MCP Streamable HTTP transport (port 3000) alongside the existing stdio entrypoint, making the server hostable/deployable.
+- **Root `Dockerfile`** + `glama.json` registry metadata (`maintainers`, `title`, `description`, `tags`, `transport: streamable-http`, `dockerfile`) for reproducible Glama sandbox builds, introspection, and one-click deploy.
+- **Tool titles + MCP annotation hints** (`readOnlyHint`/`destructiveHint`/`idempotentHint`/`openWorldHint`) on all 17 tools.
+- **Per-tool input schemas** — each tool now advertises only the parameters it actually reads (e.g. `vdd_init` → `projectRoot` only; clone-only params on `vdd_clone`).
+
+### Changed
+- Tool count corrected to **17** (was documented as 16 — `vdd_detect_environment` was miscounted) across README, SKILL, AGENTS, and package metadata.
+
 ### Fixed (validate — feature discovery, and the report it writes)
 - **`validate` discovers the feature directories under `vdd/specs/`** instead of assuming a single `feature-1`. A project with several features (SP-002…SP-00n) no longer false-flags every other feature as uncovered, and the traceability table lists each feature. An explicit `feature` still narrows the run to one.
 - **`validate` no longer overwrites a hand-authored `vdd/impact-report.md`**; it writes `vdd/impact-report.generated.md` alongside it.
