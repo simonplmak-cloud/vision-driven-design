@@ -1,12 +1,34 @@
 {
   "name": "@simonmak-ascent/cli",
   "version": "1.6.0",
-  "description": "Vision Driven Design CLI — 16 subcommands for the VDD 8-phase chain.",
+  "description": "Vision Driven Design CLI — 17 subcommands driving the 8-phase VDD chain (Vision → Strategy → Tactics → Spec → Plan → Tasks → Implement → Validate) with 7 bi-directional quality gates.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "bin": { "vdd": "./dist/cli.js" },
   "files": ["dist"],
+  "keywords": [
+    "vdd",
+    "vision-driven-design",
+    "spec-driven-development",
+    "sdd",
+    "cli",
+    "traceability",
+    "ai-agents",
+    "ai-coding",
+    "developer-tools",
+    "software-engineering",
+    "quality-gates",
+    "code-generation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonplmak-cloud/vision-driven-design.git",
+    "directory": "packages/vdd-cli"
+  },
+  "homepage": "https://github.com/simonplmak-cloud/vision-driven-design#commands",
+  "bugs": { "url": "https://github.com/simonplmak-cloud/vision-driven-design/issues" },
+  "author": "simonplmak-cloud",
   "scripts": { "build": "tsc", "check": "tsc --noEmit" },
   "dependencies": {
     "@simonmak-ascent/engine": "workspace:^",

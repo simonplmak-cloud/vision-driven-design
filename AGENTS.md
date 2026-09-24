@@ -14,6 +14,7 @@ api/                     ← Vercel MCP endpoint (deployed at vdd.simonmak.com).
 vercel.json              ← Vercel deploy config (Framework: Other).
 Dockerfile               ← Self-host build — Streamable HTTP MCP server. (Glama generates its own; it ignores this file.)
 glama.json               ← Glama registry file — `maintainers` only (the sole field Glama's schema consumes).
+server.json              ← Official MCP Registry manifest (`io.github.simonplmak-cloud/vision-driven-design`).
 package.json             ← Root workspace + Vercel runtime config.
 pnpm-workspace.yaml      ← Monorepo workspace config.
 packages/                ← TypeScript monorepo.

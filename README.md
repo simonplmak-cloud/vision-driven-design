@@ -226,6 +226,8 @@ Maintainer notes:
 - `glama.json` (repo root) is Glama's registry file. Its [schema](https://glama.ai/mcp/schemas/server.json) consumes exactly one field — `maintainers`. Build/transport/description metadata belongs in `package.json` and this README, **not** here; Glama ignores it.
 - Glama generates its own container build from the stdio entrypoint (`packages/vdd-mcp/dist/stdio.js`), wrapped with `mcp-proxy`. The root `Dockerfile` is for **self-hosting** the Streamable HTTP server, not for Glama.
 - After tool-definition changes: sync the repository and run **Build & Release** in the Glama admin. Tool-level scores refresh on the next sweep; the server-level *coherence* score re-runs less often.
+- Also published to the [**Official MCP Registry**](https://registry.modelcontextprotocol.io) as `io.github.simonplmak-cloud/vision-driven-design` (manifest: `server.json`) — PulseMCP and other directories ingest from there.
+- Listed in the [`awesome-mcp-servers`](https://github.com/punkpeye/awesome-mcp-servers) community list under Developer Tools.
 
 ### API Reference
 
@@ -307,6 +309,7 @@ VDD is benchmarked against NASA SE, CMMI REQM, DO-178C, IEC 62304, DORA, ISO 291
 ├── vercel.json                      # Vercel deployment config
 ├── Dockerfile                       # Self-host build — Streamable HTTP MCP server
 ├── glama.json                       # Glama registry file (maintainers only)
+├── server.json                      # Official MCP Registry manifest
 ├── domain-primers/                  # 7 domain research patterns
 │   ├── webapp.md
 │   ├── data-storage.md
