@@ -4,7 +4,7 @@
   "scripts": {
     "build": "mkdir -p public && cp index.html public/",
     "build:packages": "pnpm -r build",
-    "start": "node packages/vdd-mcp/dist/http-entry.js",
+    "start": "node packages/vdd-mcp/dist/stdio.js",
     "check": "pnpm -r check",
     "test": "pnpm -r test"
   }
