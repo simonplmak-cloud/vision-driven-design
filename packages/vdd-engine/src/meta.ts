@@ -31,71 +31,71 @@ export interface PhaseMeta {
 
 export const PHASE_META: Record<PhaseName, PhaseMeta> = {
   init: {
-    description: 'VDD Phase 0: Generate constitution.md at the project root — encodes immutable tech stack, conventions, security constraints, naming conventions, and banned patterns. Applied to every subsequent phase.',
+    description: 'VDD Phase 0: Generate constitution.md at the project root — encodes the immutable tech stack, conventions, security constraints, naming rules, and banned patterns that govern all later phases. Overwrites any existing constitution.md. Run this first; to change an existing constitution use vdd_amend instead of re-running this.',
     instructions: 'Run this first. AI agent should read the existing codebase (package.json, tsconfig, existing patterns) and fill in the constitution template with actual project values.',
   },
   vision: {
-    description: 'VDD Phase 1: Expand freeform vision statement into structured vision.md — defines Impact Model (Goal, Actors, Impacts), Stakeholder Map, Success Metrics (leading + lagging), Constraints & Boundaries, and Target Domains. This is the root of all traceability.',
+    description: 'VDD Phase 1: Expand a freeform vision statement into vdd/vision.md — Impact Model (Goal, Actors, Impacts), Stakeholder Map, Success Metrics (leading + lagging), Constraints & Boundaries, and Target Domains. Overwrites any existing vdd/vision.md. Requires the statement parameter; run once after vdd_init and before vdd_strategize.',
     instructions: 'Provide a 1-3 paragraph freeform "statement" describing the impact you want to create. The AI agent should then expand and formalize it into the vision template. The template file is written to vdd/vision.md.',
   },
   strategize: {
-    description: 'VDD Phase 2: Research-backed strategy — resolves domain primers from vision target domains, emits 5 parallel research subagent dispatch specs (Market, Competitive, Technology, Impact, Domain), and synthesizes findings into strategic pillars, competitive analysis, and risk register.',
+    description: 'VDD Phase 2: Produce research-backed strategy into vdd/strategy.md — 12 strategic pillars, competitive analysis, and a risk register, resolved from the vision target-domain primers. Overwrites vdd/strategy.md. Requires vdd/vision.md to exist. Pass availableTools to detect missing capabilities and researchFindings to synthesize subagent results.',
     instructions: 'Requires vdd/vision.md to exist. Dispatch the returned research subagents using your environment tools (Brave Search, Perplexity, Context7, gh_grep, Playwright), then re-call vdd_strategize with researchFindings to synthesize vdd/strategy.md. Pass availableTools to detect missing capabilities.',
   },
   tactics: {
-    description: 'VDD Phase 3: Repository-grounded action plan — full codebase audit, technical debt assessment, gap analysis, prioritized action items (MoSCoW), dependency map, and infrastructure requirements.',
+    description: 'VDD Phase 3: Audit the codebase into vdd/tactics.md — full repo audit, technical-debt assessment, gap analysis, MoSCoW-prioritized action items, dependency map, and infrastructure requirements. Overwrites vdd/tactics.md. Run after vdd_strategize and before vdd_specify.',
     instructions: 'Requires vdd/strategy.md. AI agent should audit the existing codebase: scan directory structure, read package manifests, identify existing modules, assess technical debt, map gaps to strategy pillars, and produce prioritized action items (A-001, A-002, ...). Output to vdd/tactics.md.',
   },
   specify: {
-    description: 'VDD Phase 4: Generate spec.md for a tactical action item. Includes user stories, boundaries (Always/Ask/Never), acceptance criteria (Given/When/Then), MoSCoW priorities, non-functional requirements, and impact verification.',
+    description: 'VDD Phase 4: Generate vdd/specs/<id>/spec.md for a tactical action item — user stories, Always/Ask/Never boundaries, Given/When/Then acceptance criteria, MoSCoW priorities, non-functional requirements, and impact verification. Overwrites the spec file. Pass actionItemId (e.g. "A-001") or a freeform description to skip the V/S/T chain.',
     instructions: 'Pass actionItemId (e.g., "A-001") or a freeform "description". The AI agent should surface assumptions, write precise ACs with measurable criteria, define boundaries, and connect each AC to a vision impact. Output to vdd/specs/<id>/spec.md.',
   },
   clarify: {
-    description: 'VDD Phase 4b: Standalone clarification pass on an existing spec — scans for [NEEDS CLARIFICATION] markers, template placeholders, and missing edge cases. Returns a list of items to resolve.',
+    description: 'VDD Phase 4b: Clarify an existing spec in place — resolves every [NEEDS CLARIFICATION] marker, replaces [e.g.] placeholders with concrete values, and adds edge-case ACs (AC-E*). Mutates vdd/specs/<feature>/spec.md. Pass the feature (spec directory name). Run after vdd_specify when a spec has unresolved markers.',
     instructions: 'Pass "feature" (the spec directory name). AI agent reads the spec, resolves every [NEEDS CLARIFICATION] item, replaces [e.g.] placeholders with concrete values, and adds edge-case ACs (AC-E*) for every happy-path MUST AC.',
   },
   plan: {
-    description: 'VDD Phase 5: Technical blueprint — generates plan.md (component breakdown, AC coverage map, technology choices, verification toolchain), data-model.md (entities, indexes, migrations), and contracts/ (API contracts with request/response/error schemas).',
+    description: 'VDD Phase 5: Generate the technical blueprint under vdd/specs/<feature>/ — plan.md (component breakdown, AC coverage map, technology choices, verification toolchain), data-model.md (entities, indexes, migrations), and contracts/ (request/response/error schemas). Overwrites these files. Requires the feature spec to exist.',
     instructions: 'Pass "feature". AI agent translates the spec into architecture: component decomposition, technology decisions, AC→component mapping, verification tool selection (Vitest, Playwright, Browserless, Sentry), data model design, and API contract definitions. Outputs 3 files.',
   },
   tasks: {
-    description: 'VDD Phase 6: Break the plan into atomic test-first tasks. Each task references specific ACs and contracts. Tasks are sized (S/M/L), marked parallelizable ([P]), and ordered test-first.',
+    description: 'VDD Phase 6: Break the plan into atomic test-first tasks in vdd/specs/<feature>/tasks.md. Each task references ACs and contracts, is sized S/M/L, and is marked [P] when parallelizable. Overwrites tasks.md. Requires plan.md to exist.',
     instructions: 'Pass "feature". AI agent decomposes each plan component into granular tasks with test-first ordering (test task before impl task). Every impl task traces to a contract and AC. Output to vdd/specs/<feature>/tasks.md.',
   },
   'next-task': {
-    description: 'VDD Phase 7a: Read tasks.md and return the next uncompleted task. Use this before each implementation session to maintain context isolation.',
+    description: 'VDD Phase 7a: Read vdd/specs/<feature>/tasks.md and return the next uncompleted task. Read-only. Pass the feature (spec directory name). Use before each implementation session to keep context isolated.',
     instructions: 'Pass "feature". Returns the first uncompleted task line from tasks.md. The AI agent should then start a fresh context window for that task.',
   },
   implement: {
-    description: 'VDD Phase 7b: Execute a single task — load constitution, task description, spec, plan, contracts. Implement, verify, and commit. One commit per task with full impact-chain commit message.',
+    description: 'VDD Phase 7b: Execute one task — load constitution, spec, plan, and contracts, implement, verify, and commit with an impact-chain commit message. Mutates source code and commits to git. Pass the taskId (e.g. "TASK-003"); run after vdd_next_task.',
     instructions: 'Pass "taskId". AI agent loads constitution + task description + relevant spec/plan/contracts. Implements with constraints from Boundaries section. Commits with traceable message format.',
   },
   validate: {
-    description: 'VDD Phase 8: Full-chain validation — bidirectional traceability matrix, drift detection, orphan code detection, uncovered vision goals, impact metrics vs targets, S&T assumption validation (all 28 across 7 gates), and release readiness decision.',
+    description: 'VDD Phase 8: Validate the full chain — bidirectional traceability matrix, drift detection, orphan detection, uncovered vision goals, impact metrics vs targets, and 28 S&T assumption checks across 7 gates. Writes vdd/impact-report.md. Run after implementation is complete.',
     instructions: 'AI agent generates the complete impact-verification report: forward coverage (V→S→T→SP→PL→TK→code), backward authorization, orphan detection, uncovered detection, metric comparison, S&T validation, and drift report. Output to vdd/impact-report.md.',
   },
   trace: {
-    description: 'VDD Cross-phase: Generate bidirectional traceability matrix showing the full V→S→T→SP→PL→TK chain for the current project.',
+    description: 'VDD Cross-phase: Generate the bidirectional V→S→T→SP→PL→TK traceability matrix for the current project. Read-only — reads all vdd/ artifacts and returns the matrix without modifying files. Use any time to inspect coverage.',
     instructions: 'AI agent reads all existing artifacts in vdd/ and produces a traceability matrix mapping every level to its parent and children.',
   },
   analyze: {
-    description: 'VDD Cross-phase: Cross-artifact consistency analysis — checks spec AC count, unresolved clarifications, placeholder density, plan+tasks existence.',
+    description: 'VDD Cross-phase: Cross-artifact consistency analysis for a feature — AC count, unresolved clarifications, placeholder density, and plan+tasks existence. Read-only; returns metrics without modifying files. Pass the feature (spec directory name).',
     instructions: 'Pass "feature". AI agent reads spec.md, plan.md, tasks.md for the feature and reports metrics: AC count, unresolved [NEEDS CLARIFICATION] items, [e.g.] placeholder count, and readiness status.',
   },
   amend: {
-    description: 'VDD Cross-phase: Cascade a requirement change through the full chain. Identify the highest affected level and update downward through V→S→T→SP→PL→TK. Re-run all affected gates.',
+    description: 'VDD Cross-phase: Cascade a requirement change through the whole chain — identify the highest affected level and update downward V→S→T→SP→PL→TK, re-running affected gates (G1–G7). Mutates the affected vdd/ artifacts. Pass the change as description. Use when a requirement changes after artifacts exist.',
     instructions: 'Pass "description" of what changed. AI agent identifies the highest affected level, updates all downstream artifacts, re-runs affected gates (G1–G7), and commits each updated artifact with [AMEND] marker.',
   },
   e2e: {
-    description: 'VDD End-to-End: Execute the full 8-phase VDD chain from constitution to validation in one call. Runs init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate sequentially. Writes all 10+ template files with proper impact-chain headers. Accepts a freeform vision statement.',
+    description: 'VDD End-to-End: Run the full 8-phase chain (init → vision → strategize → tactics → specify → clarify → plan → tasks → next-task → validate) in one call, writing all 10+ template files with impact-chain headers. Overwrites existing artifacts. Pass the freeform vision statement; use feature (default "feature-1") to name the spec directory. Use for greenfield projects — for incremental changes, call the individual phase tools instead.',
     instructions: 'Pass "statement" with your vision. The tool runs all phases end-to-end, creating every artifact: constitution.md, vision.md, strategy.md, tactics.md, spec.md, plan.md, data-model.md, contracts/, tasks.md, and impact-report.md. Use optional "feature" (default "feature-1") to customize the spec directory name. The AI agent then fills in each template with domain-specific content.',
   },
   'detect-environment': {
-    description: 'VDD Environment Detection: Reports which tools/MCPs are required and optional per phase, and — when the host agent supplies its availableTools — which capabilities are present vs. missing, plus resulting research limitations.',
+    description: 'VDD Environment Detection: Report which tools/MCPs are required vs optional per phase, and which of the host agent availableTools are present vs missing. Read-only; returns a capability report without modifying files. Pass availableTools (e.g. ["brave-search","playwright"]) for a per-phase capability report.',
     instructions: 'Pass availableTools (array of MCP/tool names available to the host agent, e.g. ["brave-search","perplexity","context7","gh_grep","playwright","filesystem"]). Returns a per-phase capability report. Used before Phase 2 (strategize) to plan research subagent dispatch.',
   },
   clone: {
-    description: 'VDD Clone: Normalize a target domain and run the clone pipeline (crawl → capture → evidence → WordPress-aware schema inference → Payload collections → scaffold manifest → AI tools). Emits vdd/clone-manifest.json (Next.js + Payload + Postgres spec) that a host `vdd-clone` skill turns into a live, operational site. Entry point is `vdd e2e -clone <domain>`.',
+    description: 'VDD Clone: Crawl and capture a target domain into a clone dataset + manifest — WordPress-aware schema inference, Payload collections, and a Next.js + Payload + Postgres scaffold manifest (vdd/clone-manifest.json). Writes vdd/clone-dataset.json, vdd/clone-manifest.json, and vdd/clone.md. Pass the domain as description; tune maxPages, timeoutMs, concurrency, crawl, browser, and refresh. Open-world: makes network requests to the target site.',
     instructions: 'Pass the domain as "description" (or "statement"). The phase normalizes the domain, crawls the site (sitemap + same-origin links, browserless-first with plain-fetch fallback) into vdd/clone-dataset.json, detects WordPress CMS (content types, taxonomies, Polylang locales), infers the content model, generates Payload collections, and writes vdd/clone-manifest.json + vdd/clone.md. To make the clone live, run the `vdd-clone` skill: scaffold a Next.js + Payload + Postgres app at the project root (`.`), then `docker compose up` (self-hosted Postgres) and expose via `cs tunnel`. Browserless config: BROWSERLESS_HOST (default http://localhost:3000) + BROWSERLESS_TOKEN env vars.',
   },
 };
