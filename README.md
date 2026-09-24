@@ -181,7 +181,10 @@ pnpm -r build
 
 ## MCP API
 
-VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 16 tools, SSE transport with JSON-RPC 2.0, no API key required.
+VDD is available as a public MCP server at `https://vdd.simonmak.com` — 16 tools, no API key required. Two transports:
+
+- **Streamable HTTP** — `https://vdd.simonmak.com/api/mcp` (recommended; Smithery and modern MCP clients)
+- **SSE** — `https://vdd.simonmak.com/api/sse` (legacy, JSON-RPC 2.0)
 
 ### Agent Configuration
 
@@ -204,6 +207,8 @@ VDD is available as a public MCP server at `https://vdd.simonmak.com/api/sse`. 1
 ```
 
 **Cursor** — add MCP server URL: `https://vdd.simonmak.com/api/sse`
+
+**Any Streamable HTTP client** (Smithery, Claude Code, …) — MCP server URL: `https://vdd.simonmak.com/api/mcp`
 
 **Any SSE-compatible agent** — endpoint: `https://vdd.simonmak.com/api/sse`
 
@@ -233,8 +238,19 @@ Maintainer notes:
 
 | Method | Description |
 |--------|-------------|
+| POST `/api/mcp` | Streamable HTTP — JSON-RPC `initialize`, `tools/list`, `tools/call` (stateless) |
+| GET `/api/mcp` | 405 — no server-initiated stream |
+| DELETE `/api/mcp` | 204 — no session state to terminate |
 | GET `/api/sse` | SSE stream (MCP client) or HTML docs (browser) |
 | POST `/api/sse` | JSON-RPC — `initialize`, `tools/list`, `tools/call` |
+
+```bash
+# Streamable HTTP call example
+curl -X POST https://vdd.simonmak.com/api/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
 
 ```bash
 # JSON-RPC call example
